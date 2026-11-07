@@ -67,6 +67,10 @@ domain, and widgets get state. Nothing in this layer knows about HTTP or JSON.
   `allow`, short private helpers are fine, but whatever has its own state or rebuild boundary
   must still be a widget.
 
+**Comments** follow `../forge-architecture/references/code-comments.md`. Reference the
+rule behind non-obvious UI behavior (`// HU-12 §5: skeleton only after 250 ms`). Comment
+nothing in widget trees that the code already says. `///` goes on shared widgets.
+
 ## Step 3 — Navigation and DI
 
 - Register the route as the blueprint says:
@@ -100,6 +104,7 @@ Run `quality.analyze_command` until it is clean. Widget and state tests come fro
 | Hex colors and raw `TextStyle`s | Theme / tokens from the profile | Theming and dark mode keep working |
 | Changing an existing widget's required parameters | Optional parameter, old behavior as default | Every call site keeps compiling |
 | Navigation inside a state manager | Side effect via listener (`BlocListener`, `ref.listen`, one-shot event) | State stays UI-agnostic |
+| `// ===== WIDGETS =====` banners, `// build the button` | Extract a well-named widget; comment only the *why* | Comments that restate code rot first |
 
 ## Finish
 

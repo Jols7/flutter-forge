@@ -104,6 +104,13 @@ Every container follows one rule: **classes receive their dependencies through t
 constructor.** Only composition resolves them. That is what makes every class testable with
 mocktail.
 
+## Code comments
+
+Code that the forge skills generate follows `references/code-comments.md`: the code says
+*what*, a comment says *why*. Typical comments are rule references (`// AC-4 (HU-12): …`),
+links to workarounds, `///` on domain contracts and `TODO(#issue)`. The audit checks it
+(`forge-audit` checklist §14 and `scripts/check_comments.py`).
+
 ## Output
 
 When another skill loads this one, it needs nothing back. When the user asks directly, answer

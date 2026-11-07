@@ -9,8 +9,10 @@ package. The example app `example/forge_demo` compiles this exact code.
 ```dart
 import 'package:flutter/foundation.dart';
 
+/// Spending category; unknown backend values map to [other].
 enum TransactionCategory { food, transport, salary, other }
 
+/// A booked movement of an account. [amount] is signed: negative is a debit.
 @immutable
 class Transaction {
   const Transaction({
@@ -66,11 +68,16 @@ class Paginated<T> {
 ## 3. Repository contract — `domain/repositories/transactions_repository.dart`
 
 ```dart
+import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/result.dart';
 import '../../../../core/utils/paginated.dart';
 import '../entities/transaction.dart';
 
+/// Read access to an account's movements.
 abstract interface class TransactionsRepository {
+  /// Newest-first page [page] (1-based) of [accountId]'s movements.
+  ///
+  /// Fails with [NotFoundFailure] for an unknown account and [NetworkFailure] when offline.
   Future<Result<Paginated<Transaction>>> getTransactions({
     required String accountId,
     int page = 1,
@@ -78,7 +85,9 @@ abstract interface class TransactionsRepository {
 }
 ```
 
-Use `package:<package>/…` imports instead of relative ones when the project prefers them, and
+Domain contracts and entities carry `///` docs: what they guarantee, which `AppFailure`s they
+return and their units (`forge-architecture/references/code-comments.md`; `check_comments.py`
+flags missing ones). Use `package:<package>/…` imports instead of relative ones when the project prefers them, and
 stay consistent with `analysis_options.yaml` (`always_use_package_imports` or
 `prefer_relative_imports`).
 

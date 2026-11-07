@@ -52,6 +52,10 @@ Follow `references/templates.md`. Each item is a separate file:
 9. **Mocks** for every endpoint with `status: mock-agreed` or `gap`, plus a dev toggle (see
    `references/mock-interceptor.md`). List each mocked route in the run report.
 
+Comments follow `../forge-architecture/references/code-comments.md`. That means `///` on the
+repository contract and entities (guarantees, failure types, units), a contract reference
+where a DTO type is surprising, and nothing that restates the code.
+
 ## Step 3 — Verify
 
 ```bash
@@ -78,6 +82,7 @@ to run it next.
 | Mock logic in repositories (`if (useMocks) return fake`) | Mock interceptor at the HTTP layer | Everything above the client stays final code |
 | Mocks enabled by a runtime flag in release builds | `const bool.fromEnvironment('USE_MOCKS')` + assert not prod | Tree-shaken out of release; never a silent fake |
 | Hand-editing `*.g.dart` | Change the DTO and rerun the build command | Generated files are overwritten |
+| `// get transactions` above `getTransactions()`, or commented-out code | `///` with what the method guarantees and which failures it returns; delete dead code | Comments say *why*; git keeps history |
 
 ## Finish
 
