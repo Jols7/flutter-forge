@@ -148,3 +148,18 @@ finding only when it meets the confidence bar.
 - Is there no second package for an existing concern (another HTTP client, a second state
   library)?
 - Are there no `dependency_overrides` without a comment and an issue link?
+
+## 14. Comments (`../forge-architecture/references/code-comments.md`)
+
+Run `scripts/check_comments.py` on the scope first. It flags the mechanical cases:
+commented-out code, `TODO`/`FIXME` without a reference, decorative banners, and missing
+`///` on public domain contracts. Then judge what a script can't:
+- Do comments explain *why* (rule with reference, workaround with link, counter-intuitive
+  decision, regex/formula) rather than restate *what*?
+- Would a rename or an extraction make the comment unnecessary?
+- Do non-obvious business rules carry their reference (`AC-n`, `R-n`, `HU-n`, ADR link)?
+- Are long explanations in code that belong in an ADR or a doc?
+- Is the code free of history or authorship notes?
+
+In `adopt` mode only new and changed lines count. Pre-existing comment debt is summarized,
+never listed one by one.

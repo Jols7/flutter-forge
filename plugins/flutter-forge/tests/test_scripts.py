@@ -187,6 +187,63 @@ class DetectProjectTest(unittest.TestCase):
         self.assertEqual(report["structure"]["feature_root"], "lib/features")
 
 
+class CheckCommentsTest(unittest.TestCase):
+    def test_example_app_follows_the_policy(self):
+        out = run("forge-audit", "check_comments.py", "--root", EXAMPLE)
+        self.assertEqual(out.returncode, 0, out.stdout)
+
+    def test_flags_policy_violations_and_keeps_good_comments(self):
+        tmp = tempfile.mkdtemp()
+        try:
+            os.makedirs(os.path.join(tmp, "lib/features/a/domain"))
+            os.makedirs(os.path.join(tmp, "lib/features/a/presentation"))
+            open(os.path.join(tmp, "lib/features/a/domain/repo.dart"), "w").write(
+                "abstract interface class ARepository {\n"
+                "  Future<int> load();\n"
+                "}\n\n"
+                "/// Documented on purpose.\n"
+                "class Documented {}\n")
+            open(os.path.join(tmp, "lib/features/a/presentation/page.dart"), "w").write(
+                "// ===== WIDGETS =====\n"
+                "// final total = items.length;\n"
+                "// setState(() {});\n"
+                "// TODO fix later\n"
+                "// TODO(#12): remove when the API ships pagination\n"
+                "// AC-4 (HU-12): transfers over 50,000 need re-authentication\n"
+                "// ignore: avoid_print\n"
+                "final pattern = RegExp(r'^\\d+$'); // digits only, no sign\n")
+            out = run("forge-audit", "check_comments.py", "--root", tmp, "--format", "json")
+            findings = json.loads(out.stdout)["findings"]
+            kinds = sorted((f["kind"], f["line"]) for f in findings)
+            self.assertEqual(kinds, [
+                ("banner", 1),
+                ("commented-out-code", 2),
+                ("missing-doc", 1),
+                ("missing-doc", 2),
+                ("todo-without-ref", 4),
+            ])
+            self.assertEqual(out.returncode, 1)
+        finally:
+            shutil.rmtree(tmp)
+
+
+class ResultContractTest(unittest.TestCase):
+    """The shipped example result must satisfy the shipped schema (needs jsonschema; CI installs it)."""
+
+    def test_example_validates(self):
+        try:
+            from jsonschema import Draft202012Validator
+        except ImportError:
+            self.skipTest("jsonschema not installed")
+        refs = os.path.join(SKILLS, "forge-deliver", "references")
+        schema = json.load(open(os.path.join(refs, "result.schema.json")))
+        Draft202012Validator.check_schema(schema)
+        example = json.load(open(os.path.join(refs, "result.example.json")))
+        errors = [e.message for e in Draft202012Validator(schema).iter_errors(example)]
+        self.assertEqual(errors, [])
+        self.assertTrue(example["why"] and example["review_points"])
+
+
 class YamlSubsetTest(unittest.TestCase):
     mod = load("forge-api-contract", "postman_to_contract.py")
 

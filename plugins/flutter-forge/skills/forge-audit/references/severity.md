@@ -18,6 +18,14 @@ The automated checks map to severities like this:
   - `layer` → high;
   - `cross-feature` → medium.
 
+`check_comments.py` findings map to these severities:
+- `commented-out-code` → medium;
+- `todo-without-ref` → low;
+- `banner` → low;
+- `missing-doc` on a domain contract → low.
+
+A missing reference on a non-obvious **money or security** rule is medium.
+
 An overlay can remap any rule, for example `forbidden-import package:get_it/ in presentation:
 medium (legacy)`.
 

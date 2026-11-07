@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 
+/// Spending category; unknown backend values map to [other].
 enum TransactionCategory { food, transport, salary, other }
 
+/// A booked movement of an account. [amount] is signed: negative is a debit.
 @immutable
 class Transaction {
   const Transaction({

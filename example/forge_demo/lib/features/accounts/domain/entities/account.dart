@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 
+/// Account product; unknown backend values map to [other].
 enum AccountType { checking, savings, other }
 
+/// An account owned by the signed-in user. The number arrives already masked.
 @immutable
 class Account {
   const Account({
