@@ -1,0 +1,8 @@
+{
+  "access_token": "<redacted>",
+  "expires_in": 3600,
+  "user": {
+    "id": "u_1",
+    "name": "Ana López"
+  }
+}

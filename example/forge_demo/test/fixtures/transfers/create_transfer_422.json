@@ -1,0 +1,9 @@
+{
+  "code": "VALIDATION_ERROR",
+  "message": "Revisa los datos",
+  "errors": {
+    "amount": [
+      "El monto mínimo es 10.00"
+    ]
+  }
+}

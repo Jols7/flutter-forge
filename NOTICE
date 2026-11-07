@@ -1,0 +1,26 @@
+flutter-forge
+Copyright (c) 2026 Joel Anaya — MIT License (see LICENSE).
+
+This project adapts ideas from the following MIT-licensed works. No file is
+copied verbatim; review checklists and design lenses were rewritten, extended
+and re-scoped for flutter-forge.
+
+1. ECC — "everything-claude-code"
+   https://github.com/affaan-m/ECC
+   Copyright (c) 2026 Affaan Mustafa — MIT License
+   Used as reference for: the structure of the Flutter/Dart review checklist
+   (skills/flutter-dart-code-review) and the severity, verdict and confidence
+   rules of its reviewer agent (agents/flutter-reviewer.md).
+   Adapted in: plugins/flutter-forge/skills/forge-audit/references/checklist.md
+   and plugins/flutter-forge/agents/flutter-reviewer.md.
+
+2. flutter-llm-toolkit
+   https://github.com/rolandtolnay/flutter-llm-toolkit (commit bb26ba8)
+   Copyright (c) 2026 Roland Tolnay — MIT License
+   Used as reference for: the three design lenses (state modeling,
+   responsibility boundaries, abstraction timing) and the design principles
+   of skills/flutter-senior-review.
+   Adapted in: plugins/flutter-forge/skills/forge-audit/references/design-lenses.md.
+
+The MIT license text of both works requires that their copyright notice be
+kept in copies or substantial portions; it is reproduced above.

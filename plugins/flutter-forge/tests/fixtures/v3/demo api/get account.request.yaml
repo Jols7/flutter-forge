@@ -1,0 +1,11 @@
+$kind: http-request
+method: GET
+url: '{{base_url}}/accounts/:id'
+order: 1000
+pathVariables:
+  - key: id
+    value: 'acc_1'
+queryParams:
+  - key: expand
+    value: owner
+examples: './.resources/get account.resources/examples/'

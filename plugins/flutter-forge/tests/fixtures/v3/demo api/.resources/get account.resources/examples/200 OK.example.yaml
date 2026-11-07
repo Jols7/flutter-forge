@@ -1,0 +1,19 @@
+$kind: http-example
+request:
+  url: '{{base_url}}/accounts/acc_1'
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": "acc_1",
+        "balance": 10.5,
+        "owner": {"name": "Ana", "token": "abc"},
+        "tags": ["a", "b"]
+      }

@@ -1,0 +1,15 @@
+$kind: http-request
+name: 'Create payment: v2'
+method: POST
+url: '{{base_url}}/payments'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "amount": 100,
+      "card_number": "4111111111111111"
+    }

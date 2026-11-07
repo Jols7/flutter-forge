@@ -1,0 +1,4 @@
+{"openapi":"3.0.3","info":{"title":"Mini","version":"1"},
+ "paths":{"/users/{id}":{"get":{"operationId":"getUser","tags":["users"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],
+   "responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"$ref":"#/components/schemas/User"}}}},"404":{"description":"Missing"}}}}},
+ "components":{"schemas":{"User":{"type":"object","required":["id"],"properties":{"id":{"type":"string"},"nick":{"type":"string","nullable":true},"age":{"type":"integer"}}}}}}

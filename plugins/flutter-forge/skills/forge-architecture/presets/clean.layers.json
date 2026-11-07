@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "preset": "clean",
+  "description": "Feature-first Clean Architecture: domain <- data, domain <- presentation, composition wires everything.",
+  "source_root": "lib",
+  "features_root": "lib/features",
+  "ignore": ["**/*.g.dart", "**/*.freezed.dart", "**/*.gr.dart", "**/*.config.dart", "lib/generated/**", "lib/l10n/generated/**"],
+  "layers": {
+    "composition": {
+      "paths": ["lib/main*.dart", "lib/bootstrap.dart", "lib/app/**", "lib/core/di/**", "lib/core/router/**", "lib/features/*/di/**"],
+      "may_import": ["*"],
+      "forbidden_imports": []
+    },
+    "domain": {
+      "paths": ["lib/features/*/domain/**"],
+      "may_import": ["domain", "core_error", "core_utils"],
+      "forbidden_imports": ["package:flutter/", "package:dio/", "package:http/", "package:json_annotation/", "package:get_it/", "package:injectable/", "package:flutter_bloc/", "package:bloc/", "package:provider/", "package:flutter_riverpod/", "package:riverpod/", "package:hooks_riverpod/", "package:shared_preferences/", "package:flutter_secure_storage/"],
+      "allowed_imports": ["package:flutter/foundation.dart"]
+    },
+    "data": {
+      "paths": ["lib/features/*/data/**"],
+      "may_import": ["domain", "data", "core_error", "core_network", "core_storage", "core_config", "core_utils"],
+      "forbidden_imports": ["package:flutter/material.dart", "package:flutter/widgets.dart", "package:flutter/cupertino.dart", "package:get_it/", "package:flutter_bloc/", "package:bloc/", "package:provider/", "package:flutter_riverpod/", "package:hooks_riverpod/"],
+      "allowed_imports": []
+    },
+    "presentation": {
+      "paths": ["lib/features/*/presentation/**"],
+      "may_import": ["domain", "presentation", "core_ui", "core_error", "core_utils", "composition"],
+      "forbidden_imports": ["package:dio/", "package:http/", "package:json_annotation/", "package:get_it/", "package:shared_preferences/", "package:flutter_secure_storage/"],
+      "allowed_imports": []
+    },
+    "core_error": {
+      "paths": ["lib/core/error/**"],
+      "may_import": ["core_error"],
+      "forbidden_imports": ["package:flutter/material.dart", "package:flutter/widgets.dart", "package:dio/"],
+      "allowed_imports": []
+    },
+    "core_network": {
+      "paths": ["lib/core/network/**"],
+      "may_import": ["core_network", "core_error", "core_config", "core_storage", "core_utils"],
+      "forbidden_imports": ["package:flutter/material.dart", "package:flutter/widgets.dart"],
+      "allowed_imports": []
+    },
+    "core_storage": {
+      "paths": ["lib/core/storage/**"],
+      "may_import": ["core_storage", "core_error", "core_utils"],
+      "forbidden_imports": ["package:flutter/material.dart", "package:flutter/widgets.dart"],
+      "allowed_imports": []
+    },
+    "core_config": {
+      "paths": ["lib/core/config/**"],
+      "may_import": ["core_config", "core_utils"],
+      "forbidden_imports": [],
+      "allowed_imports": []
+    },
+    "core_ui": {
+      "paths": ["lib/core/widgets/**", "lib/core/theme/**", "lib/core/l10n/**", "lib/l10n/**"],
+      "may_import": ["core_ui", "core_utils", "core_error"],
+      "forbidden_imports": ["package:dio/", "package:http/", "package:get_it/"],
+      "allowed_imports": []
+    },
+    "core_utils": {
+      "paths": ["lib/core/utils/**", "lib/core/extensions/**"],
+      "may_import": ["core_utils"],
+      "forbidden_imports": ["package:dio/", "package:get_it/"],
+      "allowed_imports": []
+    }
+  },
+  "cross_feature": {
+    "allowed_layers": ["domain"],
+    "note": "A feature may depend on another feature's domain only. Data and presentation stay private to their feature; composition (router, DI) may import anything."
+  }
+}

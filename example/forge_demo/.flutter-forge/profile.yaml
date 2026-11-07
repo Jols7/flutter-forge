@@ -1,0 +1,84 @@
+# flutter-forge project profile — see forge-profile/references/profile-schema.md
+schema: 1
+
+project:
+  name: Forge Demo
+  package: forge_demo
+  domain: personal finance (fictional API, runs on mocks)
+  canonical_feature: transactions
+
+architecture:
+  preset: clean
+  mode: new
+  state: bloc
+  di: get_it
+  router: go_router
+  errors: result
+  use_cases: optional
+  ui_helpers: forbid
+
+paths:
+  features: lib/features
+  core: lib/core
+  shared_widgets: lib/core/widgets
+  di_setup: lib/core/di/injection.dart
+  router: lib/core/router/app_router.dart
+  error: lib/core/error
+
+networking:
+  http: dio
+  client: lib/core/network/api_client.dart
+  auth: interceptor
+  error_message_key: message
+  base_url: dart-define
+  mocks: interceptor            # run with --dart-define=USE_MOCKS=true
+
+serialization:
+  codegen: json_serializable
+  build_command: dart run build_runner build --delete-conflicting-outputs
+
+l10n:
+  pipeline: gen-l10n
+  arb_dir: lib/l10n
+  template_locale: es
+  locales: [es, en]
+  accessor: AppLocalizations.of(context)
+  generate_command: flutter gen-l10n
+
+design:
+  figma: false                  # the demo has no Figma file; forge-figma runs in CSS mode only
+  colors: Theme.of(context).colorScheme
+  typography: Theme.of(context).textTheme
+  widget_catalog: docs/widget-catalog.md
+
+requirements:
+  template: default
+  language: es
+  sources: [file, paste]
+
+api:
+  sources:
+    - kind: postman-file
+      path: api/forge_demo.postman_collection.json
+  contract_dir: docs/api
+
+testing:
+  unit: mocktail
+  coverage_min: 0.8
+  widget: true
+  e2e: patrol
+  e2e_dir: patrol_test
+  credentials_file: patrol_test/demo_env.json   # demo only: USE_MOCKS, no credentials (the app has no login)
+  default_flavor: dev
+  forbidden_flavors: [prod]
+
+quality:
+  analyze_command: flutter analyze
+  format_command: dart format --output=none --set-exit-if-changed lib test
+  dcm: false
+  max_build_lines: 120
+
+security:
+  level: high                   # finance-like domain: MASVS-L2 checks
+  sensitive_data: [credentials, financial]
+  pinning: false                # fictional API; a real deployment should decide this explicitly

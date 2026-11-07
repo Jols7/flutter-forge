@@ -1,0 +1,98 @@
+---
+name: forge-requirements
+description: Turn a requirement into an implementation brief for a Flutter feature. It reads an existing user story (HU, handoff, ticket, PRD, Jira/Linear/GitHub issue, Google Doc or pasted text). If none exists, it drafts one from a short description with a configurable template (INVEST story, Gherkin acceptance criteria, screens and states, rules, security). It then extracts entry/exit points, states, validations, data needs and gaps, and asks about the gaps instead of guessing. Use it when the user shares or describes a feature, flow, screen or user story, asks to "bajar un requerimiento", "escribe la historia de usuario", "genera la HU", "analiza esta HU", "qué falta definir", or when forge-deliver starts a run.
+---
+
+# forge-requirements
+
+Output: a **brief**, the single description of behavior that blueprint, code, tests and
+reports trace back to. When no story exists, the output is also a **user story (HU)**.
+
+## Step 0 — Resolve
+
+1. Read `.flutter-forge/profile.yaml`:
+   - `requirements.template` (`default` or a project template path);
+   - `requirements.language` (write the HU and the questions in it);
+   - `requirements.sources` and `requirements.index`;
+   - `project.domain` and `security.level`.
+2. Load `references/hu-template.md` (default) or the project template, and
+   `references/brief-template.md`.
+3. If `.flutter-forge/overlays/forge-requirements.md` exists, read it. Its rules win, for
+   example a design team's fixed handoff format.
+
+## Step 1 — Locate the source
+
+| Input | Action |
+|---|---|
+| File in the repo (`.md`, `.txt`, `.pdf`, `.docx`) | Read it; PDFs/DOCX via the available document tools |
+| Pasted text | Use it as is |
+| Issue/ticket URL or id | `gh issue view <n> --comments`, or the Jira/Linear MCP if connected |
+| Google Drive / Docs name or link | Drive connector if connected; otherwise ask the person to paste or export it. **Never guess its content** |
+| Index entry (`requirements.index`) | Find the row by id/name, confirm it targets the mobile app, then open the linked document |
+| Only a short description ("una pantalla para transferir entre mis cuentas") | Go to Step 2b (draft the HU) |
+| Only a Figma link | Ask whether a story exists before inventing behavior. If none exists, draft one in Step 2b using the design as input, and mark every rule as `[to confirm]` |
+
+## Step 2a — Analyze an existing story
+
+Map each part of the story to brief items using `references/hu-to-brief.md`. Pay special
+attention to:
+- **Visibility and entry conditions.** These belong at the entry point, not inside the page.
+- **Exact copy for messages and errors.** It becomes l10n keys; the story text is the source.
+- **Non-functional rules.** Optimistic UI, "no flicker" and retry policy shape the state design.
+- **Security notes.** Masking, no-logging, limits and re-authentication.
+
+## Step 2b — Draft a story (none exists)
+
+1. Ask at most **5** questions in one message, and only questions that change behavior: who
+   the user is and their goal, the happy path, limits and validations, what happens on
+   failure, and what is sensitive. Skip anything the description or the design already answers.
+2. Fill `references/hu-template.md`. Writing rules:
+   - Use the **INVEST** check: if the story fails "Small", propose splitting it and list the
+     split stories.
+   - Write acceptance criteria in Gherkin with ids (`AC-1`…). Each one must be testable: an
+     observable outcome with concrete values.
+   - **Never invent business numbers.** This covers limits, fees, thresholds, rates and
+     currencies. Write `[TBD: minimum transfer amount]`, and the gap becomes a question.
+   - Every screen lists its states: loading, empty, error (with retry policy), success, and
+     validation errors.
+   - Security section: classify data with `security.sensitive_data` and state masking,
+     logging and confirmation rules (`references/hu-template.md` §8).
+3. Save it as `.flutter-forge/runs/<slug>/hu.md`. Offer to copy it to where the team keeps
+   stories.
+
+## Step 3 — Write the brief
+
+Use the format in `references/brief-template.md` and save it as `.flutter-forge/runs/<slug>/brief.md`.
+The `slug` is the kebab-case feature name. Rules:
+- Keep it under ~80 lines. It summarizes the story and does not replace it; link to the story.
+- **Gaps are questions, never guesses.** Each gap is marked:
+  - **blocking**: behavior of an AC cannot be implemented without the answer;
+  - **non-blocking**: can be built behind a clearly named placeholder, for example a mock
+    fixture or a `// TODO(gap-3)` constant, and resolved later.
+- Mock data visible in a design is never a source for rules or constants.
+- Use the profile's language for the content. Ids (`AC-n`, `G-n`) are language-neutral.
+
+## Step 4 — Gate 1
+
+- **Interactive.** Show the brief and **all** gaps in one message. Wait for answers. Update the
+  brief and log the answers under `## Decisions` with today's date. If the person says to
+  proceed with gaps open, keep them in the brief; they will appear again in the final report.
+- **Unattended.** Do not ask. If any gap is blocking, set the run status to `blocked` and stop
+  with the questions. Otherwise continue and list the non-blocking gaps as open questions.
+
+## Anti-patterns
+
+| ❌ Don't | ✅ Do | Why |
+|---|---|---|
+| Fill a missing limit with a number from a Figma mock | `[TBD]` + gap | Mock values are illustrative; a wrong limit is a business bug |
+| Ten scattered questions over several turns | One message, grouped, at most 5 when drafting | Respects the person's time; faster gate |
+| Gherkin like "Then it works correctly" | "Then the amount field shows `Ingresa un monto mayor a $10.00`" | Criteria become test assertions |
+| Rewrite the team's story in your own format | Brief = derived artifact; the story stays the source | Traceability back to what was approved |
+| Put endpoint guesses in the story | "Data needed" + gap, or a source from forge-api-contract | Contracts come from backend, not from the UI |
+| Skip states because "the story didn't mention them" | Add loading/empty/error per screen and ask about the copy | Every network screen has them |
+
+## Finish
+
+- Write `brief.md` (and `hu.md` when drafted). Update `state.json` with
+  `phase: requirements`, `status` and counts of blocking/non-blocking gaps.
+- Report: story source, AC count, screens, gaps by type, and the decisions recorded.

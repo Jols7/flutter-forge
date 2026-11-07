@@ -1,0 +1,104 @@
+{
+  "info": {
+    "_postman_id": "00000000-0000-4000-8000-000000000001",
+    "name": "Forge Demo API",
+    "description": "Fictional personal-finance API used by the flutter-forge example app.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{access_token}}", "type": "string"}]},
+  "variable": [
+    {"key": "base_url", "value": ""},
+    {"key": "access_token", "value": ""}
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "auth": {"type": "noauth"},
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"email\": \"demo@example.com\",\n  \"password\": \"{{demo_password}}\"\n}"},
+            "url": {"raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"]},
+            "description": "Exchanges credentials for an access token."
+          },
+          "response": [
+            {"name": "OK", "code": 200, "body": "{\"access_token\":\"eyJ.demo.token\",\"expires_in\":3600,\"user\":{\"id\":\"u_1\",\"name\":\"Ana López\"}}"},
+            {"name": "Invalid credentials", "code": 401, "body": "{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Correo o contraseña incorrectos\"}"}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "List accounts",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/accounts", "host": ["{{base_url}}"], "path": ["accounts"]},
+            "description": "Accounts owned by the authenticated user."
+          },
+          "response": [
+            {"name": "OK", "code": 200, "body": "{\"data\":[{\"id\":\"acc_1\",\"alias\":\"Nómina\",\"number_masked\":\"•••• 4821\",\"currency\":\"MXN\",\"balance\":15230.5,\"type\":\"checking\"},{\"id\":\"acc_2\",\"alias\":null,\"number_masked\":\"•••• 9034\",\"currency\":\"USD\",\"balance\":820,\"type\":\"savings\"}]}"}
+          ]
+        },
+        {
+          "name": "List transactions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/accounts/:accountId/transactions?page=1&size=20",
+              "host": ["{{base_url}}"],
+              "path": ["accounts", ":accountId", "transactions"],
+              "query": [{"key": "page", "value": "1"}, {"key": "size", "value": "20"}],
+              "variable": [{"key": "accountId", "value": "acc_1"}]
+            },
+            "description": "Paginated movements of one account, newest first."
+          },
+          "response": [
+            {"name": "OK", "code": 200, "body": "{\"data\":[{\"id\":\"tx_1\",\"description\":\"Café\",\"amount\":-85.0,\"currency\":\"MXN\",\"booked_at\":\"2026-10-30T14:05:00Z\",\"category\":\"food\"},{\"id\":\"tx_2\",\"description\":null,\"amount\":12000,\"currency\":\"MXN\",\"booked_at\":\"2026-10-29T09:00:00Z\",\"category\":null}],\"next_page\":2}"},
+            {"name": "Empty", "code": 200, "body": "{\"data\":[],\"next_page\":null}"},
+            {"name": "Not found", "code": 404, "body": "{\"code\":\"ACCOUNT_NOT_FOUND\",\"message\":\"La cuenta no existe\"}"}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transfers",
+      "item": [
+        {
+          "name": "Preview transfer",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/transfers/preview?from=acc_1&to=acc_2&amount=500",
+              "host": ["{{base_url}}"],
+              "path": ["transfers", "preview"],
+              "query": [{"key": "from", "value": "acc_1"}, {"key": "to", "value": "acc_2"}, {"key": "amount", "value": "500"}]
+            }
+          },
+          "response": [
+            {"name": "OK", "code": 200, "body": "{\"fee\":0,\"exchange_rate\":0.0551,\"amount_received\":27.55,\"total_debited\":500}"}
+          ]
+        },
+        {
+          "name": "Create transfer",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Idempotency-Key", "value": "{{$guid}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"from_account_id\": \"acc_1\",\n  \"to_account_id\": \"acc_2\",\n  \"amount\": 500,\n  \"concept\": \"Ahorro\"\n}"},
+            "url": {"raw": "{{base_url}}/transfers", "host": ["{{base_url}}"], "path": ["transfers"]}
+          },
+          "response": [
+            {"name": "Created", "code": 201, "body": "{\"id\":\"tr_1\",\"status\":\"completed\",\"reference\":\"FD-000123\",\"created_at\":\"2026-11-01T10:00:00Z\"}"},
+            {"name": "Validation error", "code": 422, "body": "{\"code\":\"VALIDATION_ERROR\",\"message\":\"Revisa los datos\",\"errors\":{\"amount\":[\"El monto mínimo es 10.00\"]}}"},
+            {"name": "Insufficient funds", "code": 409, "body": "{\"code\":\"INSUFFICIENT_FUNDS\",\"message\":\"Saldo insuficiente\"}"}
+          ]
+        }
+      ]
+    }
+  ]
+}

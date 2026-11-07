@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "id": "acc_1",
+      "alias": "Nómina",
+      "number_masked": "•••• 4821",
+      "currency": "MXN",
+      "balance": 15230.5,
+      "type": "checking"
+    },
+    {
+      "id": "acc_2",
+      "alias": null,
+      "number_masked": "•••• 9034",
+      "currency": "USD",
+      "balance": 820,
+      "type": "savings"
+    }
+  ]
+}

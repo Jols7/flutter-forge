@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "preset": "layered",
+  "description": "Three tiers without a domain contract layer: Api -> Repository (returns models) -> state manager -> UI. Common in existing apps; supported for adopt/improve modes.",
+  "source_root": "lib",
+  "features_root": "lib/features",
+  "ignore": ["**/*.g.dart", "**/*.freezed.dart", "**/*.gr.dart", "lib/generated/**", "lib/l10n/generated/**"],
+  "layers": {
+    "composition": {
+      "paths": ["lib/main*.dart", "lib/bootstrap.dart", "lib/app/**", "lib/core/di/**", "lib/core/router/**"],
+      "may_import": ["*"],
+      "forbidden_imports": []
+    },
+    "models": {
+      "paths": ["lib/models/**", "lib/domain/**"],
+      "may_import": ["models", "core_utils"],
+      "forbidden_imports": ["package:flutter/material.dart", "package:flutter/widgets.dart", "package:dio/", "package:http/", "package:json_annotation/"],
+      "allowed_imports": []
+    },
+    "api": {
+      "paths": ["lib/data/api/**"],
+      "may_import": ["api", "core_network", "core_config", "core_error", "core_utils"],
+      "forbidden_imports": ["package:flutter/material.dart", "package:flutter/widgets.dart"],
+      "allowed_imports": []
+    },
+    "dtos": {
+      "paths": ["lib/data/dtos/**", "lib/data/mappers/**"],
+      "may_import": ["dtos", "models", "core_utils"],
+      "forbidden_imports": ["package:flutter/material.dart", "package:flutter/widgets.dart", "package:dio/"],
+      "allowed_imports": []
+    },
+    "repositories": {
+      "paths": ["lib/data/repositories/**"],
+      "may_import": ["repositories", "api", "dtos", "models", "core_error", "core_network", "core_storage", "core_utils"],
+      "forbidden_imports": ["package:flutter/material.dart", "package:flutter/widgets.dart", "package:flutter_bloc/", "package:provider/", "package:flutter_riverpod/"],
+      "allowed_imports": []
+    },
+    "presentation": {
+      "paths": ["lib/features/**"],
+      "may_import": ["presentation", "repositories", "models", "core_ui", "core_error", "core_utils", "composition"],
+      "forbidden_imports": ["package:dio/", "package:http/", "package:json_annotation/"],
+      "allowed_imports": []
+    },
+    "core_error": {"paths": ["lib/core/error/**"], "may_import": ["core_error"], "forbidden_imports": [], "allowed_imports": []},
+    "core_network": {"paths": ["lib/core/network/**"], "may_import": ["core_network", "core_error", "core_config", "core_storage", "core_utils"], "forbidden_imports": [], "allowed_imports": []},
+    "core_storage": {"paths": ["lib/core/storage/**"], "may_import": ["core_storage", "core_error", "core_utils"], "forbidden_imports": [], "allowed_imports": []},
+    "core_config": {"paths": ["lib/core/config/**"], "may_import": ["core_config", "core_utils"], "forbidden_imports": [], "allowed_imports": []},
+    "core_ui": {"paths": ["lib/core/widgets/**", "lib/core/theme/**", "lib/widgets/**", "lib/l10n/**"], "may_import": ["core_ui", "core_utils", "models"], "forbidden_imports": ["package:dio/"], "allowed_imports": []},
+    "core_utils": {"paths": ["lib/core/utils/**", "lib/core/extensions/**"], "may_import": ["core_utils"], "forbidden_imports": [], "allowed_imports": []}
+  },
+  "cross_feature": {
+    "allowed_layers": ["presentation"],
+    "note": "In the layered preset features are UI modules; sharing data happens through repositories, so cross-feature imports of presentation are tolerated (navigation)."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "@@locale": "en",
+  "appTitle": "Forge Demo",
+  "accountsTitle": "My accounts",
+  "accountsEmpty": "You don't have accounts yet",
+  "accountTypeChecking": "Checking account",
+  "accountTypeSavings": "Savings account",
+  "accountTypeOther": "Account",
+  "transactionsTitle": "Transactions",
+  "transactionsEmpty": "No transactions yet",
+  "transactionsNoDescription": "No description",
+  "commonRetry": "Retry",
+  "errorOffline": "You're offline. Check your connection.",
+  "errorTimeout": "The connection took too long. Try again.",
+  "errorSessionExpired": "Your session expired. Sign in again.",
+  "errorForbidden": "You don't have permission to do this.",
+  "errorNotFound": "We couldn't find what you're looking for.",
+  "errorValidation": "Check the data and try again.",
+  "errorConflict": "The operation conflicted. Refresh and try again.",
+  "errorGeneric": "Something went wrong. Try again."
+}

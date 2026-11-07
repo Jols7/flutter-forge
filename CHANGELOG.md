@@ -1,0 +1,46 @@
+# Changelog
+
+All notable changes to this project are documented here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
+[Semantic Versioning](https://semver.org/).
+
+## [Unreleased]
+
+## [0.1.0] - 2026-11-06
+
+### Added
+- Marketplace and plugin manifests; MIT license with third-party attribution (NOTICE).
+- Agents:
+  - `flutter-engineer`: entry point for people and orchestrators;
+  - `flutter-reviewer`: read-only, independent review.
+- Skills:
+  - `forge-deliver`: pipeline with 3 gates, resumable runs and `result.json`;
+  - `forge-profile`: stack detection, adopt/improve/migrate, profile and layer mapping;
+  - `forge-architecture`: `clean` and `layered` presets, layer rules in JSON, Result/AppFailure,
+    DI, core bootstrap;
+  - `forge-requirements`: story analysis or drafting (INVEST + Gherkin), brief and gaps;
+  - `forge-figma`: Figma MCP, token mapping, reuse ladder, widget catalog, CSS mode;
+  - `forge-api-contract`: Postman v2.1/v3/cloud and OpenAPI → contract and redacted fixtures;
+  - `forge-blueprint`: class design, value trace, test plan;
+  - `forge-data-layer`: entities, contracts, DTOs, mappers, data sources, repositories,
+    mock-first;
+  - `forge-presentation`: BLoC, Riverpod and Provider templates, sealed states, page patterns;
+  - `forge-l10n`: gen-l10n and intl_utils;
+  - `forge-tests`: unit, state and widget tests with fixtures and coverage;
+  - `forge-e2e`: Patrol harness (Patrol 4 API), checkpoints, recording pace
+    (`E2E_STEP_DELAY_MS`), runner script and iOS UI-test target script;
+  - `forge-audit`: automated checks, checklist, design lenses, severity model;
+  - `forge-security`: OWASP MASVS v2, secret and platform-config scanners, flow review;
+  - `forge-learn`: overlays and proposals.
+- Scripts with unit tests:
+  - `detect_project.py`, `postman_to_contract.py`, `check_layers.py`;
+  - `scan_secrets.py`, `check_platform_config.py`;
+  - `run_flow.sh` and `add_ios_ui_test_target.rb`.
+- Example app `example/forge_demo`:
+  - accounts and transactions in the `clean` preset;
+  - 29 tests and 82.6 % domain/data coverage;
+  - a Patrol E2E flow passing on the iOS simulator (Xcode 27 ready);
+  - a sample story and the README GIF.
+- Evals for 5 cases; CI workflow (validate, scripts, example, leak guard read from a secret)
+  and a manual/weekly evals workflow.
+- Documentation: architecture, subagent contract, ADRs 0001–0003.

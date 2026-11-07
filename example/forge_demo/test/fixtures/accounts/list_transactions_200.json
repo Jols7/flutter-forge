@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "id": "tx_1",
+      "description": "Café",
+      "amount": -85.0,
+      "currency": "MXN",
+      "booked_at": "2026-10-30T14:05:00Z",
+      "category": "food"
+    },
+    {
+      "id": "tx_2",
+      "description": null,
+      "amount": 12000,
+      "currency": "MXN",
+      "booked_at": "2026-10-29T09:00:00Z",
+      "category": null
+    }
+  ],
+  "next_page": 2
+}

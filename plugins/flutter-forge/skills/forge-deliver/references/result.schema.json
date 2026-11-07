@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Jols7/flutter-forge/plugins/flutter-forge/skills/forge-deliver/references/result.schema.json",
+  "title": "flutter-forge run result",
+  "description": "Machine-readable outcome of a forge-deliver run, read by orchestrators (.flutter-forge/runs/<slug>/result.json).",
+  "type": "object",
+  "required": ["schema", "slug", "status", "mode", "phases_completed", "files", "tests", "review", "open_questions"],
+  "properties": {
+    "schema": {"const": 1},
+    "slug": {"type": "string"},
+    "feature": {"type": "string"},
+    "status": {"enum": ["completed", "completed-with-gaps", "failing-tests", "blocked", "in-progress"]},
+    "mode": {"enum": ["interactive", "unattended"]},
+    "project": {
+      "type": "object",
+      "properties": {
+        "path": {"type": "string"},
+        "package": {"type": "string"},
+        "preset": {"type": "string"},
+        "state": {"type": "string"},
+        "architecture_mode": {"enum": ["new", "adopt", "improve", "migrate"]}
+      }
+    },
+    "phases_completed": {"type": "array", "items": {"type": "string"}},
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status"],
+        "properties": {
+          "id": {"type": "string"},
+          "status": {"enum": ["implemented-tested", "implemented-untested", "pending-gap", "out-of-scope"]},
+          "tests": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "files": {
+      "type": "object",
+      "required": ["created", "modified"],
+      "properties": {
+        "created": {"type": "array", "items": {"type": "string"}},
+        "modified": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "mocked_routes": {"type": "array", "items": {"type": "string"}},
+    "tests": {
+      "type": "object",
+      "properties": {
+        "unit": {"$ref": "#/$defs/testResult"},
+        "widget": {"$ref": "#/$defs/testResult"},
+        "e2e": {
+          "type": "object",
+          "properties": {
+            "status": {"enum": ["passed", "failed", "pending-run", "disabled"]},
+            "flows": {"type": "array", "items": {"type": "string"}},
+            "reason": {"type": "string"}
+          }
+        },
+        "coverage_domain_data": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["independent", "verdict"],
+      "properties": {
+        "independent": {"type": "boolean"},
+        "verdict": {"enum": ["pass", "pass-with-notes", "block", "not-run"]},
+        "counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer"}
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "severity", "category", "summary", "status"],
+            "properties": {
+              "id": {"type": "string"},
+              "severity": {"enum": ["critical", "high", "medium", "low", "improvement"]},
+              "category": {"type": "string"},
+              "masvs": {"type": "string"},
+              "file": {"type": "string"},
+              "line": {"type": "integer"},
+              "summary": {"type": "string"},
+              "owner": {"type": "string"},
+              "status": {"enum": ["open", "fixed", "wontfix", "deferred"]}
+            }
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "question", "blocking"],
+        "properties": {
+          "id": {"type": "string"},
+          "question": {"type": "string"},
+          "blocking": {"type": "boolean"}
+        }
+      }
+    },
+    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "report": {"type": "string", "description": "Path to report.md"},
+    "proposed_commit": {"type": "string"}
+  },
+  "$defs": {
+    "testResult": {
+      "type": ["object", "null"],
+      "properties": {
+        "passed": {"type": "integer"},
+        "failed": {"type": "integer"},
+        "skipped": {"type": "integer"}
+      }
+    }
+  }
+}

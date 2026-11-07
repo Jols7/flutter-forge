@@ -1,0 +1,17 @@
+{
+  "name": "flutter-forge",
+  "owner": {
+    "name": "Joel Anaya",
+    "url": "https://github.com/Jols7"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for delivering Flutter features end to end: requirements, design, API contract, code, tests, audit and security review."
+  },
+  "plugins": [
+    {
+      "name": "flutter-forge",
+      "source": "./plugins/flutter-forge",
+      "description": "Flutter engineering agent: turns a user story, Figma design and Postman/OpenAPI contract into Clean Architecture code with tests, then audits it for quality and security."
+    }
+  ]
+}

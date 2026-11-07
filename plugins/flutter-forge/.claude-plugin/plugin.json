@@ -1,0 +1,13 @@
+{
+  "name": "flutter-forge",
+  "version": "0.1.0",
+  "description": "Flutter engineering agent: user story + Figma + Postman/OpenAPI → Clean Architecture feature (BLoC, Riverpod or Provider) with unit, widget and Patrol tests, followed by a code audit and an OWASP MASVS security review. Adapts to any project through a .flutter-forge/ profile.",
+  "author": {
+    "name": "Joel Anaya",
+    "url": "https://github.com/Jols7"
+  },
+  "homepage": "https://github.com/Jols7/flutter-forge",
+  "repository": "https://github.com/Jols7/flutter-forge",
+  "license": "MIT",
+  "keywords": ["flutter", "dart", "clean-architecture", "bloc", "riverpod", "provider", "patrol", "figma", "postman", "code-review", "masvs"]
+}

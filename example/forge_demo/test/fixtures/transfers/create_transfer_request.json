@@ -1,0 +1,6 @@
+{
+  "from_account_id": "acc_1",
+  "to_account_id": "acc_2",
+  "amount": 500,
+  "concept": "Ahorro"
+}

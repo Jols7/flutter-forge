@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plugin:
+    name: Plugin manifests and skills
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g @anthropic-ai/claude-code
+      - run: claude plugin validate . --strict
+      - run: claude plugin validate plugins/flutter-forge --strict
+      - name: No project-specific names leaked into skills
+        # Terms live in the LEAK_GUARD_TERMS secret (e.g. "acme|contoso"), never in the repo.
+        # Output shows file:line only, so matched words are not printed in public logs.
+        env:
+          LEAK_GUARD_TERMS: ${{ secrets.LEAK_GUARD_TERMS }}
+        run: |
+          if [ -z "$LEAK_GUARD_TERMS" ]; then echo "::notice::LEAK_GUARD_TERMS not set; skipping"; exit 0; fi
+          hits=$(grep -rnoiE "\b($LEAK_GUARD_TERMS)\b" plugins/flutter-forge/skills plugins/flutter-forge/agents | cut -d: -f1,2 || true)
+          if [ -n "$hits" ]; then echo "Project-specific terms found at:"; echo "$hits"; exit 1; fi
+
+  scripts:
+    name: Scripts (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m unittest discover -s plugins/flutter-forge/tests -v
+      - run: shellcheck plugins/flutter-forge/skills/forge-e2e/scripts/run_flow.sh
+
+  example:
+    name: Example app (analyze, test, forge scanners)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: example/forge_demo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.4
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter gen-l10n
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test --coverage
+      - name: forge-audit layer rules
+        run: python3 ../../plugins/flutter-forge/skills/forge-audit/scripts/check_layers.py --rules ../../plugins/flutter-forge/skills/forge-architecture/presets/clean.layers.json
+      - name: forge-security secret scan
+        run: python3 ../../plugins/flutter-forge/skills/forge-security/scripts/scan_secrets.py
+      - name: forge-security platform config
+        run: python3 ../../plugins/flutter-forge/skills/forge-security/scripts/check_platform_config.py

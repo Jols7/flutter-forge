@@ -1,0 +1,22 @@
+.DS_Store
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# eval results and local runs
+evals/results/
+plugins/flutter-forge/evals/results/
+
+# example app build output
+example/**/build/
+example/**/.dart_tool/
+example/**/.flutter-plugins
+example/**/.flutter-plugins-dependencies
+example/**/patrol_test/test_env.json
+example/**/.flutter-forge/runs/
+
+# editors
+.idea/
+.vscode/
+*.iml
