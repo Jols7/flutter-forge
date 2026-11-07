@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "slug": "new-transfer",
+  "feature": "Nueva transferencia entre cuentas propias",
+  "status": "completed-with-gaps",
+  "mode": "unattended",
+  "project": {"path": "apps/mobile", "package": "forge_demo", "preset": "clean", "state": "bloc", "architecture_mode": "new"},
+  "phases_completed": ["requirements", "contract", "blueprint", "data", "presentation", "l10n", "tests", "e2e", "review", "fix", "report"],
+  "acceptance_criteria": [
+    {"id": "AC-1", "status": "implemented-tested", "tests": ["patrol_test/flows/transfer_test.dart"]},
+    {"id": "AC-6", "status": "pending-gap"}
+  ],
+  "files": {
+    "created": ["lib/features/transfers/domain/entities/transfer_amount.dart"],
+    "modified": ["lib/core/router/app_router.dart"]
+  },
+  "mocked_routes": ["POST transfers"],
+  "tests": {
+    "unit": {"passed": 24, "failed": 0, "skipped": 0},
+    "widget": {"passed": 9, "failed": 0, "skipped": 0},
+    "e2e": {"status": "passed", "flows": ["transfer_test"]},
+    "coverage_domain_data": 0.91
+  },
+  "review": {
+    "independent": false,
+    "verdict": "pass-with-notes",
+    "counts": {"high": 0, "medium": 1},
+    "findings": [
+      {"id": "F-2", "severity": "medium", "category": "comments", "file": "lib/features/transfers/presentation/state/transfer_cubit.dart", "line": 41, "summary": "Commented-out code", "owner": "forge-presentation", "status": "fixed"}
+    ]
+  },
+  "open_questions": [{"id": "G-2", "question": "Maximum amount per transfer?", "blocking": false}],
+  "assumptions": ["Minimum amount applies per transfer"],
+  "why": [
+    {"decision": "No use case for loading accounts", "reason": "Pass-through call with no rule or reuse", "alternatives": ["GetAccounts use case"]}
+  ],
+  "review_points": [
+    {"point": "Confirm the 10.00 minimum is per transfer", "location": "lib/features/transfers/domain/entities/transfer_amount.dart:12", "reason": "Story R-1 is ambiguous"}
+  ],
+  "git": {
+    "branch": "feat/HU-01-transfers",
+    "commits": [{"sha": "a1b2c3d", "message": "feat(mobile): add transfers data layer"}]
+  },
+  "report": ".flutter-forge/runs/new-transfer/report.md"
+}

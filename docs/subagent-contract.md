@@ -25,6 +25,7 @@ sources:
 mode: unattended
 phases: all                            # or e.g. [requirements, contract, blueprint]
 git: none                              # none | commit | pr
+explain: brief                         # none | brief (default) | full
 constraints:
   - "Backend PR #88 adds POST /transfers; until merged, use the agreed mock in docs/api/transfers.md"
 ```
@@ -35,7 +36,8 @@ constraints:
 | `sources.story` | `none` lets the agent draft the story from `feature` + constraints. Every business number it cannot source becomes an open question |
 | `mode` | `unattended`: no questions, assumptions recorded, `blocked` on blocking gaps, auto-fix of critical/high only |
 | `phases` | Subset semantics: phases run in pipeline order. Phases whose inputs are missing are skipped and listed in `result.json` |
-| `git` | The engineer never commits or pushes unless this says so |
+| `git` | `none`: nothing; the message is proposed in `proposed_commit`. `commit`: Conventional Commits with scope `mobile` on a `<type>/<HU>-<slug>` branch, no push. `pr`: also pushes and opens a PR (body *Qué / Por qué / Dónde revisar*); never merges. A project with its own convention keeps it |
+| `explain` | Depth of `why[]` and `review_points[]` ("Por qué / Dónde revisar"): `none` empty, `brief` 1–3 each, `full` every gate decision with alternatives (since v0.2.0) |
 
 ## Output
 
@@ -57,12 +59,26 @@ The engineer replies with a short message and writes the files below.
 └── result.json     # machine result
 ```
 
+An example that validates against the schema is
+`plugins/flutter-forge/skills/forge-deliver/references/result.example.json`.
+
 Key fields to branch on:
 - `status`: `completed` / `completed-with-gaps` / `failing-tests` / `blocked`.
 - `open_questions[].blocking`: what to send back to a person, or to the backend agent.
 - `mocked_routes`: endpoints the backend still owes.
 - `review.independent`: `false` when the engineer ran as a subagent. Launch the reviewer next.
 - `review.verdict` and `review.findings[].status`.
+- `why[]` / `review_points[]`: decisions with discarded alternatives, and where a person must
+  look. Each review point has a `point`, a `location` (`file:line`) and a `reason`. Since v0.2.0,
+  same shape as the common orchestrator contract.
+- `git.branch`, `git.commits[]`, `git.pr`: what was committed or opened, when `git` allowed it.
+
+## Compatibility
+
+- `schema: 1` is stable. Fields are only added, never renamed or removed, within a major
+  schema version. v0.2.0 added `why`, `review_points` and `git`, which are optional.
+- Both agents declare `model: sonnet`, so an orchestrator's cost model does not depend on the
+  caller's default model.
 
 ## Recommended orchestration
 

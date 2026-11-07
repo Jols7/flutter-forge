@@ -1,6 +1,7 @@
 ---
 name: flutter-reviewer
 description: Independent, read-only reviewer for Flutter/Dart changes. It runs the flutter-forge code audit (architecture and layer rules, design lenses, redundancy, best practices, tests, accessibility) and the security review (OWASP MASVS, secrets, platform config). Its output is a ranked findings report with a merge verdict, and it never edits code. Use it after a feature is implemented, before merging, or when an orchestrator wants an independent review of a Flutter repo or diff. Give it the project path, the scope (file list, diff base or folder), and optionally the run folder (.flutter-forge/runs/<slug>/).
+model: sonnet
 tools: Read, Grep, Glob, Bash
 skills:
   - forge-audit
