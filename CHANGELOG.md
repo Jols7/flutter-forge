@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-07
+
+### Added
+- Agents declare `model: sonnet` (`flutter-engineer`, `flutter-reviewer`), so they no longer
+  inherit the caller's model.
+- Brief field `explain: none | brief | full` (default `brief`). Runs report **Por qué**
+  (decisions and discarded alternatives) and **Dónde revisar** (`file:line` + reason) in
+  `report.md`, the final message and `result.json` (`why[]`, `review_points[]`).
+- `result.json`: optional `git` object (branch, commits, PR). The schema stays at `1`
+  (additive), and a `result.example.json` is validated in CI.
+- Git conventions for `git: commit | pr`: Conventional Commits with scope `mobile`,
+  `<type>/<HU>-<slug>` branches, PR body *Qué / Por qué / Dónde revisar*, never merge or
+  force-push, and the project's own convention respected when it has one.
+- Code comments policy (`forge-architecture/references/code-comments.md`):
+  - applied by `forge-data-layer` and `forge-presentation`;
+  - audited by checklist §14 and the new `check_comments.py` (commented-out code, `TODO`
+    without a reference, banners, missing `///` on domain contracts);
+  - new eval `audit-comment-policy`.
+
+### Changed
+- Example app: domain contracts and entities documented with `///`; the CI checks the
+  comments policy.
+- `docs/subagent-contract.md`: `explain`, `why`/`review_points`, `git` and compatibility rules.
+- CONTRIBUTING: commit scopes for this repository and for generated projects.
+
 ## [0.1.0] - 2026-11-06
 
 ### Added

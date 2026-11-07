@@ -58,4 +58,12 @@ claude plugin eval plugins/flutter-forge --case '<glob>' --runs 1
   - minor: new skills, presets or options;
   - major: breaking changes to the profile schema or the subagent contract.
 - Update `CHANGELOG.md` in the same PR. Tag releases as `v<version>`.
-- Conventional Commits (`feat(forge-audit): …`, `fix(forge-e2e): …`).
+- [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) in English,
+  imperative, at most 72 characters:
+  - **in this repository**, the scope is the skill or area: `feat(forge-audit): …`,
+    `fix(forge-e2e): …`, `docs(contract): …`, `ci: …`, `test(example): …`;
+  - **in projects the agent works on**, the scope is `mobile` (see
+    `forge-deliver/references/git-conventions.md`);
+  - breaking changes use `!` plus a `BREAKING CHANGE:` footer and bump the major version.
+- Code comments follow `forge-architecture/references/code-comments.md`; the CI runs
+  `check_comments.py` on the example app.
