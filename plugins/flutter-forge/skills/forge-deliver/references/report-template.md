@@ -36,6 +36,17 @@ Comandos ejecutados: …
 | medium | 3 | 2 | 1 |
 Veredicto final: pass-with-notes · Detalle: findings.md
 
+## Por qué
+<!-- explain: brief → 1–3 entries; full → every gate decision; none → omit this section -->
+- **Sin use case para cargar movimientos.** La llamada solo pasa datos; no hay regla ni reúso.
+  Descartado: `GetTransactions` (ceremonia) y llamar al repositorio desde la página (rompe capas).
+
+## Dónde revisar
+<!-- the same entries as result.json review_points[]: point · location · reason -->
+- Mínimo de 10.00 por transferencia, no por día (R-1 ambigua) —
+  `lib/features/transfers/domain/entities/transfer_amount.dart:12`
+- Ruta mockeada `POST transfers` hasta que el back la publique — `lib/core/network/mocks/transfers_mocks.dart`
+
 ## Pendientes
 - Gaps abiertos (G-n) y preguntas.
 - Supuestos (modo desatendido).
@@ -44,5 +55,6 @@ Veredicto final: pass-with-notes · Detalle: findings.md
 ## Siguiente paso
 Lo que la persona debe decidir: responder G-2, aprobar commit con el mensaje propuesto, …
 
-Commit propuesto: `feat(transfers): nueva transferencia entre cuentas propias`
+Commit propuesto: `feat(mobile): add own-account transfers` (con `git: commit|pr`, ver
+`git-conventions.md`; aquí van la rama, los commits y la URL del PR).
 ```

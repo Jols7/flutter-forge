@@ -13,15 +13,18 @@ skill's rules.
 
 1. **Mode.** Use `unattended` when the arguments or the orchestrator brief say
    `mode: unattended` (or "desatendido"). Otherwise use `interactive`.
-2. **Phases.** All of them by default. A brief can request a subset, e.g. `phases: [contract,
+2. **Explain level.** `explain: none | brief | full` from the brief (default `brief`), per
+   `references/explain.md`. Collect `why[]` and `review_points[]` as you go, and record each
+   gate decision when it is taken, not at the end.
+3. **Phases.** All of them by default. A brief can request a subset, e.g. `phases: [contract,
    blueprint]` or `[audit, security]`, and the phase table below says what each subset needs.
-3. **Profile.** If `.flutter-forge/profile.yaml` is missing, run `forge-profile` first.
-4. **Run folder.** The slug is the kebab-case feature name. In `.flutter-forge/runs/<slug>/`:
+4. **Profile.** If `.flutter-forge/profile.yaml` is missing, run `forge-profile` first.
+5. **Run folder.** The slug is the kebab-case feature name. In `.flutter-forge/runs/<slug>/`:
    - If `state.json` exists, **resume**. Read it, report the completed phases and the open
      gates, and continue from `next_phase`. Do not redo completed phases unless their inputs
      changed (for example, a new story version or a new contract).
    - Otherwise, create `state.json` from `references/run-state.md`.
-5. If `.flutter-forge/overlays/forge-deliver.md` exists, read it; its rules win. Examples: phases
+6. If `.flutter-forge/overlays/forge-deliver.md` exists, read it; its rules win. Examples: phases
    to skip, extra gates, or the report language.
 
 ## Phases
@@ -92,12 +95,18 @@ whole review unless the fixes were broad, meaning they touched more than ~30 % o
   - the mocked routes;
   - tests and coverage;
   - findings and their status;
-  - open gaps, assumptions and observations.
+  - open gaps, assumptions and observations;
+  - **Por qué** and **Dónde revisar** at the brief's `explain` level (`references/explain.md`).
 - Write `result.json` following `references/result.schema.json`. This is what
-  orchestrators read.
+  orchestrators read. It includes `why[]` and `review_points[]` (empty when `explain: none`).
 - **Git.** Never commit, push or open PRs unless the person asked, or the orchestrator brief
-  sets `git: commit` / `git: pr`. Propose a Conventional Commit message and the PR body
-  (taken from the report) instead.
+  sets `git: commit` / `git: pr`. Then follow `references/git-conventions.md`:
+  - Conventional Commits with scope `mobile`;
+  - a `<type>/<HU>-<slug>` branch;
+  - for `pr`, a PR body with *Qué / Por qué / Dónde revisar*;
+  - the outcome recorded in `result.json.git`.
+
+  Otherwise, put the proposed commit message in `proposed_commit` and do nothing.
 
 ## Context discipline
 
@@ -118,6 +127,7 @@ whole review unless the fixes were broad, meaning they touched more than ~30 % o
 | Re-run every phase on resume | Continue from `next_phase` | Time and context |
 | Report "done" with failing or unrun tests | `status: failing-tests` / `pending-run` with output | Honest status |
 | Commit or push by default | Propose the message; act only when asked or authorized | Git actions are the person's call |
+| "Por qué: implemented the feature" / "Dónde revisar: all files" | Concrete decisions with alternatives; `file:line` with a reason | The person reviews where the risk is, not everything |
 
 ## Finish
 
