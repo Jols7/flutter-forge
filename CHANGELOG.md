@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Default user story template is now **hu-v1**, technology-neutral and multi-surface:
+  - header fields `Template`, `Epic`, `Surfaces` (replaces `Platform`), `Points` and
+    `Depends on`;
+  - §5 "Interface, flows and states" and §6 hold one `### <surface>` block per UI surface;
+  - §7 is contract-first (`operationId` or `METHOD /path`, contract status);
+  - `N/A — <reason>` for sections that don't apply;
+  - `Q-n (blocking: …)` open questions.
+
+  Section numbers 1–10 and their meaning are unchanged.
+- `hu-to-brief.md` reads stories by section number:
+  - a story applies when `Surfaces` contains `mobile` (`Platform` for earlier stories);
+  - §5/§6 read only `### mobile` when surface blocks exist, or the whole section otherwise;
+  - `Epic`, `Points`, `Depends on` and `NFR-n` are not consumed.
+- `forge-requirements` drafts standalone stories with `Surfaces: mobile` and `### mobile`
+  blocks. Custom `requirements.template` files must keep sections 1–10 and the
+  `### <surface>` convention.
+- The example story `HU-01-transfer.md` is migrated to hu-v1.
+
+### Added
+- Story fixtures (`tests/fixtures/hu/`): an earlier flat story and a hu-v1 web+mobile story,
+  plus a manual checklist.
+- `test_hu_template.py`: template sections 1–10 in order, the header contract, and a
+  reference reader proving that only `### mobile` is read and that earlier stories still read.
+
 ## [0.2.0] - 2026-11-07
 
 ### Added

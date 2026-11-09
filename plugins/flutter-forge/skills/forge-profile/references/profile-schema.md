@@ -86,7 +86,8 @@ design:
   widget_catalog: docs/widget-catalog.md
 
 requirements:
-  template: default                        # default | path to a template (.flutter-forge/templates/hu.md)
+  template: default                        # default (hu-v1) | path to a template (.flutter-forge/templates/hu.md);
+                                           # a custom one keeps sections 1–10 and the `### <surface>` blocks in §5/§6
   language: es                             # language of user stories and user-facing reports
   sources: [file, paste]                   # file | paste | drive | jira | notion | linear
   index: null                              # where the story index lives (e.g. a sheet name)
