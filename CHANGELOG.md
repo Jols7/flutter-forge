@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-08
+
 ### Changed
 - Default user story template is now **hu-v1**, technology-neutral and multi-surface:
   - header fields `Template`, `Epic`, `Surfaces` (replaces `Platform`), `Points` and

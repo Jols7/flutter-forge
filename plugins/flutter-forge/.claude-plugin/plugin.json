@@ -1,6 +1,6 @@
 {
   "name": "flutter-forge",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Flutter engineering agent: user story + Figma + Postman/OpenAPI → Clean Architecture feature (BLoC, Riverpod or Provider) with unit, widget and Patrol tests, followed by a code audit and an OWASP MASVS security review. Adapts to any project through a .flutter-forge/ profile.",
   "author": {
     "name": "Joel Anaya",
