@@ -63,8 +63,10 @@ An example that validates against the schema is
 `plugins/flutter-forge/skills/forge-deliver/references/result.example.json`.
 
 Key fields to branch on:
-- `status`: `completed` / `completed-with-gaps` / `failing-tests` / `blocked`.
+- `status`: `completed` / `completed-with-gaps` / `failing-tests` / `blocked`, or `in-progress`
+  while a run is still writing `result.json` (read it again later; never treat it as final).
 - `open_questions[].blocking`: what to send back to a person, or to the backend agent.
+  Ids: `G-n` in the run's brief; the same gap is `Q-n` in a story drafted from it (`hu-to-brief.md`).
 - `mocked_routes`: endpoints the backend still owes.
 - `review.independent`: `false` when the engineer ran as a subagent. Launch the reviewer next.
 - `review.verdict` and `review.findings[].status`.

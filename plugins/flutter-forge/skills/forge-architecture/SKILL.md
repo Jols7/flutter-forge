@@ -24,7 +24,9 @@ feature code itself. It says **where** things go and **what may depend on what**
    - `references/preset-clean.md`, or
    - `references/preset-layered.md`, or
    - for `custom`, the project's `.flutter-forge/layers.json` plus the closest preset.
-4. Read `references/di.md` only when you are about to register or resolve dependencies.
+4. Read `references/conventions.md` when you place constants or assets, name a mapper, decide
+   whether two repositories may meet, or design navigation shells and app start.
+   Read `references/di.md` only when you are about to register or resolve dependencies.
    State-manager templates live in `forge-presentation`, not here.
 5. If `.flutter-forge/overlays/forge-architecture.md` exists, read it. Its rules win over this file.
 
@@ -58,6 +60,7 @@ The dependency rule always points inward: **presentation → domain ← data**. 
 | Feature-local widget | `features/<f>/presentation/widgets/` | `TransactionTile` |
 | Widget reused by 2+ features | `core/widgets/<group>/` | `AppPrimaryButton` |
 | DI registrations of a feature | `features/<f>/di/` | `transactions_module.dart` |
+| Typed asset paths | `core/constants/` | `AppAssets` (`conventions.md` §1) |
 
 `references/preset-clean.md` has the full tree. It also explains the per-state-manager variations.
 
@@ -110,6 +113,23 @@ Code that the forge skills generate follows `references/code-comments.md`: the c
 *what*, a comment says *why*. Typical comments are rule references (`// AC-4 (HU-12): …`),
 links to workarounds, `///` on domain contracts and `TODO(#issue)`. The audit checks it
 (`forge-audit` checklist §14 and `../forge-audit/scripts/check_comments.py`).
+
+## Anti-patterns
+
+| ❌ Don't | ✅ Do | Why |
+|---|---|---|
+| Resolve `getIt<X>()` in a widget or state manager | Constructor injection; resolve in the route or DI module | `core/di` is closed to presentation; tests need no globals |
+| Add a use case that only forwards one repository call | Call the repository contract from the state manager | Pass-through files add cost and no rule |
+| Let a repository call another repository | Combine them in a use case | Per-resource boundaries must not chain |
+| Put `CancelToken` or any Dio type in a domain contract | Keep it in the data source; the repository implementation owns it | Domain stays transport-free |
+| Copy a preset's `layers.json` onto other paths | Rewrite `paths` (see `forge-profile`) | Otherwise every file is unclassified |
+| Create `core/` pieces in an existing project | Mirror the project's layout (`adopt`) | Migrating someone's architecture is their decision |
+
+## Finish
+
+Say, in this order: the layer and path of each class, the import rule that applies, and (for a
+refactor) the moves, each of which leaves the build green. When another skill loaded this one,
+return control to it with nothing else.
 
 ## Output
 

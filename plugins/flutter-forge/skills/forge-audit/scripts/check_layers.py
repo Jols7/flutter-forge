@@ -115,7 +115,7 @@ def line_of(text: str, pos: int) -> int:
 
 
 def changed_files(root: str, ref: str) -> List[str]:
-    out = subprocess.run(["git", "-C", root, "diff", "--name-only", ref, "--"], capture_output=True, text=True, check=False)
+    out = subprocess.run(["git", "-C", root, "diff", "--name-only", "--relative", ref, "--"], capture_output=True, text=True, check=False)
     untracked = subprocess.run(["git", "-C", root, "ls-files", "--others", "--exclude-standard"], capture_output=True, text=True, check=False)
     names = set(out.stdout.split()) | set(untracked.stdout.split())
     return sorted(n for n in names if n.endswith(".dart"))

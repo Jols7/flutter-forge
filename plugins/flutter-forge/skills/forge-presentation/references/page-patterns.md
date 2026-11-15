@@ -76,7 +76,7 @@ Future<void> _preview(double amount) async {
     if (id == _requestId) _update(preview: const PreviewLoading());   // only if slow
   });
   final result = await _repository.previewTransfer(...);
-  if (_isDisposed || id != _requestId) return;                        // stale or closed
+  if (_disposed || id != _requestId) return;                        // stale or closed
   _loadingTimer?.cancel();
   _update(preview: switch (result) {
     Success(:final value) => PreviewReady(value),
@@ -126,3 +126,52 @@ transformer instead.
 - Use `MediaQuery.sizeOf(context)`, not `MediaQuery.of(context).size` (fewer rebuilds).
 - Wrap content in `SafeArea`. Pages with inputs must scroll when the keyboard opens.
 - Back navigation: `PopScope` only when the brief defines a premature-exit behavior.
+
+
+## Shell: tabs and bottom navigation
+
+Use go_router's `StatefulShellRoute.indexedStack`. The shell owns the selected index and each
+branch keeps its own back stack, so a Cubit for "current tab" is unnecessary.
+
+```dart
+StatefulShellRoute.indexedStack(
+  builder: (context, state, shell) => HomeShell(shell: shell),
+  branches: [
+    StatefulShellBranch(routes: [
+      GoRoute(path: '/accounts', name: AccountsPage.routeName, builder: (_, __) => const AccountsPage()),
+    ]),
+    StatefulShellBranch(routes: [
+      GoRoute(path: '/profile', name: ProfilePage.routeName, builder: (_, __) => const ProfilePage()),
+    ]),
+  ],
+)
+
+// HomeShell: `body: shell`, `onDestinationSelected: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex)`
+```
+
+State managers are still created per route inside each branch. Do not hold the selected tab in
+a state manager that other widgets update.
+
+## App start (splash)
+
+The router decides the first screen. `bootstrap.dart` resolves the session **before** `runApp`
+(or exposes it as a `Listenable` while it loads), and the router redirects from it:
+
+```dart
+GoRouter(
+  refreshListenable: authState,                      // notifies on sign-in / sign-out
+  redirect: (context, state) {
+    final status = authState.status;                 // unknown | signedOut | signedIn
+    if (status == AuthStatus.unknown) return '/splash';
+    final atAuth = state.matchedLocation == '/login';
+    if (status == AuthStatus.signedOut) return atAuth ? null : '/login';
+    return (atAuth || state.matchedLocation == '/splash') ? '/accounts' : null;
+  },
+  routes: [...],
+)
+```
+
+`/splash` is a plain page that shows while the status is `unknown`. A cubit that calls
+`context.go` from `emit` mixes state with navigation (the anti-pattern in `forge-presentation`),
+and a refresh-token failure then has no single place to end the session. The auth interceptor
+signals logout through the same `authState` (`core-bootstrap.md`).

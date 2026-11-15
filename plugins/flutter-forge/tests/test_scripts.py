@@ -282,6 +282,56 @@ class CheckCommentsTest(unittest.TestCase):
             shutil.rmtree(tmp)
 
 
+    def _git_app(self):
+        """A Flutter app in a monorepo folder (apps/mobile), one commit, then one new file."""
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        app = os.path.join(tmp, "apps", "mobile")
+        files = {
+            "lib/old.dart": "// TODO fix later\nclass Old {}\n",
+            "lib/domain/model.dart": "class Model {}\n",
+        }
+        for rel, text in files.items():
+            os.makedirs(os.path.dirname(os.path.join(app, rel)), exist_ok=True)
+            with open(os.path.join(app, rel), "w") as fh:
+                fh.write(text)
+        git = ["git", "-C", tmp, "-c", "user.email=t@t", "-c", "user.name=t"]
+        subprocess.run(git + ["init", "-q"], check=True)
+        subprocess.run(git + ["add", "-A"], check=True)
+        subprocess.run(git + ["commit", "-q", "-m", "init"], check=True)
+        with open(os.path.join(app, "lib/new.dart"), "w") as fh:
+            fh.write("// TODO later\nclass New {}\n")
+        return app
+
+    def test_changed_from_checks_only_new_code_inside_a_monorepo_folder(self):
+        app = self._git_app()
+        out = run("forge-audit", "check_comments.py", "--root", app, "--changed-from", "HEAD", "--format", "json")
+        findings = json.loads(out.stdout)["findings"]
+        self.assertEqual([f["file"] for f in findings], ["lib/new.dart"])
+
+    def test_rules_file_says_where_the_domain_is(self):
+        app = self._git_app()
+        rules = os.path.join(app, "layers.json")
+        with open(rules, "w") as fh:
+            json.dump({"layers": {"models": {"paths": ["lib/domain/**"], "may_import": []}}}, fh)
+        without = json.loads(run("forge-audit", "check_comments.py", "--root", app, "--files", "lib/domain/model.dart", "--format", "json").stdout)
+        with_rules = json.loads(run("forge-audit", "check_comments.py", "--root", app, "--rules", rules,
+                                    "--files", "lib/domain/model.dart", "--format", "json").stdout)
+        self.assertEqual(len(without["findings"]), 1)      # default heuristic also matches /domain/
+        self.assertEqual(with_rules["findings"][0]["kind"], "missing-doc")
+
+    def test_layers_changed_from_is_relative_to_the_app_folder(self):
+        app = self._git_app()
+        rules = os.path.join(SKILLS, "forge-architecture", "presets", "clean.layers.json")
+        with open(os.path.join(app, "pubspec.yaml"), "w") as fh:
+            fh.write("name: demo\n")
+        os.makedirs(os.path.join(app, "lib/features/a/domain"), exist_ok=True)
+        with open(os.path.join(app, "lib/features/a/domain/a.dart"), "w") as fh:
+            fh.write("import 'package:dio/dio.dart';\n")
+        out = run("forge-audit", "check_layers.py", "--root", app, "--rules", rules, "--changed-from", "HEAD", "--format", "json")
+        self.assertEqual([v["file"] for v in json.loads(out.stdout)["reported"]], ["lib/features/a/domain/a.dart"])
+
+
 class ResultContractTest(unittest.TestCase):
     """The shipped example result must satisfy the shipped schema (needs jsonschema; CI installs it)."""
 

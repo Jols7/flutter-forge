@@ -23,7 +23,7 @@ skills we evaluated each had a gap:
   2. checklist;
   3. design lenses;
   4. MASVS.
-- Report only findings with confidence above 80 %. Group similar findings. Use four severities
+- Report only findings with confidence of 0.8 or more. Group similar findings. Use four severities
   (critical/high/medium/low) plus `improvement` for upgrades in `improve` mode.
 - The verdict is `block` if any finding is critical or high, otherwise `pass-with-notes` or
   `pass`.
