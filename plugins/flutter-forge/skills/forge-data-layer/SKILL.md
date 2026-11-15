@@ -1,6 +1,6 @@
 ---
 name: forge-data-layer
-description: Implement the domain and data layers of a Flutter feature from its blueprint and API contract. That covers entities, repository contracts, earned use cases, DTOs (json_serializable or freezed), mappers, remote and local data sources over Dio, repository implementations returning Result/AppFailure, pagination, idempotency, and a mock-first interceptor for endpoints that are not ready. It follows the profile's preset (clean or layered) and the project's overlays. Use it when the user asks to consume or integrate an endpoint, create or change a DTO, model or repository, add a field to a response, fix a parsing error, wire a mock for an endpoint that does not exist yet, or says "conecta el endpoint", "crea el repositorio", "agrega el DTO", "intégralo"; and when forge-deliver reaches implementation.
+description: Implement the domain and data layers of a Flutter feature from its blueprint and API contract. That covers entities, repository contracts, earned use cases, DTOs (json_serializable or freezed), mappers, remote and local data sources over Dio, repository implementations returning Result/AppFailure, pagination, idempotency, and a mock-first interceptor for endpoints that are not ready. It follows the profile's preset (clean or layered) and the project's overlays. Use it when the user asks to consume or integrate an endpoint, create or change a DTO, model or repository, add a field to a response, fix a parsing error, wire a mock for an endpoint that does not exist yet, or says "conecta el endpoint", "crea el repositorio", "agrega el DTO"; and when forge-deliver reaches implementation.
 ---
 
 # forge-data-layer
@@ -11,7 +11,7 @@ repositories. Presentation only ever sees entities and `Result`.
 ## Step 0 — Resolve
 
 1. Read `.flutter-forge/profile.yaml`. Load `forge-architecture`, its preset reference and
-   `references/result-and-failures.md` when `errors: result`.
+   `../forge-architecture/references/result-and-failures.md` when `errors: result`.
 2. Read the run's `blueprint.md` (file plan, contract signatures, value trace) and `contract.md`
    with its fixtures. Without a blueprint, make a mini-plan with the same tables and show it first.
 3. In `adopt`/`improve`, open the canonical feature's data source, repository, DTO and mapper.
@@ -41,7 +41,8 @@ Follow `references/templates.md`. Each item is a separate file:
 4. **DTOs.** Mirror the JSON exactly (rules in `references/dto-rules.md`). Run the profile's
    `serialization.build_command`.
 5. **Mappers.** Use extensions: `toEntity()` and `toDto()`. They do all conversions, defaults
-   and sorting. Use the fixtures to verify them.
+   and sorting. In `adopt`/`improve`, name the DTO → entity method as `naming.mapper_method`
+   says (for example `toDomain()`), so new code reads like the existing code. Use the fixtures to verify them.
 6. **Data source.** One method per endpoint, returning DTOs. It uses relative paths,
    percent-encodes path parameters, passes `CancelToken`, and sends idempotency headers on
    writes when the contract asks for them. It throws and never catches.

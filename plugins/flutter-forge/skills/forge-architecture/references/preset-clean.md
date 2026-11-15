@@ -12,6 +12,7 @@ lib/
 ├── app/app.dart                  # MaterialApp.router, theme, localization delegates
 ├── core/
 │   ├── config/                   # AppConfig (base URL from --dart-define / flavor), feature flags
+│   ├── constants/                # app_assets.dart (typed asset paths) — pure `const`, no Flutter widgets
 │   ├── di/injection.dart         # container setup; calls each feature module
 │   ├── error/                    # result.dart, app_failure.dart
 │   ├── network/                  # api_client.dart, interceptors/, dio_failure_mapper.dart, mocks/
@@ -56,12 +57,17 @@ with a sealed `status`. They are never a bag of booleans. Templates: `forge-pres
 
 ## Dependency rule (what `check_layers.py` enforces)
 
-| From \ To | domain | data | presentation | core_* | composition |
-|---|---|---|---|---|---|
-| domain | ✅ | ❌ | ❌ | error, utils | ❌ |
-| data | ✅ | ✅ | ❌ | error, network, storage, config, utils | ❌ |
-| presentation | ✅ | ❌ | ✅ | ui, error, utils | ✅ (Riverpod providers only) |
-| composition | ✅ | ✅ | ✅ | ✅ | ✅ |
+| From \ To | domain | data | presentation | core_* | composition | composition_di |
+|---|---|---|---|---|---|---|
+| domain | ✅ | ❌ | ❌ | error, utils | ❌ | ❌ |
+| data | ✅ | ✅ | ❌ | error, network, storage, config, constants, utils | ❌ | ❌ |
+| presentation | ✅ | ❌ | ✅ | ui, error, constants, utils | ✅ (router, app) | ❌ (Riverpod: ✅, see below) |
+| composition | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+`composition_di` is `lib/core/di/**`: the container and the global `getIt`. Keeping it closed to
+presentation is what makes "no service locator in widgets" enforceable. Importing the file, not
+only the `get_it` package, is what the checker blocks. With `state: riverpod`, providers live
+there, so `forge-profile` adds it to `presentation.may_import` in the project's `layers.json`.
 
 Package bans by layer:
 - **domain:** no Flutter SDK except `foundation.dart`; no Dio/http; no `json_annotation`; no DI
@@ -99,6 +105,9 @@ Cross-feature imports are allowed for `domain` only.
 ## Data-layer policies (decide per feature in the blueprint)
 
 - **Caching:** none, memory, or local data source with a TTL. State it in the blueprint.
-- **Pagination:** the repository returns `Page<T>` (items + cursor/next), never raw lists for
+- **Pagination:** the repository returns `Paginated<T>` (items + cursor/next), never raw lists for
   paginated endpoints.
-- **Cancellation:** pass a `CancelToken` down when a request can be superseded (search, debounce).
+- **Cancellation:** the data source accepts a `CancelToken`; the repository *contract* in `domain`
+  never does (Dio is banned there). A repository implementation that serves a supersedable call
+  (search, debounce) owns the token and cancels the previous one itself. The state manager also
+  discards stale responses by request id, so the contract stays free of transport types.

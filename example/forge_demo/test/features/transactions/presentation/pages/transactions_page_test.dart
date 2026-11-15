@@ -70,7 +70,7 @@ void main() {
       TransactionsLoaded(
         items: [tx1],
         nextPage: 2,
-        loadMoreFailure: const ServerFailure(statusCode: 500),
+        loadMore: const LoadMoreFailed(ServerFailure(statusCode: 500)),
       ),
     );
     await tester.pumpAndSettle();

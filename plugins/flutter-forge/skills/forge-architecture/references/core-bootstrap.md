@@ -5,7 +5,7 @@ their own folders. Create each one only if it is missing, and adapt names to the
 
 | File | Contents |
 |---|---|
-| `lib/core/config/app_config.dart` | `AppConfig { baseUrl, flavor, useMocks }` built from `--dart-define` (`String.fromEnvironment`). Never hardcode URLs. Never put secrets in client config (`forge-security`) |
+| `lib/core/config/app_config.dart` | `AppConfig { baseUrl, flavor }` built from `--dart-define` (`String.fromEnvironment`), plus a separate `MockConfig { enabled, scenario }` of compile-time `const`s so release builds tree-shake the mocks (`forge-data-layer/references/mock-interceptor.md`). Never hardcode URLs. Never put secrets in client config (`forge-security`) |
 | `lib/bootstrap.dart` | `runZonedGuarded` + `FlutterError.onError` + `PlatformDispatcher.instance.onError` → logger/crash reporter; `WidgetsFlutterBinding.ensureInitialized()`; `configureDependencies`; `runApp` |
 | `lib/main.dart` / `main_<flavor>.dart` | Builds `AppConfig` and calls `bootstrap` |
 | `lib/app/app.dart` | `MaterialApp.router` with theme, router, `localizationsDelegates`, `supportedLocales` |
@@ -14,7 +14,7 @@ their own folders. Create each one only if it is missing, and adapt names to the
 | `lib/core/network/interceptors/auth_interceptor.dart` | Adds `Authorization` from secure storage on each request; on 401, attempts **one** refresh under a lock, then signals logout through a stream that the app listens to. It never navigates by itself |
 | `lib/core/network/interceptors/log_interceptor.dart` | Debug-only (`kDebugMode`); redacts `authorization`, `cookie`, `password`, `token`, `pin`, card and account fields |
 | `lib/core/network/dio_failure_mapper.dart`, `guard.dart` | From `result-and-failures.md` |
-| `lib/core/network/mocks/mock_interceptor.dart` | Serves fixture JSON per route when `AppConfig.useMocks` is set (only allowed when the flavor is not prod; asserted at startup). Template in `forge-data-layer` |
+| `lib/core/network/mocks/mock_interceptor.dart` | Serves fixture JSON per route when `MockConfig.enabled` is set (only allowed when the flavor is not prod; asserted in `AppConfig.fromEnvironment`). Template in `forge-data-layer` |
 | `lib/core/storage/secure_storage.dart` | Thin wrapper over `flutter_secure_storage` (tokens only) |
 | `lib/core/di/injection.dart` | Container setup (`di.md`) |
 | `lib/core/router/app_router.dart` | `GoRouter` with typed route names and a redirect for auth state |

@@ -29,39 +29,51 @@ final class TransactionsFailure extends TransactionsState {
   final AppFailure failure;
 }
 
+/// "Load more" below a visible list. Sealed, so "loading" and "failed" cannot both be true.
+@immutable
+sealed class LoadMore {
+  const LoadMore();
+}
+
+final class LoadMoreIdle extends LoadMore {
+  const LoadMoreIdle();
+}
+
+final class LoadMoreInProgress extends LoadMore {
+  const LoadMoreInProgress();
+}
+
+final class LoadMoreFailed extends LoadMore {
+  const LoadMoreFailed(this.failure);
+  final AppFailure failure;      // shown inline at the list end; the list stays visible
+}
+
 final class TransactionsLoaded extends TransactionsState {
   const TransactionsLoaded({
     required this.items,
     required this.nextPage,
-    this.isLoadingMore = false,
-    this.loadMoreFailure,
+    this.loadMore = const LoadMoreIdle(),
   });
 
   final List<Transaction> items;
   final int? nextPage;
-  final bool isLoadingMore;
-  final AppFailure? loadMoreFailure;    // shown inline at the list end; list stays visible
+  final LoadMore loadMore;
 
   bool get hasMore => nextPage != null;
 
-  TransactionsLoaded copyWith({
-    List<Transaction>? items,
-    int? Function()? nextPage,
-    bool? isLoadingMore,
-    AppFailure? Function()? loadMoreFailure,
-  }) =>
+  TransactionsLoaded copyWith({List<Transaction>? items, int? Function()? nextPage, LoadMore? loadMore}) =>
       TransactionsLoaded(
         items: items ?? this.items,
         nextPage: nextPage != null ? nextPage() : this.nextPage,
-        isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-        loadMoreFailure: loadMoreFailure != null ? loadMoreFailure() : this.loadMoreFailure,
+        loadMore: loadMore ?? this.loadMore,
       );
 }
 ```
 
-The `T? Function()?` parameters let `copyWith` set a nullable field back to `null`. Add `==`
-and `hashCode` (or `equatable`) when tests compare states with `equals`. `bloc_test`'s
-`expect:` uses `==`, so value equality is **required** for every state that has fields.
+The `int? Function()?` parameter lets `copyWith` set `nextPage` back to `null`. A loading flag and
+an error never share a field set: `LoadMore` is its own sealed type, so "in progress" and "failed"
+cannot both be true. Add `==` and `hashCode` (or `equatable`) to every state *and* every
+`LoadMore` subtype that has fields: `bloc_test`'s `expect:` uses `==`.
 
 ## Cubit — `presentation/state/transactions_cubit.dart`
 
@@ -91,17 +103,17 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   Future<void> loadMore() async {
     final current = state;
-    if (current is! TransactionsLoaded || !current.hasMore || current.isLoadingMore) return;
-    emit(current.copyWith(isLoadingMore: true, loadMoreFailure: () => null));
+    if (current is! TransactionsLoaded || !current.hasMore || current.loadMore is LoadMoreInProgress) return;
+    emit(current.copyWith(loadMore: const LoadMoreInProgress()));
     final result = await _repository.getTransactions(accountId: accountId, page: current.nextPage!);
     if (isClosed) return;
     emit(switch (result) {
       Success(:final value) => current.copyWith(
           items: [...current.items, ...value.items],
           nextPage: () => value.nextPage,
-          isLoadingMore: false,
+          loadMore: const LoadMoreIdle(),
         ),
-      Failure(:final failure) => current.copyWith(isLoadingMore: false, loadMoreFailure: () => failure),
+      Failure(:final failure) => current.copyWith(loadMore: LoadMoreFailed(failure)),
     });
   }
 }

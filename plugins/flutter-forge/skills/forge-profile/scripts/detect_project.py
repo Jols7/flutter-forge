@@ -27,6 +27,15 @@ HTTP_PACKAGES = {"dio": "dio", "http": "http", "chopper": "chopper", "retrofit":
 CODEGEN_PACKAGES = {"freezed_annotation": "freezed", "json_annotation": "json_serializable"}
 TEST_PACKAGES = ["mocktail", "mockito", "bloc_test", "patrol", "integration_test", "golden_toolkit", "alchemist"]
 FEATURE_ROOT_CANDIDATES = ["lib/features", "lib/feature", "lib/modules", "lib/screens", "lib/presentation/screens", "lib/ui", "lib/pages"]
+# Values `profile.yaml` can express (profile-schema.md). Anything else the project uses is
+# reported under `needs_decision`, so the skill asks instead of silently picking one.
+SUPPORTED = {
+    "state": {"bloc", "riverpod", "provider"},
+    "router": {"go_router", "auto_route"},
+    "http": {"dio", "http"},
+    "l10n_pipeline": {"gen-l10n", "intl_utils", "none"},
+}
+MAPPER_METHODS = ("toEntity", "toDomain", "toModel")
 SKIP_DIRS = {".dart_tool", "build", ".git", "ios", "android", "macos", "windows", "linux", "web", ".fvm", "generated"}
 
 
@@ -216,13 +225,27 @@ def main(argv: List[str]) -> int:
         "get_navigation": r"Get\.(to|off|toNamed|offAll)\(",
         "dotenv": r"dotenv\.(env|load)",
         "dart_define": r"String\.fromEnvironment",
+        "mapper_toEntity": r"(?:get\s+toEntity\b|\btoEntity\s*\()",
+        "mapper_toDomain": r"(?:get\s+toDomain\b|\btoDomain\s*\()",
+        "mapper_toModel": r"(?:get\s+toModel\b|\btoModel\s*\()",
     })
+    mapper_counts = {m: usage.pop("mapper_" + m) for m in MAPPER_METHODS}
+    mapper_method = max(mapper_counts, key=mapper_counts.get) if any(mapper_counts.values()) else None
     code_state = {
         "bloc": usage["cubit_or_bloc"],
         "riverpod": usage["riverpod_notifier"],
         "provider": usage["change_notifier"],
     }
     primary_state = max(code_state, key=code_state.get) if any(code_state.values()) else None
+    deps_report = {
+        "state": classify(deps, STATE_PACKAGES),
+        "router": classify(deps, ROUTER_PACKAGES),
+        "http": classify(deps, HTTP_PACKAGES),
+    }
+    l10n_report = detect_l10n(root, pubspec_text, sections)
+    needs_decision = {key: sorted(set(values) - SUPPORTED[key]) for key, values in deps_report.items()}
+    needs_decision["l10n_pipeline"] = [l10n_report.get("pipeline")] if l10n_report.get("pipeline") not in SUPPORTED["l10n_pipeline"] else []
+    needs_decision = {k: v for k, v in needs_decision.items() if v and v != [None]}
     report = {
         "root": root,
         "package": pubspec["name"],
@@ -240,7 +263,7 @@ def main(argv: List[str]) -> int:
             "lints": [p for p in ("flutter_lints", "very_good_analysis", "lints", "dart_code_metrics", "custom_lint", "riverpod_lint") if p in dev_deps],
         },
         "patrol_config": "patrol" in sections,
-        "l10n": detect_l10n(root, pubspec_text, sections),
+        "l10n": l10n_report,
         "flavors": detect_flavors(files),
         "structure": {
             "dart_files": len(files),
@@ -252,6 +275,8 @@ def main(argv: List[str]) -> int:
             "e2e_dirs": [d for d in ("patrol_test", "integration_test") if os.path.isdir(os.path.join(root, d))],
         },
         "conventions_signals": usage,
+        "naming": {"mapper_method": mapper_method, "mapper_counts": mapper_counts},
+        "needs_decision": needs_decision,
         "existing": {
             "flutter_forge": os.path.isdir(os.path.join(root, ".flutter-forge")),
             "claude_md_lines": len(read(os.path.join(root, "CLAUDE.md")).splitlines()) or None,

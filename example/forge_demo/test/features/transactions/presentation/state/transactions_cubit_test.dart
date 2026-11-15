@@ -66,7 +66,11 @@ void main() {
     seed: () => TransactionsLoaded(items: [tx1], nextPage: 2),
     act: (cubit) => cubit.loadMore(),
     expect: () => [
-      TransactionsLoaded(items: [tx1], nextPage: 2, isLoadingMore: true),
+      TransactionsLoaded(
+        items: [tx1],
+        nextPage: 2,
+        loadMore: const LoadMoreInProgress(),
+      ),
       TransactionsLoaded(items: [tx1, tx2], nextPage: null),
     ],
   );
@@ -78,10 +82,22 @@ void main() {
     seed: () => TransactionsLoaded(items: [tx1], nextPage: 2),
     act: (cubit) => cubit.loadMore(),
     expect: () => [
-      TransactionsLoaded(items: [tx1], nextPage: 2, isLoadingMore: true),
+      TransactionsLoaded(
+        items: [tx1],
+        nextPage: 2,
+        loadMore: const LoadMoreInProgress(),
+      ),
       isA<TransactionsLoaded>()
           .having((s) => s.items, 'items', [tx1])
-          .having((s) => s.loadMoreFailure, 'failure', isA<ServerFailure>()),
+          .having(
+            (s) => s.loadMore,
+            'loadMore',
+            isA<LoadMoreFailed>().having(
+              (m) => m.failure,
+              'failure',
+              isA<ServerFailure>(),
+            ),
+          ),
     ],
   );
 

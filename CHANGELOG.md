@@ -6,6 +6,45 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-14
+
+No change to the orchestrator contract: the brief fields, `result.json` (`schema: 1`), the
+`hu-v1` template and every skill and agent name are untouched. Everything added is optional.
+
+### Added
+- `forge-architecture/references/conventions.md`: typed assets in `core/constants/`, mapper
+  naming, isolated repositories, private data sources, one state manager per screen,
+  `StatefulShellRoute` shells and router-driven app start (`page-patterns.md`).
+- ADR 0004: reference architectures compared (a Flutter demo analysed on DeepWiki, the official
+  Flutter guide, Very Good Ventures) and what was adopted or left.
+- `detect_project.py` reports `naming.mapper_method` and `needs_decision` (state, router, HTTP
+  or l10n values the profile cannot express, such as `getx` or `beamer`). The profile gains the
+  optional `naming.mapper_method` and `git.convention`; `forge-profile` documents a read-only mode.
+- `check_comments.py --changed-from REF` and `--rules layers.json`.
+- `check_layers.py` lists imports into unclassified files (blind spots, not violations).
+- Tests: both presets are loaded against trees built from their own documentation, and every
+  cross-skill file reference must resolve.
+
+### Fixed
+- `composition` allowed UI to import `core/di`, so a widget could call the global `getIt`
+  without a violation. `core/di` is now the closed `composition_di` layer (Riverpod projects get
+  it opened by `forge-profile`).
+- The `layered` preset forbade `api → dtos`, so every layered project produced violations.
+- `--changed-from` returned repo-root paths for an app inside a monorepo folder (for example
+  `apps/mobile`) and matched nothing; paths are now relative to the app.
+- The load-more state example mixed two flags (`isLoadingMore`, `loadMoreFailure`) against the
+  sealed-state rule. It is now a sealed `LoadMore`, in the docs and in the demo with its tests.
+- Domain repository contracts no longer carry `CancelToken` (Dio is banned in `domain`).
+- `Page<T>` and `Paginated<T>` are unified as `Paginated<T>`.
+- `BusinessFailure` never shows backend text; features map its `code` to an l10n key.
+- Docs: `useMocks` → `MockConfig.enabled`, the disposal flag name, the confidence threshold,
+  the `in-progress` status, `Q-n`/`G-n` gap ids, `"intégralo"` removed from `forge-data-layer`,
+  overlapping triggers disambiguated, README script and eval counts, the broken
+  `result-and-failures.md` and `check_comments.py` paths.
+- The reviewer's single permitted write (`findings.md`) is documented, with a fallback to the reply.
+- 0.3.0 listed unit tests for `run_flow.sh` and `add_ios_ui_test_target.rb`; only `shellcheck`
+  covers the runner. The README no longer claims otherwise.
+
 ## [0.3.0] - 2026-11-08
 
 ### Changed

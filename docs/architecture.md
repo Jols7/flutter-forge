@@ -76,6 +76,9 @@ flowchart LR
 In `unattended` mode no gate asks. Gaps go to **Open questions**. Blocking gaps stop the run with
 `status: blocked`. Only `critical` and `high` findings are fixed automatically.
 
+Reference architectures that were compared with this design, and what was adopted from each, are
+recorded in [ADR 0004](adr/0004-reference-architectures.md).
+
 ## Design principles
 
 1. **The project's knowledge lives in the project.** The plugin ships rules and presets; the

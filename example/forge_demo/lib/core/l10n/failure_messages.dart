@@ -11,7 +11,7 @@ extension AppFailureMessage on AppFailure {
     ValidationFailure(:final serverMessage) =>
       serverMessage ?? l10n.errorValidation,
     ConflictFailure() => l10n.errorConflict,
-    BusinessFailure() => serverMessage ?? l10n.errorGeneric,
+    BusinessFailure() => l10n.errorGeneric,
     ServerFailure() || ParsingFailure() => l10n.errorGeneric,
   };
 }

@@ -63,6 +63,7 @@ void main() {
 | `VISIBLE TEXTS: a \| b \| c` | up to 25 texts at failure time |
 | `RECOVERED level "<level>" → <checkpoint>` | which ladder level worked |
 | `ERROR_APP in "<step>": <error>` | uncaught app exception → app bug |
+| `[APP_ERROR] <first line>` | the raw line `flowTest` prints the moment the exception happens. `run_flow.sh` keeps it so the report shows both; one error normally produces both lines |
 | `SESSION_LOST in "<step>" (attempt n)` | session lost; recovered once |
 | `ABORTED in "<step>": <reason>` | flow stopped |
 | `END OK` / `END <n> failure(s)` | summary |

@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """Check Dart comments against the flutter-forge comments policy.
 
-Usage: check_comments.py [--root PROJECT] [--files F ...] [--format text|json] [--no-fail]
+Usage: check_comments.py [--root PROJECT] [--files F ...] [--changed-from REF] [--rules LAYERS.json]
+                         [--format text|json] [--no-fail]
+
+  --changed-from  check only files that differ from REF (plus untracked): the "new or changed
+                  code" scope that adopt/improve modes require.
+  --rules         layers.json whose `domain` (or `models`) layer says where public declarations
+                  need `///`; without it, any `/domain/` folder.
 
 Flags what a script can decide reliably; whether a comment explains *why* is left to the
 reviewer (forge-audit checklist §14):
@@ -17,8 +23,9 @@ import argparse
 import json
 import os
 import re
+import subprocess
 import sys
-from typing import Dict, List
+from typing import Dict, List, Optional, Pattern
 
 GENERATED = re.compile(r"(\.g|\.freezed|\.gr|\.config|\.mocks)\.dart$|/generated/|/l10n/generated/")
 LINE_COMMENT = re.compile(r"^\s*//(?!/)(.*)$")
@@ -32,6 +39,42 @@ BANNER = re.compile(r"^\s*//+\s*([=\-*#~_/]{4,})|([=\-*#~_]{4,})\s*$")
 PUBLIC_DECL = re.compile(r"^(abstract\s+interface\s+class|abstract\s+final\s+class|abstract\s+class|sealed\s+class|final\s+class|base\s+class|interface\s+class|class|enum|mixin|extension\s+type|typedef)\s+([A-Z]\w*)")
 INTERFACE_START = re.compile(r"^abstract\s+interface\s+class\s+")
 METHOD_SIG = re.compile(r"^  (?!//|@|\)|}|return\b|final\b|const\b)[\w<>?,\s\[\]]+?\s+([a-z]\w*)\s*[(<]")
+
+
+def glob_to_regex(glob: str) -> Pattern[str]:
+    out, i = "", 0
+    while i < len(glob):
+        c = glob[i]
+        if c == "*":
+            while i + 1 < len(glob) and glob[i + 1] == "*":
+                i += 1
+            out += ".*"
+        elif c == "?":
+            out += "[^/]"
+        else:
+            out += re.escape(c)
+        i += 1
+    return re.compile("^" + out + "$")
+
+
+def domain_matcher(rules_path: Optional[str]):
+    """Return a predicate telling whether a project-relative path is in the domain layer."""
+    if not rules_path:
+        return lambda path: "/domain/" in "/" + path
+    with open(rules_path, encoding="utf-8") as fh:
+        layers = json.load(fh).get("layers", {})
+    spec = layers.get("domain") or layers.get("models") or {}
+    patterns = [glob_to_regex(g) for g in spec.get("paths", [])]
+    return lambda path: any(rx.match(path) for rx in patterns)
+
+
+def changed_files(root: str, ref: str) -> List[str]:
+    # --relative keeps paths relative to `root` when the Flutter app lives in a monorepo folder
+    diff = subprocess.run(["git", "-C", root, "diff", "--name-only", "--relative", ref, "--"],
+                          capture_output=True, text=True, check=False)
+    untracked = subprocess.run(["git", "-C", root, "ls-files", "--others", "--exclude-standard"],
+                               capture_output=True, text=True, check=False)
+    return sorted(n for n in set(diff.stdout.split()) | set(untracked.stdout.split()) if n.endswith(".dart"))
 
 
 def dart_files(root: str) -> List[str]:
@@ -53,7 +96,7 @@ def has_doc(lines: List[str], index: int) -> bool:
     return i >= 0 and lines[i].strip().startswith("///")
 
 
-def check_file(root: str, path: str) -> List[Dict]:
+def check_file(root: str, path: str, is_domain=lambda path: "/domain/" in "/" + path) -> List[Dict]:
     try:
         with open(os.path.join(root, path), encoding="utf-8") as fh:
             lines = fh.read().splitlines()
@@ -96,7 +139,7 @@ def check_file(root: str, path: str) -> List[Dict]:
         if stripped.startswith("//") and not stripped.startswith("///") and BANNER.search(stripped):
             add("banner", i + 1, "decorative banner: extract or rename instead of separating sections with comments")
 
-    if "/domain/" in "/" + path:
+    if is_domain(path):
         in_interface = False
         for i, raw in enumerate(lines):
             decl = PUBLIC_DECL.match(raw)
@@ -119,15 +162,22 @@ def main(argv: List[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", default=".")
     parser.add_argument("--files", nargs="*")
+    parser.add_argument("--changed-from")
+    parser.add_argument("--rules")
     parser.add_argument("--format", choices=["text", "json"], default="text")
     parser.add_argument("--no-fail", action="store_true")
     args = parser.parse_args(argv)
     root = os.path.abspath(args.root)
-    files = [f.replace(os.sep, "/") for f in args.files] if args.files else dart_files(root)
+    if args.changed_from:
+        scope = changed_files(root, args.changed_from) + [f.replace(os.sep, "/") for f in (args.files or [])]
+        files = sorted(set(scope))
+    else:
+        files = [f.replace(os.sep, "/") for f in args.files] if args.files else dart_files(root)
+    is_domain = domain_matcher(args.rules if args.rules and os.path.exists(args.rules) else None)
     files = [f for f in files if f.endswith(".dart") and not GENERATED.search("/" + f)]
     findings: List[Dict] = []
     for path in files:
-        findings.extend(check_file(root, path))
+        findings.extend(check_file(root, path, is_domain))
     if args.format == "json":
         print(json.dumps({"files": len(files), "findings": findings}, indent=2))
     else:

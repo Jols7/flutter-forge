@@ -124,6 +124,38 @@ class CheckLayersTest(unittest.TestCase):
             shutil.rmtree(tmp)
 
 
+    def _tree(self, files):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        files = dict(files, **{"pubspec.yaml": "name: demo\n"})
+        for rel, text in files.items():
+            path = os.path.join(tmp, rel)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as fh:
+                fh.write(text)
+        return tmp
+
+    def test_presentation_cannot_reach_the_service_locator(self):
+        tmp = self._tree({
+            "lib/core/di/injection.dart": "final getIt = Object();\n",
+            "lib/features/a/presentation/pages/a_page.dart": "import '../../../../core/di/injection.dart';\n",
+        })
+        data = json.loads(run("forge-audit", "check_layers.py", "--root", tmp, "--rules", self.rules, "--format", "json").stdout)
+        self.assertEqual([(v["from_layer"], v["to_layer"]) for v in data["reported"]], [("presentation", "composition_di")])
+
+    def test_unclassified_import_target_is_reported_but_not_a_violation(self):
+        tmp = self._tree({
+            "lib/features/a/domain/entities/a.dart": "import '../../../../odd/thing.dart';\nclass A {}\n",
+            "lib/odd/thing.dart": "const x = 1;\n",
+        })
+        out = run("forge-audit", "check_layers.py", "--root", tmp, "--rules", self.rules, "--format", "json")
+        data = json.loads(out.stdout)
+        self.assertEqual(out.returncode, 0)
+        self.assertEqual([u["target"] for u in data["unclassified_targets"]], ["lib/odd/thing.dart"])
+        text = run("forge-audit", "check_layers.py", "--root", tmp, "--rules", self.rules)
+        self.assertIn("Imports into unclassified files", text.stdout)
+
+
 class ScanSecretsTest(unittest.TestCase):
     def test_example_has_no_secrets(self):
         out = run("forge-security", "scan_secrets.py", "--root", EXAMPLE)
@@ -185,6 +217,29 @@ class DetectProjectTest(unittest.TestCase):
         self.assertEqual(report["l10n"]["pipeline"], "gen-l10n")
         self.assertEqual(report["structure"]["architecture"]["preset"], "clean")
         self.assertEqual(report["structure"]["feature_root"], "lib/features")
+        self.assertEqual(report["naming"]["mapper_method"], "toEntity")
+        self.assertEqual(report["needs_decision"], {})
+
+    def test_reports_mapper_name_and_values_the_profile_cannot_express(self):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        files = {
+            "pubspec.yaml": "name: legacy\ndependencies:\n  flutter:\n    sdk: flutter\n  get: ^4.0.0\n  beamer: ^1.0.0\n  dio: ^5.0.0\n",
+            "lib/features/a/data/a_dto.dart": "extension on ADto {\n  A toDomain() => A();\n}\nextension on BDto {\n  B toDomain() => B();\n}\n",
+            "lib/features/a/a_view.dart": "class AView {}\n",
+            "lib/main.dart": "void main() {}\n",
+            "lib/x.dart": "class X {}\n",
+        }
+        for rel, text in files.items():
+            path = os.path.join(tmp, rel)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as fh:
+                fh.write(text)
+        report = json.loads(run("forge-profile", "detect_project.py", tmp).stdout)
+        self.assertEqual(report["naming"]["mapper_method"], "toDomain")
+        self.assertEqual(report["needs_decision"]["state"], ["getx"])
+        self.assertEqual(report["needs_decision"]["router"], ["beamer"])
+        self.assertNotIn("http", report["needs_decision"])
 
 
 class CheckCommentsTest(unittest.TestCase):
@@ -225,6 +280,56 @@ class CheckCommentsTest(unittest.TestCase):
             self.assertEqual(out.returncode, 1)
         finally:
             shutil.rmtree(tmp)
+
+
+    def _git_app(self):
+        """A Flutter app in a monorepo folder (apps/mobile), one commit, then one new file."""
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        app = os.path.join(tmp, "apps", "mobile")
+        files = {
+            "lib/old.dart": "// TODO fix later\nclass Old {}\n",
+            "lib/domain/model.dart": "class Model {}\n",
+        }
+        for rel, text in files.items():
+            os.makedirs(os.path.dirname(os.path.join(app, rel)), exist_ok=True)
+            with open(os.path.join(app, rel), "w") as fh:
+                fh.write(text)
+        git = ["git", "-C", tmp, "-c", "user.email=t@t", "-c", "user.name=t"]
+        subprocess.run(git + ["init", "-q"], check=True)
+        subprocess.run(git + ["add", "-A"], check=True)
+        subprocess.run(git + ["commit", "-q", "-m", "init"], check=True)
+        with open(os.path.join(app, "lib/new.dart"), "w") as fh:
+            fh.write("// TODO later\nclass New {}\n")
+        return app
+
+    def test_changed_from_checks_only_new_code_inside_a_monorepo_folder(self):
+        app = self._git_app()
+        out = run("forge-audit", "check_comments.py", "--root", app, "--changed-from", "HEAD", "--format", "json")
+        findings = json.loads(out.stdout)["findings"]
+        self.assertEqual([f["file"] for f in findings], ["lib/new.dart"])
+
+    def test_rules_file_says_where_the_domain_is(self):
+        app = self._git_app()
+        rules = os.path.join(app, "layers.json")
+        with open(rules, "w") as fh:
+            json.dump({"layers": {"models": {"paths": ["lib/domain/**"], "may_import": []}}}, fh)
+        without = json.loads(run("forge-audit", "check_comments.py", "--root", app, "--files", "lib/domain/model.dart", "--format", "json").stdout)
+        with_rules = json.loads(run("forge-audit", "check_comments.py", "--root", app, "--rules", rules,
+                                    "--files", "lib/domain/model.dart", "--format", "json").stdout)
+        self.assertEqual(len(without["findings"]), 1)      # default heuristic also matches /domain/
+        self.assertEqual(with_rules["findings"][0]["kind"], "missing-doc")
+
+    def test_layers_changed_from_is_relative_to_the_app_folder(self):
+        app = self._git_app()
+        rules = os.path.join(SKILLS, "forge-architecture", "presets", "clean.layers.json")
+        with open(os.path.join(app, "pubspec.yaml"), "w") as fh:
+            fh.write("name: demo\n")
+        os.makedirs(os.path.join(app, "lib/features/a/domain"), exist_ok=True)
+        with open(os.path.join(app, "lib/features/a/domain/a.dart"), "w") as fh:
+            fh.write("import 'package:dio/dio.dart';\n")
+        out = run("forge-audit", "check_layers.py", "--root", app, "--rules", rules, "--changed-from", "HEAD", "--format", "json")
+        self.assertEqual([v["file"] for v in json.loads(out.stdout)["reported"]], ["lib/features/a/domain/a.dart"])
 
 
 class ResultContractTest(unittest.TestCase):

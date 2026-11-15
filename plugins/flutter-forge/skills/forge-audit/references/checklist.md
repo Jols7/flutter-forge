@@ -13,6 +13,9 @@ finding only when it meets the confidence bar.
   project's convention in `adopt`?
 - Is domain free of Flutter (except `foundation.dart`), HTTP, JSON annotations, DI and storage?
 - Does each use case earn its existence (combines repositories, holds a rule, or is reused)?
+- Is every repository isolated (no repository imports or receives another one; combining is a
+  use case's job)? Only the repository implementation of the same feature uses a data source.
+- Are asset paths read from `AppAssets` (`core/constants`) instead of string literals in widgets?
 - Are cross-feature dependencies limited to `domain`?
 - Does composition (router/DI) create and wire, while nothing else resolves from a container?
 - Does each file match the blueprint: correct layer, name and signature?
@@ -151,7 +154,8 @@ finding only when it meets the confidence bar.
 
 ## 14. Comments (`../forge-architecture/references/code-comments.md`)
 
-Run `scripts/check_comments.py` on the scope first. It flags the mechanical cases:
+Run `../scripts/check_comments.py` on the scope first (`--changed-from <base>` for new and
+changed files, `--rules <layers.json>` when the domain is not under `/domain/`). It flags the mechanical cases:
 commented-out code, `TODO`/`FIXME` without a reference, decorative banners, and missing
 `///` on public domain contracts. Then judge what a script can't:
 - Do comments explain *why* (rule with reference, workaround with link, counter-intuitive

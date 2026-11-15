@@ -47,6 +47,14 @@ differ: for example, §5 was "Screens, navigation and states". Both are read wit
 | Security | Sensitive data, masking, logging, re-auth, limits, screenshots | Requirements checked by `forge-security` against the code |
 | Out of scope | Explicit exclusions | Scope guard: nothing outside it is built |
 
+## Gap ids: `Q-n` in the story, `G-n` in the brief
+
+A story numbers its open questions `Q-n` (§ open questions of the template). The brief numbers
+every gap `G-n`, because it also collects gaps found in the design and the contract. When a story
+question becomes a gap, keep the story's id in the question text: `G-2 (Q-1 of HU-12) …`. Answers
+are recorded under the `G-n` id in the brief's Decisions, and the story's `Q-n` is updated by the
+person who owns the story, never by the agent.
+
 ## Always a gap unless stated
 
 - Endpoints and contracts, and which calculations happen on the server.

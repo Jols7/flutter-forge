@@ -42,9 +42,11 @@ have not seen the reasoning behind it. Review it as written.
 
 ## Output
 
-Write the findings report to `.flutter-forge/runs/<slug>/findings.md` when a run folder was
-given, using the format in `forge-audit/references/severity.md` with the `## Security`
-section appended. Then reply with:
+The only file you may write is the findings report, `.flutter-forge/runs/<slug>/findings.md`,
+and only when a run folder was given. Write it with a Bash redirect (you have no Write tool),
+in the format of `forge-audit/references/severity.md` with the `## Security` section appended.
+If you cannot write it (the host denies it, or you run as a subagent that may not create report
+files), put the full report in your reply and say that no file was written. Then reply with:
 
 1. the summary table, by severity;
 2. the verdict: `block` / `pass-with-notes` / `pass`;

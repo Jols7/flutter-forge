@@ -26,7 +26,7 @@ Status: draft | approved YYYY-MM-DD
 ## Repository contract
 ```dart
 abstract interface class TransfersRepository {
-  Future<Result<TransferPreview>> previewTransfer({required String fromId, required String toId, required double amount, CancelToken? cancelToken});
+  Future<Result<TransferPreview>> previewTransfer({required String fromId, required String toId, required double amount});   // no Dio types in a domain contract
   Future<Result<TransferReceipt>> createTransfer(TransferDraft draft);
 }
 ```

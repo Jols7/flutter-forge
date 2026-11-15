@@ -55,7 +55,7 @@ class _TransactionsList extends StatelessWidget {
       child: ListView.builder(
         itemCount:
             state.items.length +
-            (state.hasMore || state.loadMoreFailure != null ? 1 : 0),
+            (state.hasMore || state.loadMore is LoadMoreFailed ? 1 : 0),
         itemBuilder: (context, index) {
           if (index < state.items.length) {
             final item = state.items[index];
@@ -65,8 +65,7 @@ class _TransactionsList extends StatelessWidget {
               fallbackDescription: l10n.transactionsNoDescription,
             );
           }
-          final failure = state.loadMoreFailure;
-          if (failure != null) {
+          if (state.loadMore case LoadMoreFailed(:final failure)) {
             return ErrorView(
               message: failure.message(l10n),
               retryLabel: l10n.commonRetry,

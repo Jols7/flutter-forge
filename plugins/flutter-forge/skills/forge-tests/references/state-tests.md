@@ -47,8 +47,8 @@ void main() {
     seed: () => const TransactionsLoaded(items: [tx1], nextPage: 2),
     act: (cubit) => cubit.loadMore(),
     expect: () => [
-      const TransactionsLoaded(items: [tx1], nextPage: 2, isLoadingMore: true),
-      isA<TransactionsLoaded>().having((s) => s.items, 'items', [tx1]).having((s) => s.loadMoreFailure, 'failure', isA<ServerFailure>()),
+      const TransactionsLoaded(items: [tx1], nextPage: 2, loadMore: LoadMoreInProgress()),
+      isA<TransactionsLoaded>().having((s) => s.items, 'items', [tx1]).having((s) => s.loadMore, 'loadMore', isA<LoadMoreFailed>()),
     ],
   );
 }
