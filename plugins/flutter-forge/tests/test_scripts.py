@@ -124,6 +124,38 @@ class CheckLayersTest(unittest.TestCase):
             shutil.rmtree(tmp)
 
 
+    def _tree(self, files):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        files = dict(files, **{"pubspec.yaml": "name: demo\n"})
+        for rel, text in files.items():
+            path = os.path.join(tmp, rel)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as fh:
+                fh.write(text)
+        return tmp
+
+    def test_presentation_cannot_reach_the_service_locator(self):
+        tmp = self._tree({
+            "lib/core/di/injection.dart": "final getIt = Object();\n",
+            "lib/features/a/presentation/pages/a_page.dart": "import '../../../../core/di/injection.dart';\n",
+        })
+        data = json.loads(run("forge-audit", "check_layers.py", "--root", tmp, "--rules", self.rules, "--format", "json").stdout)
+        self.assertEqual([(v["from_layer"], v["to_layer"]) for v in data["reported"]], [("presentation", "composition_di")])
+
+    def test_unclassified_import_target_is_reported_but_not_a_violation(self):
+        tmp = self._tree({
+            "lib/features/a/domain/entities/a.dart": "import '../../../../odd/thing.dart';\nclass A {}\n",
+            "lib/odd/thing.dart": "const x = 1;\n",
+        })
+        out = run("forge-audit", "check_layers.py", "--root", tmp, "--rules", self.rules, "--format", "json")
+        data = json.loads(out.stdout)
+        self.assertEqual(out.returncode, 0)
+        self.assertEqual([u["target"] for u in data["unclassified_targets"]], ["lib/odd/thing.dart"])
+        text = run("forge-audit", "check_layers.py", "--root", tmp, "--rules", self.rules)
+        self.assertIn("Imports into unclassified files", text.stdout)
+
+
 class ScanSecretsTest(unittest.TestCase):
     def test_example_has_no_secrets(self):
         out = run("forge-security", "scan_secrets.py", "--root", EXAMPLE)

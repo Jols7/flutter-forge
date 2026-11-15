@@ -11,7 +11,7 @@ repositories. Presentation only ever sees entities and `Result`.
 ## Step 0 — Resolve
 
 1. Read `.flutter-forge/profile.yaml`. Load `forge-architecture`, its preset reference and
-   `references/result-and-failures.md` when `errors: result`.
+   `../forge-architecture/references/result-and-failures.md` when `errors: result`.
 2. Read the run's `blueprint.md` (file plan, contract signatures, value trace) and `contract.md`
    with its fixtures. Without a blueprint, make a mini-plan with the same tables and show it first.
 3. In `adopt`/`improve`, open the canonical feature's data source, repository, DTO and mapper.

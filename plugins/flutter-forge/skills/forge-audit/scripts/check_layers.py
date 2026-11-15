@@ -7,7 +7,9 @@ Usage:
 
   --files / --changed-from limit the *reported* violations to those files (new or
   changed code); the whole tree is still classified. Exit 1 when violations are
-  reported (unless --no-fail). Read-only, no network, Python 3.9+ stdlib.
+  reported (unless --no-fail). Imports that resolve to a file no layer claims are listed as
+  "unclassified targets": a blind spot to fix in layers.json, never a violation.
+  Read-only, no network, Python 3.9+ stdlib.
 """
 from __future__ import annotations
 
@@ -123,6 +125,7 @@ def check(root: str, rules: Rules, package: Optional[str]) -> Dict:
     files = [f for f in dart_files(root, rules.source_root) if not rules.ignored(f)]
     violations: List[Dict] = []
     unclassified: List[str] = []
+    unclassified_targets: List[Dict] = []
     layer_counts: Counter = Counter()
     for path in files:
         layer_name = rules.classify(path)
@@ -149,6 +152,8 @@ def check(root: str, rules: Rules, package: Optional[str]) -> Dict:
                 continue
             target_layer = rules.classify(target)
             if target_layer is None:
+                # Not a violation, but a blind spot: the rules say nothing about this file.
+                unclassified_targets.append(dict(base, target=target))
                 continue
             if "*" not in layer["may_import"] and target_layer not in layer["may_import"]:
                 violations.append(dict(base, kind="layer", to_layer=target_layer,
@@ -160,7 +165,8 @@ def check(root: str, rules: Rules, package: Optional[str]) -> Dict:
                 violations.append(dict(base, kind="cross-feature", to_layer=target_layer,
                                        message="feature '%s' imports %s of feature '%s' (only %s may cross features)" % (
                                            src_feature, target_layer, dst_feature, ", ".join(sorted(rules.cross_allowed)) or "nothing")))
-    return {"files": len(files), "layers": dict(layer_counts), "unclassified": unclassified, "violations": violations}
+    return {"files": len(files), "layers": dict(layer_counts), "unclassified": unclassified,
+            "unclassified_targets": unclassified_targets, "violations": violations}
 
 
 def _forbidden(uri: str, layer: Dict) -> bool:
@@ -197,6 +203,7 @@ def main(argv: List[str]) -> int:
     report["preexisting"] = len(all_violations) - len(reported)
     if scope is not None:
         report["unclassified"] = [f for f in report["unclassified"] if f in scope]
+        report["unclassified_targets"] = [u for u in report["unclassified_targets"] if u["file"] in scope]
 
     if args.format == "json":
         print(json.dumps(report, indent=2))
@@ -204,6 +211,11 @@ def main(argv: List[str]) -> int:
         print("Layer check: %d files · %s" % (report["files"], ", ".join("%s=%d" % kv for kv in sorted(report["layers"].items()))))
         if report["unclassified"]:
             print("Unclassified (%d): %s%s" % (len(report["unclassified"]), ", ".join(report["unclassified"][:10]), " …" if len(report["unclassified"]) > 10 else ""))
+        if report["unclassified_targets"]:
+            targets = Counter(u["target"] for u in report["unclassified_targets"])
+            print("Imports into unclassified files (%d, not violations; map them in layers.json): %s%s" % (
+                len(report["unclassified_targets"]),
+                ", ".join("%s×%d" % kv for kv in targets.most_common(5)), " …" if len(targets) > 5 else ""))
         if args.summary:
             kinds = Counter(v["kind"] for v in reported)
             pairs = Counter("%s → %s" % (v["from_layer"], v["to_layer"] or v["import"].split("/")[0]) for v in reported)
