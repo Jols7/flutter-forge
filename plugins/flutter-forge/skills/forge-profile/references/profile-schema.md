@@ -47,6 +47,14 @@ architecture:
   ui_helpers: allow                        # allow | forbid  — private _buildX() methods in widgets
   layers_file: null                        # path to a custom layers.json (null = preset rules)
 
+naming:
+  mapper_method: toEntity                  # toEntity | toDomain | toModel — name of the DTO → entity method.
+                                           # forge-profile detects it; adopt/improve mirror it, new code uses toEntity
+
+git:
+  convention: conventional                 # conventional | project — "project" = follow the log (git-conventions.md §1).
+                                           # An orchestrator may send it in the brief; absent = detect from `git log`
+
 paths:                                     # relative to the project root
   features: lib/features
   core: lib/core

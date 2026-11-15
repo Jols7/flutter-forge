@@ -46,6 +46,7 @@ message** only what the detection could not settle:
 | Existing project (`is_new_project: false`) | **Mode:** `adopt` (keep as is) · `improve` (keep layout, raise quality in new code) · `migrate` (new features in Clean). Recommend `improve` when `conventions_signals` show untestable patterns; otherwise `adopt` |
 | New project | State manager (`bloc` · `riverpod` · `provider`), router (default `go_router`), locales |
 | Several state packages, or code differs from pubspec | Which one new code must use |
+| `needs_decision` is not empty (for example `getx`, `beamer`, `unknown-arb`) | The profile cannot express that value. Say so, set `architecture.preset: custom`, and ask which convention new code follows. Never map it silently to the nearest enum value |
 | `security.level` | `high` for finance, health, identity or payments apps, otherwise `standard` |
 | API sources | Where the Postman collection / OpenAPI lives, or a Postman cloud collection UID |
 | Requirement sources | Where user stories live (files, Drive, Jira…) and their language |
@@ -54,12 +55,21 @@ Do not ask about anything the detection already answered with high confidence.
 
 **Unattended mode.** There is nobody to ask. Use `adopt` for existing projects, and the brief's
 preferences or `clean` + `bloc` for new ones. Record every assumption under `# assumed:`
-comments in the profile and in the run's open questions.
+comments in the profile and in the run's open questions. A non-empty `needs_decision` becomes
+`preset: custom` plus an open question, never a guess.
+
+**Read-only mode.** An orchestrator that only audits (it says `read-only`, or gives an
+`output_dir`) must not change the project. In that mode:
+- write `profile.yaml` and `layers.json` to `output_dir` instead of `.flutter-forge/`;
+- skip Step 4 (bootstrap), Step 5 (`CLAUDE.md`) and the `.gitignore` change in Step 3;
+- do not run `flutter` or `dart`. Step 6 checks only the files and the enums, and records
+  `validated: static` in the report.
 
 ## Step 3 — Write `.flutter-forge/`
 
 1. **`profile.yaml`.** Start from the template in `references/profile-schema.md`. Fill it from the detection
-   and the answers. Delete keys that only repeat the default. Keep the comments that explain
+   and the answers, including `naming.mapper_method` from the report's `naming` when it is not
+   `toEntity`. Delete keys that only repeat the default. Keep the comments that explain
    non-obvious values.
 2. **`layers.json`.** Needed in two cases: the preset is `layered`/`custom`, or the paths differ
    from the preset's (for example `lib/screens/**` instead of `lib/features/**`). Follow
@@ -69,7 +79,10 @@ comments in the profile and in the run's open questions.
    ```bash
    python3 <this skill dir>/../forge-audit/scripts/check_layers.py --root <project> --rules .flutter-forge/layers.json --summary
    ```
-   In `adopt` mode an existing codebase must come out mostly clean against its own rules. If
+   `Imports into unclassified files` in that output are blind spots, not violations: map those
+   folders. For `state: riverpod`, add `composition_di` to `presentation.may_import`, because
+   providers live in `core/di`; with any other state manager it stays closed so a widget cannot
+   reach the service locator. In `adopt` mode an existing codebase must come out mostly clean against its own rules. If
    it shows hundreds of violations, the mapping is wrong, not the code. Fix the mapping, or
    move recurring legitimate exceptions into `allowed_imports`.
 3. **Overlays.** Do not write any here. List the project conventions you saw that differ from

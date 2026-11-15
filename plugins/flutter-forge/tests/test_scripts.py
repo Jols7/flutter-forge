@@ -217,6 +217,29 @@ class DetectProjectTest(unittest.TestCase):
         self.assertEqual(report["l10n"]["pipeline"], "gen-l10n")
         self.assertEqual(report["structure"]["architecture"]["preset"], "clean")
         self.assertEqual(report["structure"]["feature_root"], "lib/features")
+        self.assertEqual(report["naming"]["mapper_method"], "toEntity")
+        self.assertEqual(report["needs_decision"], {})
+
+    def test_reports_mapper_name_and_values_the_profile_cannot_express(self):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        files = {
+            "pubspec.yaml": "name: legacy\ndependencies:\n  flutter:\n    sdk: flutter\n  get: ^4.0.0\n  beamer: ^1.0.0\n  dio: ^5.0.0\n",
+            "lib/features/a/data/a_dto.dart": "extension on ADto {\n  A toDomain() => A();\n}\nextension on BDto {\n  B toDomain() => B();\n}\n",
+            "lib/features/a/a_view.dart": "class AView {}\n",
+            "lib/main.dart": "void main() {}\n",
+            "lib/x.dart": "class X {}\n",
+        }
+        for rel, text in files.items():
+            path = os.path.join(tmp, rel)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as fh:
+                fh.write(text)
+        report = json.loads(run("forge-profile", "detect_project.py", tmp).stdout)
+        self.assertEqual(report["naming"]["mapper_method"], "toDomain")
+        self.assertEqual(report["needs_decision"]["state"], ["getx"])
+        self.assertEqual(report["needs_decision"]["router"], ["beamer"])
+        self.assertNotIn("http", report["needs_decision"])
 
 
 class CheckCommentsTest(unittest.TestCase):
