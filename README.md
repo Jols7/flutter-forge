@@ -86,15 +86,16 @@ Assumptions are recorded, and only blocking gaps stop the run.
 | `flutter-engineer` | The entry point for people and orchestrators. Accepts a brief and returns `result.json` |
 | `flutter-reviewer` | Read-only reviewer that runs in a clean context, for independent audit and security review |
 
-Five stdlib-only Python scripts back the skills, each with unit tests:
+Six stdlib-only Python scripts back the skills, each with unit tests:
 - `detect_project.py`
 - `postman_to_contract.py`
 - `check_layers.py`
+- `check_comments.py`
 - `scan_secrets.py`
 - `check_platform_config.py`
 
-A shell runner (`run_flow.sh`) drives the Patrol tests, and `add_ios_ui_test_target.rb`
-creates the iOS UI-testing target that Patrol needs.
+A shell runner (`run_flow.sh`, checked with `shellcheck`) drives the Patrol tests, and
+`add_ios_ui_test_target.rb` creates the iOS UI-testing target that Patrol needs.
 
 ## Install
 
@@ -181,10 +182,12 @@ can watch a `forge-deliver` run surface them.
 ## Quality of the plugin itself
 
 - `claude plugin validate --strict` runs on the marketplace and on the plugin.
-- Unit tests cover every script (Python 3.9 and 3.12), and `shellcheck` covers the runner.
+- Unit tests cover every Python script and both layer presets (Python 3.9 and 3.12); a test also
+  resolves every cross-skill file reference. `shellcheck` covers the runner.
 - A CI guard (terms kept in a repository secret) fails if project-specific names leak into generic skills.
-- [Evals](plugins/flutter-forge/evals) cover requirement drafting, contract inference,
-  architecture placement, code-review findings and security findings. They run manually or
+- [Evals](plugins/flutter-forge/evals) (six cases) cover requirement drafting, contract
+  inference, architecture placement, code-review findings, the comments policy and security
+  findings. They run manually or
   weekly (`evals.yml`), because they cost tokens.
 - During development the scanners were also run read-only against a large real-world Flutter
   codebase (~600 Dart files) to measure noise on code they had never seen. Every false
@@ -198,6 +201,8 @@ can watch a `forge-deliver` run surface them.
   `AppFailure` instead of thrown strings or fpdart.
 - [ADR 0003](docs/adr/0003-review-in-separate-context.md): review in a separate read-only agent,
   with automation first.
+- [ADR 0004](docs/adr/0004-reference-architectures.md): what was taken from outside reference
+  architectures (a Flutter demo, the official guide, Very Good Ventures), and what was left.
 - [Architecture](docs/architecture.md): components, pipeline, gates and the constraints of the
   host.
 

@@ -46,7 +46,7 @@ Every `SKILL.md` follows the same skeleton:
 
 ```bash
 claude plugin validate . --strict                      # manifests, skills, agents
-python3 -m pytest plugins/flutter-forge/tests -q        # script tests
+python3 -m unittest discover -s plugins/flutter-forge/tests -v   # script, preset and link tests
 cd example/forge_demo && claude --plugin-dir ../../plugins/flutter-forge
 claude plugin eval plugins/flutter-forge --case '<glob>' --runs 1
 ```
