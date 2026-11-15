@@ -30,10 +30,10 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     final current = state;
     if (current is! TransactionsLoaded ||
         !current.hasMore ||
-        current.isLoadingMore) {
+        current.loadMore is LoadMoreInProgress) {
       return;
     }
-    emit(current.copyWith(isLoadingMore: true, loadMoreFailure: () => null));
+    emit(current.copyWith(loadMore: const LoadMoreInProgress()));
     final result = await _repository.getTransactions(
       accountId: accountId,
       page: current.nextPage!,
@@ -43,11 +43,10 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       Success(:final value) => current.copyWith(
         items: [...current.items, ...value.items],
         nextPage: () => value.nextPage,
-        isLoadingMore: false,
+        loadMore: const LoadMoreIdle(),
       ),
       Failure(:final failure) => current.copyWith(
-        isLoadingMore: false,
-        loadMoreFailure: () => failure,
+        loadMore: LoadMoreFailed(failure),
       ),
     });
   }

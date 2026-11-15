@@ -99,6 +99,9 @@ Cross-feature imports are allowed for `domain` only.
 ## Data-layer policies (decide per feature in the blueprint)
 
 - **Caching:** none, memory, or local data source with a TTL. State it in the blueprint.
-- **Pagination:** the repository returns `Page<T>` (items + cursor/next), never raw lists for
+- **Pagination:** the repository returns `Paginated<T>` (items + cursor/next), never raw lists for
   paginated endpoints.
-- **Cancellation:** pass a `CancelToken` down when a request can be superseded (search, debounce).
+- **Cancellation:** the data source accepts a `CancelToken`; the repository *contract* in `domain`
+  never does (Dio is banned there). A repository implementation that serves a supersedable call
+  (search, debounce) owns the token and cancels the previous one itself. The state manager also
+  discards stale responses by request id, so the contract stays free of transport types.

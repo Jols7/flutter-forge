@@ -15,14 +15,16 @@ extension AppFailureMessage on AppFailure {
         NotFoundFailure() => l10n.errorNotFound,
         ValidationFailure(:final serverMessage) => serverMessage ?? l10n.errorValidation,
         ConflictFailure() => l10n.errorConflict,
-        BusinessFailure() => serverMessage ?? l10n.errorGeneric,
+        BusinessFailure() => l10n.errorGeneric,   // a feature maps `code` to its own key
         ServerFailure() || ParsingFailure() => l10n.errorGeneric,
       };
 }
 ```
 
 - Show `serverMessage` only when the contract says the backend sends user-safe copy in the
-  app's language.
+  app's language. That is why `ValidationFailure` may use it, while `BusinessFailure` never
+  does: its `code` is mapped to an l10n key by the feature (`forge-l10n`), and unknown codes fall
+  back to the generic message.
 - `UnauthorizedFailure` usually never reaches a page, because the auth interceptor ends the
   session first. Keep the branch so the switch stays exhaustive.
 

@@ -33,33 +33,66 @@ final class TransactionsFailure extends TransactionsState {
   final AppFailure failure;
 }
 
+/// Progress of "load more" below an already visible list. Sealed so that "loading" and "failed"
+/// can never be true at once.
+@immutable
+sealed class LoadMore {
+  const LoadMore();
+}
+
+final class LoadMoreIdle extends LoadMore {
+  const LoadMoreIdle();
+
+  @override
+  bool operator ==(Object other) => other is LoadMoreIdle;
+
+  @override
+  int get hashCode => (LoadMoreIdle).hashCode;
+}
+
+final class LoadMoreInProgress extends LoadMore {
+  const LoadMoreInProgress();
+
+  @override
+  bool operator ==(Object other) => other is LoadMoreInProgress;
+
+  @override
+  int get hashCode => (LoadMoreInProgress).hashCode;
+}
+
+final class LoadMoreFailed extends LoadMore {
+  const LoadMoreFailed(this.failure);
+  final AppFailure failure;
+
+  @override
+  bool operator ==(Object other) =>
+      other is LoadMoreFailed && other.failure == failure;
+
+  @override
+  int get hashCode => Object.hash(LoadMoreFailed, failure);
+}
+
 final class TransactionsLoaded extends TransactionsState {
   const TransactionsLoaded({
     required this.items,
     required this.nextPage,
-    this.isLoadingMore = false,
-    this.loadMoreFailure,
+    this.loadMore = const LoadMoreIdle(),
   });
 
   final List<Transaction> items;
   final int? nextPage;
-  final bool isLoadingMore;
-  final AppFailure? loadMoreFailure;
+  final LoadMore loadMore;
 
   bool get hasMore => nextPage != null;
 
   TransactionsLoaded copyWith({
     List<Transaction>? items,
     int? Function()? nextPage,
-    bool? isLoadingMore,
-    AppFailure? Function()? loadMoreFailure,
+    LoadMore? loadMore,
   }) => TransactionsLoaded(
     items: items ?? this.items,
     nextPage: nextPage != null ? nextPage() : this.nextPage,
-    isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-    loadMoreFailure: loadMoreFailure != null
-        ? loadMoreFailure()
-        : this.loadMoreFailure,
+    loadMore: loadMore ?? this.loadMore,
   );
 
   @override
@@ -67,14 +100,8 @@ final class TransactionsLoaded extends TransactionsState {
       other is TransactionsLoaded &&
       listEquals(other.items, items) &&
       other.nextPage == nextPage &&
-      other.isLoadingMore == isLoadingMore &&
-      other.loadMoreFailure == loadMoreFailure;
+      other.loadMore == loadMore;
 
   @override
-  int get hashCode => Object.hash(
-    Object.hashAll(items),
-    nextPage,
-    isLoadingMore,
-    loadMoreFailure,
-  );
+  int get hashCode => Object.hash(Object.hashAll(items), nextPage, loadMore);
 }

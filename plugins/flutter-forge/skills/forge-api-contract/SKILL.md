@@ -64,7 +64,7 @@ Turn the raw extraction into `.flutter-forge/runs/<slug>/contract.md` using
 |---|---|---|
 | Base path and auth | Relative paths (no host); auth scheme per endpoint (bearer, none, inherited) | Data source, interceptor |
 | Envelope | Is the payload wrapped (`data`, `content`, `result`)? Is it the same for every endpoint? | DTO wrapper + mapper unwrap; `networking.envelope` |
-| Pagination | page/size, cursor, `next_page`, `has_more`? | `Page<T>` entity, state |
+| Pagination | page/size, cursor, `next_page`, `has_more`? | `Paginated<T>` entity, state |
 | Error shape | Message key, field errors, business `code` values | `error_message_key`, `BusinessFailure` codes, l10n of codes |
 | Types | int vs double vs `num`, dates (ISO-8601, timezone), enums as strings | DTO field types, mapper conversions |
 | Nullability | Every `?` / `[may be absent]` → nullable DTO field + default in mapper | DTO + mapper |

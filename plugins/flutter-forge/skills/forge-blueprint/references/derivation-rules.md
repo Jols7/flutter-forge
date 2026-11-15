@@ -26,7 +26,7 @@
 | Search / live calculation | Debounce (~300 ms) + discard stale responses (request id or `CancelToken`) |
 | "Unlimited retry" | Retry action in the failed region only; inputs stay interactive |
 | Limited retries / lockout | Counter in state; disable + message on limit; server is the source of truth |
-| Pagination | `Page<T>` from repository; state holds items + `nextPage` + `isLoadingMore` + `loadMoreFailure` |
+| Pagination | `Paginated<T>` from repository; state holds items + `nextPage` + a sealed `LoadMore` (`idle | inProgress | failed(failure)`), never two flags |
 | Pull to refresh | Keeps current data visible while refreshing; replaces on success |
 
 ## Domain
