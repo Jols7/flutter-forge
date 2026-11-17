@@ -5,8 +5,25 @@ allowed_tools: [Read, Glob, Grep]
 
 Estoy tomando un repo Flutter que no escribí. Ya corrió el snapshot de forge-health y este es el
 digest (resumido). Arma el backlog priorizado y la ruta de migración siguiendo las reglas de
-`forge-health` (`plugins/flutter-forge/skills/forge-health/SKILL.md` y sus `references/`).
-No hay perfil de flutter-forge en el repo. No edites nada; responde en el chat.
+`forge-health`, que van pegadas aquí abajo (la skill es de invocación manual y no se puede leer
+desde esta sesión; no busques sus archivos). No hay perfil de flutter-forge en el repo.
+No edites nada; responde en el chat.
+
+Reglas de forge-health (resumen de `references/prioritization.md`):
+- `prioridad = riesgo × frecuencia ÷ esfuerzo`. Riesgo 1–5 por severidad (+1 si toca dinero,
+  credenciales o datos personales). Frecuencia 1–5 por commits en la ventana (1 = sin cambios).
+  Esfuerzo S/M/L = 1/2/3.
+- "Hacer ya": hallazgos de seguridad o dinero con riesgo ≥ 4, sin importar la frecuencia.
+- Quick Wins: esfuerzo S y riesgo × frecuencia ≥ 8. Apuestas Grandes: esfuerzo L y riesgo ×
+  frecuencia ≥ 12, cada una con un primer paso reversible y cómo probar que funcionó.
+- Frecuencia 1 y riesgo ≤ 3: se deja quieto, con una línea que diga por qué.
+- Orden: seguridad y dinero, bugs en rutas principales, pruebas en zonas calientes antes de
+  cualquier refactor de esa zona, estructura, estilo. Un refactor y una feature nunca van juntos.
+- Modo adopt/improve/migrate: decisión humana; se recomienda uno con evidencia. Sin perfil, el
+  análisis es contra un preset asumido y se dice.
+- Nunca imprimir valores de secretos: tipo + ubicación + "rotar".
+- Secciones: backlog, ruta incremental en fases que terminan en algo desplegable, "Decisiones que
+  necesitan un humano" (riesgo 🔴/🟠/🟢) y límites (qué no se midió).
 
 ```
 Stack: state=bloc (declared: bloc, provider) di=get_it router=go_router http=dio
