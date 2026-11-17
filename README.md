@@ -79,6 +79,7 @@ Assumptions are recorded, and only blocking gaps stop the run.
 | `forge-e2e` | Patrol flow tests: session created by API, checkpoints with recovery, prod refused |
 | `forge-audit` | Analyzer + layer checker + checklist + design lenses → ranked findings and a verdict |
 | `forge-security` | MASVS v2: secret, platform-config and dependency scanners plus a review of the whole flow |
+| `forge-health` | Whole-repo baseline (manual): churn, coverage, layers, dependencies and scanners → `health-report.md` with a ranked backlog and the decisions a human must make |
 | `forge-learn` | Records a project convention as an overlay, so the agent improves without forking |
 
 | Agent | Role |
@@ -86,13 +87,14 @@ Assumptions are recorded, and only blocking gaps stop the run.
 | `flutter-engineer` | The entry point for people and orchestrators. Accepts a brief and returns `result.json` |
 | `flutter-reviewer` | Read-only reviewer that runs in a clean context, for independent audit and security review |
 
-Six stdlib-only Python scripts back the skills, each with unit tests:
+Twelve stdlib-only Python scripts back the skills, each with unit tests:
 - `detect_project.py`
 - `postman_to_contract.py`
 - `check_layers.py`
 - `check_comments.py`
 - `scan_secrets.py`
 - `check_platform_config.py`
+- `health_snapshot.py`, `git_churn.py`, `lcov_summary.py`, `code_metrics.py`, `infer_layers.py`, `draft_profile.py` (`forge-health`)
 
 A shell runner (`run_flow.sh`, checked with `shellcheck`) drives the Patrol tests, and
 `add_ios_ui_test_target.rb` creates the iOS UI-testing target that Patrol needs.

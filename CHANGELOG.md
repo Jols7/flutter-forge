@@ -6,6 +6,42 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-16
+
+Same contract as 0.5.0: no brief field, `result.json` or skill name changes.
+
+### Added
+- `forge-health` standard depth (default; `--depth quick` keeps the old behavior), ADR 0006:
+  - `infer_layers.py` drafts a `layers.json` from folder names and file suffixes when neither
+    preset fits (28% → 99% of files classified on a large real repo).
+  - `draft_profile.py` drafts a `profile.yaml` from what the code shows; the mode stays a human
+    decision and it never writes `.flutter-forge/profile.yaml`.
+  - The snapshot ranks a review queue (up to 30 files) and writes `layers.draft.json` and
+    `profile.draft.yaml` to the health folder.
+  - Tests and an eval (`health-standard-inferred-layers`).
+
+## [0.5.0] - 2026-11-16
+
+No change to the orchestrator contract: the brief fields, `result.json` (`schema: 1`), the
+`hu-v1` template and every existing skill and agent name are untouched. `forge-deliver` does not
+call the new skill.
+
+### Added
+- `forge-health` (gap B1, BIT-004): a whole-repo health baseline that writes `health-report.md`.
+  - Runs by hand only (`disable-model-invocation`), in a forked context, on `sonnet`.
+  - Scripts collect the data and a digest of at most 250 lines is injected into the prompt, so
+    the model confirms signals instead of exploring the tree.
+  - The report maps real versus declared architecture with debt per layer, then security,
+    performance, tests (hot files without coverage), dependencies, a backlog ranked by
+    `risk × change frequency ÷ effort` (quick wins apart from big bets), an incremental path
+    per `adopt`/`improve`/`migrate`, and the decisions that need a human.
+  - Scripts: `health_snapshot.py`, `git_churn.py`, `lcov_summary.py`, `code_metrics.py`. They
+    reuse `detect_project.py`, `check_layers.py`, `scan_secrets.py` and
+    `check_platform_config.py` as they are.
+- `check_layers.py --matrix` prints the real layer → layer import counts; the JSON report always
+  carries `matrix`.
+- Tests for the collectors and the snapshot, an eval (`health-baseline-hotspots`), ADR 0005.
+
 ## [0.4.0] - 2026-11-14
 
 No change to the orchestrator contract: the brief fields, `result.json` (`schema: 1`), the

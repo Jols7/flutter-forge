@@ -41,6 +41,7 @@ flowchart LR
         ARCH[forge-architecture]
         PROF[forge-profile]
         LEARN[forge-learn]
+        HEALTH["forge-health (manual, whole repo)"]
     end
     subgraph Project[".flutter-forge/ in each project"]
         P[profile.yaml]
@@ -55,6 +56,7 @@ flowchart LR
     BP & DATA & PRES & AUD --> ARCH
     PROF --> P & L
     LEARN --> O
+    HEALTH -. reuses scripts of .-> AUD & SEC & PROF
     DEL --> R
 ```
 

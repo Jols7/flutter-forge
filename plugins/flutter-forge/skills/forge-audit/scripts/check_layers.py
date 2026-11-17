@@ -3,7 +3,7 @@
 
 Usage:
   check_layers.py --rules RULES.json [--root PROJECT] [--files F ...] [--changed-from REF]
-                  [--format text|json] [--summary] [--no-fail]
+                  [--format text|json] [--summary] [--no-fail] [--matrix]
 
   --files / --changed-from limit the *reported* violations to those files (new or
   changed code); the whole tree is still classified. Exit 1 when violations are
@@ -127,6 +127,7 @@ def check(root: str, rules: Rules, package: Optional[str]) -> Dict:
     unclassified: List[str] = []
     unclassified_targets: List[Dict] = []
     layer_counts: Counter = Counter()
+    edges: Counter = Counter()
     for path in files:
         layer_name = rules.classify(path)
         if layer_name is None:
@@ -155,6 +156,7 @@ def check(root: str, rules: Rules, package: Optional[str]) -> Dict:
                 # Not a violation, but a blind spot: the rules say nothing about this file.
                 unclassified_targets.append(dict(base, target=target))
                 continue
+            edges["%s -> %s" % (layer_name, target_layer)] += 1
             if "*" not in layer["may_import"] and target_layer not in layer["may_import"]:
                 violations.append(dict(base, kind="layer", to_layer=target_layer,
                                        message="%s → %s is not allowed (may import: %s)" % (layer_name, target_layer, ", ".join(sorted(layer["may_import"])))))
@@ -166,7 +168,8 @@ def check(root: str, rules: Rules, package: Optional[str]) -> Dict:
                                        message="feature '%s' imports %s of feature '%s' (only %s may cross features)" % (
                                            src_feature, target_layer, dst_feature, ", ".join(sorted(rules.cross_allowed)) or "nothing")))
     return {"files": len(files), "layers": dict(layer_counts), "unclassified": unclassified,
-            "unclassified_targets": unclassified_targets, "violations": violations}
+            "unclassified_targets": unclassified_targets, "violations": violations,
+            "matrix": dict(edges)}
 
 
 def _forbidden(uri: str, layer: Dict) -> bool:
@@ -184,6 +187,7 @@ def main(argv: List[str]) -> int:
     parser.add_argument("--format", choices=["text", "json"], default="text")
     parser.add_argument("--summary", action="store_true")
     parser.add_argument("--no-fail", action="store_true")
+    parser.add_argument("--matrix", action="store_true", help="also print the real layer -> layer import counts")
     args = parser.parse_args(argv)
 
     root = os.path.abspath(args.root)
@@ -216,6 +220,10 @@ def main(argv: List[str]) -> int:
             print("Imports into unclassified files (%d, not violations; map them in layers.json): %s%s" % (
                 len(report["unclassified_targets"]),
                 ", ".join("%s×%d" % kv for kv in targets.most_common(5)), " …" if len(targets) > 5 else ""))
+        if args.matrix:
+            print("Import matrix (from -> to: count):")
+            for edge, n in sorted(report["matrix"].items(), key=lambda kv: -kv[1]):
+                print("  %-40s %d" % (edge, n))
         if args.summary:
             kinds = Counter(v["kind"] for v in reported)
             pairs = Counter("%s → %s" % (v["from_layer"], v["to_layer"] or v["import"].split("/")[0]) for v in reported)
