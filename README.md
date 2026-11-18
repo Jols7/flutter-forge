@@ -190,9 +190,9 @@ can watch a `forge-deliver` run surface them.
 - Unit tests cover every Python script and both layer presets (Python 3.9 and 3.12); a test also
   resolves every cross-skill file reference. `shellcheck` covers the runner.
 - A CI guard (terms kept in a repository secret) fails if project-specific names leak into generic skills.
-- [Evals](plugins/flutter-forge/evals) (six cases) cover requirement drafting, contract
-  inference, architecture placement, code-review findings, the comments policy and security
-  findings. They run manually or
+- [Evals](plugins/flutter-forge/evals) (ten cases) cover requirement drafting, contract
+  inference, architecture placement, code-review findings, the comments policy, security
+  findings, `forge-health` and the reading of `forge-metrics` output. They run manually or
   weekly (`evals.yml`), because they cost tokens.
 - During development the scanners were also run read-only against a large real-world Flutter
   codebase (~600 Dart files) to measure noise on code they had never seen. Every false

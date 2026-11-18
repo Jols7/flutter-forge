@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Evals for `forge-metrics` (BIT-008): `metrics-interpret-run` (report from a script digest: API-price
+  wording, estimated split, no savings without a baseline, sessions to confirm) and
+  `metrics-incomplete-no-invention` (an `INCOMPLETE` run never gets an invented total).
+
 ## [0.7.0] - 2026-11-17
 
 Additive only: `result.json` keeps `schema: 1` and does not change, and every existing skill and
