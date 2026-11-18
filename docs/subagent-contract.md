@@ -26,6 +26,7 @@ mode: unattended
 phases: all                            # or e.g. [requirements, contract, blueprint]
 git: none                              # none | commit | pr
 explain: brief                         # none | brief (default) | full
+baseline_estimate_hours: 16            # optional: estimate without the agent, made before the run
 constraints:
   - "Backend PR #88 adds POST /transfers; until merged, use the agreed mock in docs/api/transfers.md"
 ```
@@ -38,6 +39,7 @@ constraints:
 | `phases` | Subset semantics: phases run in pipeline order. Phases whose inputs are missing are skipped and listed in `result.json` |
 | `git` | `none`: nothing; the message is proposed in `proposed_commit`. `commit`: Conventional Commits with scope `mobile` on a `<type>/<HU>-<slug>` branch, no push. `pr`: also pushes and opens a PR (body *Qué / Por qué / Dónde revisar*); never merges. A project with its own convention keeps it |
 | `explain` | Depth of `why[]` and `review_points[]` ("Por qué / Dónde revisar"): `none` empty, `brief` 1–3 each, `full` every gate decision with alternatives (since v0.2.0) |
+| `baseline_estimate_hours` | Optional (since v0.7.0). Stored in `state.json`; `forge-metrics` uses it to compute savings. Omit it when there is no estimate made before the run |
 
 ## Output
 

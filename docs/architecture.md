@@ -42,12 +42,14 @@ flowchart LR
         PROF[forge-profile]
         LEARN[forge-learn]
         HEALTH["forge-health (manual, whole repo)"]
+        METRICS["forge-metrics (manual, after a run)"]
     end
     subgraph Project[".flutter-forge/ in each project"]
         P[profile.yaml]
         O[overlays/*.md]
         L[layers.json]
         R[runs/&lt;feature&gt;/]
+        M[metrics/]
     end
     ENG --> DEL
     DEL --> PROF & REQ & FIG & API & BP & DATA & PRES & L10N & UT & E2E
@@ -58,6 +60,8 @@ flowchart LR
     LEARN --> O
     HEALTH -. reuses scripts of .-> AUD & SEC & PROF
     DEL --> R
+    METRICS -. reads .-> R
+    METRICS --> M
 ```
 
 ## Pipeline and gates

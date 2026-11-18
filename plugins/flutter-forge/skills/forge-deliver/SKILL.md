@@ -24,7 +24,10 @@ skill's rules.
      gates, and continue from `next_phase`. Do not redo completed phases unless their inputs
      changed (for example, a new story version or a new contract).
    - Otherwise, create `state.json` from `references/run-state.md`.
-6. If `.flutter-forge/overlays/forge-deliver.md` exists, read it; its rules win. Examples: phases
+6. **Baseline (new runs, optional).** Take `baseline_estimate_hours` from the brief. In
+   interactive mode, if it is missing, ask once how many hours the work would take without the
+   agent, and accept "no sé". Record it in `state.json` before the first phase. Never infer it.
+7. If `.flutter-forge/overlays/forge-deliver.md` exists, read it; its rules win. Examples: phases
    to skip, extra gates, or the report language.
 
 ## Phases
@@ -47,9 +50,11 @@ skill's rules.
 Rules between phases:
 - After each phase, update `state.json`: `completed`, `next_phase`, files and counts. The run
   must be resumable from any point in a new session.
+- **When a phase starts,** append it to `phase_log` with the time from `date -u`. Every time in
+  `state.json` comes from that command (`references/run-state.md`).
 - **Tests failing (8–9).** Fix and re-run, up to 3 cycles per failure (the rule in
-  `forge-tests`). After that, continue to the review and mark the run `status: failing-tests`.
-  Never hide a failure.
+  `forge-tests`), and count each cycle in `retries`. After that, continue to the review and mark
+  the run `status: failing-tests`. Never hide a failure.
 - **E2E prerequisites missing** (no device or no credentials). The test stays written and is
   marked `pending-run`. The run still completes.
 - **Scope guard.** Only what the brief and blueprint list gets built. Bugs found elsewhere go
@@ -63,8 +68,8 @@ Rules between phases:
 | 2 blueprint | Show the file plan, classes, open decisions and test plan; wait | Continue; record assumptions |
 | 3 findings | Show the summary + list; the person picks the ids to fix (default: all critical/high) | Fix critical and high automatically; defer the rest |
 
-Record each answer in `state.json` (`gates`), and in the brief's or blueprint's **Decisions**,
-with the date.
+Record each answer in `state.json` (`gates`, with `changed` when the person altered what you
+proposed), and in the brief's or blueprint's **Decisions**, with the date.
 
 ## Review (phase 10): independent when possible
 
@@ -135,3 +140,7 @@ End with:
 - the `report.md` path, with its summary: status, ACs covered, tests, verdict and open gaps;
 - the `result.json` path;
 - the next step that the person must decide: answer gaps, approve fixes, or commit.
+
+In interactive mode, add one line: once the run's sessions are closed,
+`/flutter-forge:forge-metrics <slug>` reports what it cost. Do not run it from here; a session's
+official cost exists only after it closes.

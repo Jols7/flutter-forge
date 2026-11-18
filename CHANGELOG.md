@@ -6,6 +6,23 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-17
+
+Additive only: `result.json` keeps `schema: 1` and does not change, and every existing skill and
+agent name stays. The brief gains one optional field.
+
+### Added
+- `forge-metrics` (gap B4, BIT-008, ADR 0007): measures a run after its sessions close.
+  - Runs by hand only (`disable-model-invocation`), in a forked context, on `sonnet`.
+  - `run_metrics.py` links sessions to a run by the run folder they touched and reads the official
+    cost per model from `cost-state`, with no price table. It also splits cost per phase, separates
+    model, tool, question and waiting time, and reads the outcome from `state.json` and `result.json`.
+  - It stores counters only in `.flutter-forge/metrics/`, ignored by git by default, and keeps a
+    `history.jsonl` for median and range per run type.
+- `forge-deliver` records real timestamps through `date -u`, plus `phase_log`, `gates.*.changed`,
+  `retries` and the optional `baseline_estimate_hours` in `state.json`.
+- Unit tests for the script.
+
 ## [0.6.0] - 2026-11-16
 
 Same contract as 0.5.0: no brief field, `result.json` or skill name changes.
