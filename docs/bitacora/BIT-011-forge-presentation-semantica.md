@@ -2,7 +2,7 @@
 
 > [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-001](BIT-001-l10n-localizacion.md), [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-004](BIT-004-skills-forge-health-y-upgrade.md), [BIT-009](BIT-009-modelo-y-esfuerzo.md), [BIT-010](BIT-010-linea-base-forge-metrics.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md), [BIT-013](BIT-013-fidelidad-visual-frente-a-figma.md)
 
-- **Tipo:** auditoría, mejora · **Estado:** en curso (fase 0 en progreso; rama `feat/bit-011-presentation-a11y-optin`) · **Alta:** 2026-11-19
+- **Tipo:** auditoría, mejora · **Estado:** en curso (fases 0 y 1 hechas; fase 0 con fuentes pendientes; rama `feat/bit-011-presentation-a11y-optin`) · **Alta:** 2026-11-19
 - **Origen:** auditoría de solo lectura de `forge-presentation` (2026-11-19), contrastada con la
   documentación de Flutter (accesibilidad, `flutter_test` guidelines, `SemanticsService`), WCAG 2.2
   (SC 2.5.8 y 1.4.4), *Effective Dart* y el *Flutter style guide*. No se modificó código.
@@ -113,17 +113,17 @@ cuando `a11y: on`, salvo el primero)
       razón) y alcance de `///`.
 
 *Fase 1 · Contenido de `forge-presentation` (bajo a medio)*
-- [ ] Crear `references/accessibility.md`, cargada **solo con `a11y: on`**: encabezados, orden de
+- [x] Crear `references/accessibility.md`, cargada **solo con `a11y: on`**: encabezados, orden de
       lectura, campos y formularios, estados de carga, anuncios con la API vigente (consultando
       `supportsAnnounce`), importes y fechas, y la nota de `ListTile`. Reducir `page-patterns.md`
       § Accessibility y `SKILL.md:63` a "si `a11y: on`, ver la referencia". Única fuente de verdad.
-- [ ] Añadir una referencia de estructura: nombres de página, widget y archivo; esqueleto de
+- [x] Añadir una referencia de estructura: nombres de página, widget y archivo; esqueleto de
       carpetas; criterios de extracción y de promoción a compartido; umbrales de tamaño por archivo
       y anidamiento (**valores medidos, no supuestos**; ver la medición de la fase 4).
       Incluir un apartado breve: los widgets interactivos y los contenedores de estado se nombran y
       ubican de modo que luego puedan llevar key de prueba; la convención la decide **BIT-012**.
-- [ ] Reescribir la `description` más corta, separando alcance y triggers.
-- [ ] Plantilla de Riverpod 2.x en lugar de la nota en prosa.
+- [x] Reescribir la `description` más corta, separando alcance y triggers.
+- [x] Plantilla de Riverpod 2.x en lugar de la nota en prosa.
 
 *Fase 2 · Documentación y comentarios (medio)*
 - [ ] Citar las fuentes oficiales en `code-comments.md` y añadir la guía de redacción de `///` con
@@ -144,7 +144,7 @@ cuando `a11y: on`, salvo el primero)
       nombres y tamaños; decidirlo con datos de falsos positivos.
 
 *Fase 4 · Evals, medición y ejemplo (medio)*
-- [ ] Medición previa, **solo lectura**, en UNITED y `forge_demo`: tamaño de archivo, anidamiento
+- [x] Medición previa, **solo lectura** (hecha 2026-11-19 sobre `UnitedApp/lib` y `forge_demo`; cifras en `structure.md`), en UNITED y `forge_demo`: tamaño de archivo, anidamiento
       y `max_build_lines`. Con esos datos se proponen los umbrales de la fase 1.
 - [ ] Evals con el formato de los existentes: `presentation-sealed-state-and-disposal`,
       `presentation-a11y-semantics` (con `off` **no** exige nada; con `on` sí) y
@@ -173,3 +173,9 @@ pasando, una ADR y entrada en `CHANGELOG`.
   los proyectos reales (UNITED, `forge_demo`) para no inventar números.
 - Riesgo asumido con `off`: la auditoría no avisa de fallos básicos de accesibilidad. Si más
   adelante se quiere un mínimo sin coste, se reabre como decisión (confirmado el 2026-11-19).
+
+- Fase 1 (2026-11-19): `accessibility.md` y `structure.md` creadas, `SKILL.md` y `page-patterns.md`
+  apuntan a ellas. Umbrales propuestos desde la medición de UnitedApp (275 archivos): archivo 300
+  líneas, más de 3 clases, anidamiento 20. Son orientación hasta que un script los compruebe.
+  La plantilla Riverpod 2.x dejó sin verificar la guarda tras `await` (anotado en el archivo).
+  Los umbrales de `structure.md` y el apartado de keys quedan para revisión.

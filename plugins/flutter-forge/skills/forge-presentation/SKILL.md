@@ -1,6 +1,6 @@
 ---
 name: forge-presentation
-description: Implement the presentation layer of a Flutter feature from its blueprint and design notes. That covers pages, state managers with sealed states (BLoC/Cubit, Riverpod Notifier/AsyncNotifier, or Provider ChangeNotifier), feature and shared widgets via a reuse ladder, navigation (go_router, auto_route or Navigator), the entry-point change, failure-to-message mapping, forms, debounce, pagination and accessibility. It follows the profile's state manager and the project's overlays. Use it when the user asks to create or change a screen, page, flow, view, state, cubit, bloc, notifier, provider or ViewModel, wire navigation, or says "crea la pantalla", "maqueta la vista" (with a Figma link, forge-figma runs first), "agrega el estado de carga", "conecta la pantalla con el repositorio"; and when forge-deliver reaches implementation.
+description: Implement the presentation layer of a Flutter feature from its blueprint and design notes - pages, sealed-state managers (BLoC/Cubit, Riverpod, Provider), widgets, navigation, failure messages, forms and lists. Use when asked to create or change a screen, page, view, cubit, bloc, notifier or provider, wire navigation, or "crea la pantalla", "maqueta la vista", "agrega el estado de carga"; and when forge-deliver reaches implementation. Accessibility is opt-in (`a11y`).
 ---
 
 # forge-presentation
@@ -20,7 +20,8 @@ domain, and widgets get state. Nothing in this layer knows about HTTP or JSON.
    - `references/state-riverpod.md`, or
    - `references/state-provider.md`.
 
-   Load `references/page-patterns.md` too.
+   Load `references/page-patterns.md` and `references/structure.md` too. If `a11y` is `on`
+   (brief, else `accessibility.default`, default `off`), also load `references/accessibility.md`.
 3. Read the run's `blueprint.md` (state design, widgets, routes) and `design.md` when it exists.
    The design notes say which widgets to reuse, extend or create, and which tokens to use.
 4. In `adopt`/`improve`, open the canonical feature's page and state manager, and mirror where
@@ -60,9 +61,8 @@ domain, and widgets get state. Nothing in this layer knows about HTTP or JSON.
 - All text comes from l10n through `l10n.accessor`, using the keys listed in the blueprint. Add
   the keys with `forge-l10n`. Failure messages come from the `AppFailure` mapping
   (`page-patterns.md` § Failures).
-- Accessibility (`page-patterns.md` § Accessibility): semantic labels on icon-only buttons,
-  tap targets of at least 48×48, layouts that still work at 200 % text scale, and no meaning
-  conveyed by color alone.
+- Accessibility: only when the run's `a11y` is `on` (brief, else `accessibility.default`).
+  Then load `references/accessibility.md` and apply it. With `off`, add no semantics rules.
 - When `architecture.ui_helpers: forbid`, extract widgets instead of `_buildX()` methods. With
   `allow`, short private helpers are fine, but whatever has its own state or rebuild boundary
   must still be a widget.
