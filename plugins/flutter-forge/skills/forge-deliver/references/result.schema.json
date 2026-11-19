@@ -361,6 +361,61 @@
           "description": "PR URL when git: pr"
         }
       }
+    },
+    "design": {
+      "type": "object",
+      "description": "Present when a design.md exists (forge-figma). Optional: older results omit it.",
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "gaps": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "captures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fidelity": {
+          "type": "object",
+          "properties": {
+            "verdict": {
+              "enum": [
+                "pass",
+                "pass-with-accepted",
+                "fail",
+                "not-run"
+              ]
+            },
+            "defects": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "accepted": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "responsive": {
+          "type": "object",
+          "properties": {
+            "check": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "check_responsive.py findings left in scope"
+            },
+            "matrix": {
+              "enum": [
+                "passed",
+                "failed",
+                "not-run"
+              ]
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {

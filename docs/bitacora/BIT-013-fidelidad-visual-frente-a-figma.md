@@ -173,3 +173,32 @@ estable; coste total ≈ 4,0 USD con las tres rondas):
 **Pendiente de la fase 1:** ninguna capacidad nueva. La verificación con Figma MCP real de los modos
 standalone y delta (corrida completa sobre la pantalla UNITED) queda para después de la fase 2, cuando
 `forge-presentation` pueda aplicar un `delta.md`.
+
+## Fase 2 · Consumidores (2026-11-19, misma rama; ADR [0010](../adr/0010-responsive-matrix-independent-of-a11y.md))
+
+**Hecho:**
+- `forge-presentation`: `references/responsive.md` (única fuente: objetivos, reglas, cómo construir desde las
+  Medidas sin aplanar gaps); `SKILL.md`, `page-patterns.md` y `accessibility.md` solo enlazan.
+- `forge-tests`: matriz responsiva siempre activa (`widget-tests.md`, helper `pumpAppAt` en `helpers.md`,
+  `test-matrix.md`, `SKILL.md`). **Enmienda a ADR 0008:** la prueba de texto grande deja de depender de `a11y`.
+- `forge-audit`: `scripts/check_responsive.py` (8 pruebas), checklist § 15, mapa de severidades, `flutter-reviewer`
+  y un paso en CI. `forge_demo` salió marcado por la regla (saldo sin `Flexible` junto a un `Expanded`) y se corrigió.
+- `forge-deliver`: verificación visual al cierre de la fase de presentación si hay `design.md`, bloque
+  `design` opcional en `state.json` y `result.json`, plantilla de informe. Sin fase nueva (las métricas no cambian).
+- `forge-blueprint` y `forge-requirements`: una línea cada uno.
+
+**Calibración del script en UNITED (solo lectura):** 276 archivos, 50 hallazgos (18 `row-text-no-flex`, 18
+`fixed-height-text`, 7 `row-texts-no-flex`, 4 `media-query-of`, 3 `fixed-width`); marca las dos filas que
+desbordaban en la pantalla del simulador. Falsos positivos probables: etiquetas cortas junto a un `Flexible`
+(p. ej. el código de divisa de `AmountInput`). En `adopt`/`improve` todo es `warn`.
+
+**Evals de la fase 2** (2 corridas por brazo): `presentation-responsive-layout` 2/2 con plugin y 0/2 sin él;
+`audit-responsive-overflow` 2/2 con plugin y 0/2 sin él. Siguen siendo indicio, no medida estable.
+
+**Coordinación con otras BIT:** BIT-002 no debe reintroducir la prueba de texto grande como condicional a `a11y`
+(nota añadida allí); BIT-012 no se ve afectada (las keys siguen independientes). Los hooks del plugin no se
+entregan (ADR 0009).
+
+**Pendiente:** prueba de extremo a extremo con Figma real (standalone y delta) sobre UNITED, y repetir la
+presentación con Sonnet para decidir si BIT-009 recibe evidencia; umbral de `fixed-height-text` por afinar con
+más proyectos; fase 3 (goldens y capturas en E2E) sigue condicionada a datos.

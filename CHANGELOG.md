@@ -23,6 +23,26 @@ All notable changes to this project are documented here. The format follows
 - `code-comments.md` cites *Effective Dart* and the Flutter style guide, explains why comments are in
   English and adds a `///` writing guide with good and bad examples per layer.
 
+### Added (BIT-013 phase 2, ADR 0010)
+- `forge-presentation/references/responsive.md`: the single source for adaptive layout (targets: phones from
+  320 dp, tablet, landscape, text scale 1.0 to 2.0, longest content; rules for rows, fixed sizes, scroll,
+  lists, tablet) and for building from the `design.md` Measures without flattening nested gaps.
+- `forge-audit/scripts/check_responsive.py` (bare `Text` beside an `Expanded`, fixed widths and heights,
+  `ListView(children)`, `MediaQuery.of`, forms without scroll) with tests, wired into the audit, the
+  checklist (§ 15), the severity map, `flutter-reviewer` and CI. It flags both real overflows of the
+  BIT-013 phase 0 case.
+- `forge-tests`: a responsive matrix (sizes × text scales × longest content, helper `pumpAppAt`).
+- `forge-deliver`: a visual check at the end of the presentation phase when a `design.md` exists, and an
+  optional `design` block in `state.json` / `result.json` (fidelity verdict, accepted differences,
+  responsive check and matrix). No phase was added.
+- Evals `presentation-responsive-layout` and `audit-responsive-overflow`; profile key
+  `quality.max_fixed_width`.
+
+### Changed (BIT-013 phase 2)
+- **Behavior change (amends ADR 0008):** the text-scale test is no longer tied to `a11y: on`. Layout
+  robustness (overflow, clipped content) is always tested; semantics stay opt-in.
+- `forge_demo`: `AccountCard` no longer overflows with large balances (`Flexible` + `FittedBox`).
+
 ### Added (BIT-013 phase 1, ADR 0009)
 - `forge-figma` is now a specification producer with a priority order: responsive first, then exact
   colors, fonts, order, alignment, radius and borders, then spacing, with flexible dimensions. New

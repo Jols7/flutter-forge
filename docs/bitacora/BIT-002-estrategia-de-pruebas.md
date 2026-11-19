@@ -28,3 +28,6 @@
 - Se escribió "test_integration" y "test_unit"; se asumen `integration_test` y `test/` (unit).
 - Relacionado con B3 de `Curriculum/07_estudio-agente/04-brechas-y-diferenciador.md`
   (Patrol en CI y evals para `forge-tests` / `forge-e2e`).
+- Coordinación con BIT-013 (2026-11-19, ADR 0010): la prueba de **texto grande y tamaños** (matriz
+  responsiva de `widget-tests.md`) ya **no depende de `a11y`**; siempre corre. Los guidelines de semántica
+  siguen condicionados. Al revisar la estrategia aquí, no volver a atarla al interruptor.

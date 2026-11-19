@@ -173,3 +173,19 @@ commented-out code, `TODO`/`FIXME` without a reference, decorative banners, and 
 
 In `adopt` mode only new and changed lines count. Pre-existing comment debt is summarized,
 never listed one by one.
+
+## 15. Responsiveness and design fidelity
+
+Run `../scripts/check_responsive.py` on the scope first. It points at risky lines; you judge. Applies
+always (ADR 0010), not only with `a11y: on`. Rules and targets: `../../forge-presentation/references/responsive.md`.
+- Does each `row-text-no-flex` finding hold? (A bare `Text` or `Column` of texts beside an
+  `Expanded`/`Flexible` overflows with long text, large amounts or text scale 1.5+.)
+- Are widths and heights flexible (no frame width copied, minimum heights around text), and is
+  anything fixed on the list of `../../forge-figma/references/fidelity.md` § 3?
+- Do pages scroll, forms stay reachable with the keyboard open, and lists use builders?
+- Did `forge-tests` run the responsive matrix for the new or changed pages and text-holding shared
+  widgets (`../../forge-tests/references/widget-tests.md` § Responsive matrix)?
+- **When a `design.md` exists:** does it carry a verdict (`pass`, `pass-with-accepted`, `fail`), and are the
+  accepted differences listed with their reason? Spot-check three rows of its Measures table against the
+  code (gap, type role, color token) and that nested gaps were not flattened. Do not re-derive the
+  tolerance: it lives in `../../forge-figma/references/fidelity.md`.

@@ -30,6 +30,7 @@
   },
   "gaps": {"blocking": 0, "non_blocking": 1},
   "files": {"created": [], "modified": []},
+  "design": {"file": "design.md", "gaps": 2, "captures": 3, "fidelity": "pass-with-accepted", "responsive_matrix": "passed"},
   "mocked_routes": [],
   "tests": {"unit": null, "widget": null, "e2e": null, "coverage": null},
   "review": {"independent": null, "verdict": null, "counts": {}}

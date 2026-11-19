@@ -115,8 +115,9 @@ Only when `a11y: on`: see `accessibility.md`. With `off`, nothing here applies.
 
 ## Responsiveness and platform
 
-- Use `MediaQuery.sizeOf(context)`, not `MediaQuery.of(context).size` (fewer rebuilds).
-- Wrap content in `SafeArea`. Pages with inputs must scroll when the keyboard opens.
+Layout rules (flexible sizes, text beside values, scroll, lists, tablet, `MediaQuery.sizeOf`,
+`SafeArea`, keyboard) are in `responsive.md`: the single source of truth.
+
 - Back navigation: `PopScope` only when the brief defines a premature-exit behavior.
 
 

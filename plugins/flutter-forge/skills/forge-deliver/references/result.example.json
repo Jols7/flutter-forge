@@ -41,5 +41,10 @@
     "branch": "feat/HU-01-transfers",
     "commits": [{"sha": "a1b2c3d", "message": "feat(mobile): add transfers data layer"}]
   },
+  "design": {
+    "file": ".flutter-forge/runs/new-transfer/design.md", "gaps": 2, "captures": 3,
+    "fidelity": {"verdict": "pass-with-accepted", "defects": 0, "accepted": 2},
+    "responsive": {"check": 0, "matrix": "passed"}
+  },
   "report": ".flutter-forge/runs/new-transfer/report.md"
 }

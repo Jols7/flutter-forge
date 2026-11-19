@@ -133,6 +133,7 @@ quality:
   # Size limits below are the defaults for `mode: new`. With `adopt`/`improve` they default to the looser
   # 120 / 10 / 300 / 20 (build lines / complexity / file / depth) and build size is a warning, not a finding.
   max_build_lines: 50                      # build() size before it is a finding
+  max_fixed_width: 240                     # dp; a literal SizedBox/Container width at or above this is flagged by check_responsive.py
   max_file_lines: 250                      # presentation file size (warn)
   max_classes_per_file: 3                  # presentation file (warn; state/ exempt)
   max_widget_depth: 12                     # indentation levels (warn)

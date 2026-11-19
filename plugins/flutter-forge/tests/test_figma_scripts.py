@@ -1,4 +1,4 @@
-"""Tests for forge-figma's scripts (theme_tokens.py, lint_design.py).
+"""Tests for forge-figma's scripts (theme_tokens.py, lint_design.py) and forge-audit's check_responsive.py.
 Run: python3 -m unittest discover -s plugins/flutter-forge/tests -v"""
 from __future__ import annotations
 
@@ -22,6 +22,12 @@ def load(name: str):
 
 tokens_mod = load("theme_tokens")
 lint_mod = load("lint_design")
+AUDIT_SCRIPTS = os.path.join(os.path.dirname(HERE), "skills", "forge-audit", "scripts")
+_spec = importlib.util.spec_from_file_location("check_responsive", os.path.join(AUDIT_SCRIPTS, "check_responsive.py"))
+resp_mod = importlib.util.module_from_spec(_spec)
+import sys as _sys
+_sys.path.insert(0, AUDIT_SCRIPTS)
+_spec.loader.exec_module(resp_mod)
 
 
 def write(root: str, rel: str, text: str) -> str:
@@ -211,6 +217,59 @@ class LintDesignTest(unittest.TestCase):
         report = self.lint(GOOD_DESIGN + "\n## Notes\nUse #123456 here.\n")
         self.assertIn("hex-outside-tokens", self.rules(report, "warn"))
         self.assertEqual(self.rules(report), set())
+
+
+def kinds(source: str, path: str = "lib/features/x/presentation/widgets/w.dart", mode: str = "new") -> list:
+    cfg = {"mode": mode, "max_fixed_width": 240}
+    return [(f["kind"], f["severity"]) for f in resp_mod.check_text(path, source, cfg)]
+
+
+class CheckResponsiveTest(unittest.TestCase):
+    def test_bare_text_next_to_expanded_is_a_finding(self):
+        src = """class W { Widget build(c) => Row(children: [
+            Expanded(child: Text(label)),
+            Text(value),
+        ]); }"""
+        self.assertEqual(kinds(src), [("row-text-no-flex", "finding")])
+
+    def test_column_with_text_next_to_expanded_is_a_finding(self):
+        src = """Widget b() => Row(children: [Expanded(child: Column(children: [Text(a)])),
+            Column(children: [Text(b), Text(c)])]);"""
+        self.assertEqual(kinds(src), [("row-text-no-flex", "finding")])
+
+    def test_flexible_or_fittedbox_value_passes(self):
+        src = """Widget b() => Row(children: [
+            Expanded(child: Text(label)),
+            Flexible(child: FittedBox(child: Text(value))),
+        ]);"""
+        self.assertEqual(kinds(src), [])
+
+    def test_icon_next_to_expanded_text_passes(self):
+        self.assertEqual(kinds("Widget b() => Row(children: [Icon(Icons.add), Expanded(child: Text(t))]);"), [])
+
+    def test_two_bare_texts_without_flex_warn_and_legacy_downgrades_the_finding(self):
+        self.assertEqual(kinds("Widget b() => Row(children: [Text(a), Text(b)]);"), [("row-texts-no-flex", "warn")])
+        legacy = kinds("Widget b() => Row(children: [Expanded(child: Text(a)), Text(b)]);", mode="improve")
+        self.assertEqual(legacy, [("row-text-no-flex", "warn")])
+
+    def test_strings_and_comments_do_not_confuse_the_parser(self):
+        src = """Widget b() => Row(children: [Expanded(child: Text('a, ) ] [ Text(')), // Text(x)
+            Flexible(child: Text("Row(children: [Text(")))]);"""
+        self.assertEqual(kinds(src), [])
+
+    def test_fixed_width_and_height_around_text(self):
+        self.assertEqual(kinds("Widget b() => Container(width: 268, height: 1, color: c);"), [("fixed-width", "warn")])
+        self.assertEqual(kinds("Widget b() => SizedBox(width: 120, child: Text(t));"), [])
+        self.assertEqual(kinds("Widget b() => SizedBox(height: 48, child: Center(child: Text(t)));"), [("fixed-height-text", "warn")])
+        self.assertEqual(kinds("Widget b() => SizedBox(height: 8);"), [])
+
+    def test_listview_children_map_media_query_and_form(self):
+        self.assertEqual(kinds("Widget b() => ListView(children: items.map((i) => Text(i)).toList());"), [("list-not-builder", "warn")])
+        self.assertEqual(kinds("final s = MediaQuery.of(context).size;"), [("media-query-of", "warn")])
+        form = "Widget b() => Column(children: [TextField()]);"
+        self.assertEqual(kinds(form, "lib/features/x/presentation/pages/p_page.dart"), [("form-no-scroll", "warn")])
+        scrolled = "Widget b() => SingleChildScrollView(child: Column(children: [TextField()]));"
+        self.assertEqual(kinds(scrolled, "lib/features/x/presentation/pages/p_page.dart"), [])
 
 
 if __name__ == "__main__":

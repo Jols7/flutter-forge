@@ -24,6 +24,13 @@ The automated checks map to severities like this:
 - `file-lines`, `classes-per-file`, `nesting-depth`, `file-name` (`warn`) → low.
 Complexity is approximate: confirm with DCM or by reading the method before reporting it.
 
+`check_responsive.py` findings map to these severities:
+- `row-text-no-flex` → medium in new code (high when the amount or label is money or can reach 14+
+  characters), low when the script reports it as `warn` (`adopt`/`improve`);
+- `fixed-width`, `fixed-height-text`, `row-texts-no-flex`, `form-no-scroll` → low, medium when a rendered
+  matrix (`forge-tests`) overflows; `list-not-builder`, `media-query-of` → low.
+A missing or `fail` verdict in `design.md` is medium; accepted differences without a reason are low.
+
 `check_comments.py` findings map to these severities:
 - `commented-out-code` → medium;
 - `todo-without-ref` → low;

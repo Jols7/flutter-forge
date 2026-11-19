@@ -62,6 +62,9 @@
   **extend** (path + new optional parameter), or **create**. Create it in the feature's
   `widgets/` when only this flow uses it, or in `paths.shared_widgets` when it is reusable,
   and add it to the catalog.
+- When `design.md` carries Measures and Responsive behavior, the blueprint's widget rows cite them
+  (the widget implements its element rows and its responsive rule; nested gaps stay nested). Do not
+  restate the numbers: link to the `design.md` row.
 - Each region that reacts to a state gets a small widget, and each state variant maps to one
   branch of an exhaustive `switch`.
 

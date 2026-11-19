@@ -42,7 +42,7 @@ differ: for example, §5 was "Screens, navigation and states". Both are read wit
 | Navigation in/out | Origin, destination, parameters | Route + arguments; destination flow must accept the parameters (gap if unknown) |
 | States per screen | Loading, empty, error, success | Sealed state variants; which **block** of the page reacts (others stay interactive) |
 | Non-functional | Optimistic UI, no flicker, debounce, retries | Local recompute + debounced requests + delayed loading flag + stale-response discard; retry policy |
-| Design references | Nodes per state, tokens | Input list for `forge-figma` (one node per state, not full screens repeatedly) |
+| Design references | Nodes per state, tokens | Input list for `forge-figma` (one node per state, not full screens repeatedly); say whether a story exists and any device or tablet frames the design provides |
 | Data and integration | Values shown/sent | "Screen value → source" table in `forge-blueprint`; unknown sources are gaps |
 | Security | Sensitive data, masking, logging, re-auth, limits, screenshots | Requirements checked by `forge-security` against the code |
 | Out of scope | Explicit exclusions | Scope guard: nothing outside it is built |

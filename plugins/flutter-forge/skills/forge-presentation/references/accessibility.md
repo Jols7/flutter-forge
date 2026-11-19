@@ -56,5 +56,6 @@ not be read automatically, so 44 pt rests on the Flutter docs. Re-verify before 
   measure nothing.
 - Cover `androidTapTargetGuideline`, `iOSTapTargetGuideline`, `labeledTapTargetGuideline`,
   `textContrastGuideline`.
-- Text-scale test at 2.0 must assert that the content is still visible, not only that no overflow
-  exception was thrown.
+- Text-scale robustness is **not** an accessibility-only test: the responsive matrix always runs it
+  (`../../forge-tests/references/widget-tests.md` § Responsive matrix, ADR 0010). With `on`, keep the
+  assertion that the content is still visible, not only that no overflow was thrown.

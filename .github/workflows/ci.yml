@@ -72,6 +72,8 @@ jobs:
         run: python3 ../../plugins/flutter-forge/skills/forge-audit/scripts/check_layers.py --rules ../../plugins/flutter-forge/skills/forge-architecture/presets/clean.layers.json
       - name: forge-audit comments policy
         run: python3 ../../plugins/flutter-forge/skills/forge-audit/scripts/check_comments.py
+      - name: forge-audit responsive layout
+        run: python3 ../../plugins/flutter-forge/skills/forge-audit/scripts/check_responsive.py
       - name: forge-health snapshot (smoke)
         run: python3 ../../plugins/flutter-forge/skills/forge-health/scripts/health_snapshot.py --root . --no-write
       - name: forge-security secret scan
