@@ -7,7 +7,7 @@ Usage: check_presentation.py [--root PROJECT] [--files F ...] [--changed-from RE
                              [--format text|json] [--no-fail]
 
 Thresholds come from flags, else from `quality.*` / `architecture.ui_helpers` in --profile, else
-the defaults below (measured on a real app, see forge-presentation/references/structure.md).
+the defaults below (deliberately strict targets; see forge-presentation/references/structure.md).
 Scope: files under presentation/, pages/, widgets/, screens/ or state/ (generated code skipped).
 
   build-lines        build() longer than max_build_lines                          [finding]
@@ -38,8 +38,8 @@ from typing import Dict, List, Optional
 
 GENERATED = re.compile(r"(\.g|\.freezed|\.gr|\.config|\.mocks)\.dart$|/generated/|/l10n/")
 IN_SCOPE = re.compile(r"/(presentation|pages|widgets|screens|state)/")
-DEFAULTS = {"max_build_lines": 120, "max_build_complexity": 10, "max_file_lines": 300,
-            "max_classes": 3, "max_depth": 20, "ui_helpers": "allow"}
+DEFAULTS = {"max_build_lines": 50, "max_build_complexity": 5, "max_file_lines": 250,
+            "max_classes": 3, "max_depth": 12, "ui_helpers": "allow"}
 PROFILE_KEYS = {"max_build_lines": "max_build_lines", "max_build_complexity": "max_build_complexity",
                 "max_file_lines": "max_file_lines", "max_classes": "max_classes_per_file",
                 "max_depth": "max_widget_depth", "ui_helpers": "ui_helpers"}

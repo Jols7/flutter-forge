@@ -7,7 +7,9 @@ import '../../../../core/widgets/feedback/error_view.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../state/transactions_cubit.dart';
 import '../state/transactions_state.dart';
+import '../widgets/load_more_on_scroll.dart';
 import '../widgets/transaction_tile.dart';
+import '../widgets/transactions_list_footer.dart';
 
 class TransactionsPage extends StatelessWidget {
   const TransactionsPage({super.key});
@@ -45,37 +47,18 @@ class _TransactionsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (notification.metrics.extentAfter < 300) {
-          context.read<TransactionsCubit>().loadMore();
-        }
-        return false;
-      },
+    return LoadMoreOnScroll(
       child: ListView.builder(
-        itemCount:
-            state.items.length +
-            (state.hasMore || state.loadMore is LoadMoreFailed ? 1 : 0),
+        itemCount: state.listLength,
         itemBuilder: (context, index) {
-          if (index < state.items.length) {
-            final item = state.items[index];
-            return TransactionTile(
-              key: ValueKey(item.id),
-              transaction: item,
-              fallbackDescription: l10n.transactionsNoDescription,
-            );
+          if (index >= state.items.length) {
+            return TransactionsListFooter(state: state);
           }
-          if (state.loadMore case LoadMoreFailed(:final failure)) {
-            return ErrorView(
-              message: failure.message(l10n),
-              retryLabel: l10n.commonRetry,
-              onRetry: context.read<TransactionsCubit>().loadMore,
-              compact: true,
-            );
-          }
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: CircularProgressIndicator()),
+          final item = state.items[index];
+          return TransactionTile(
+            key: ValueKey(item.id),
+            transaction: item,
+            fallbackDescription: l10n.transactionsNoDescription,
           );
         },
       ),

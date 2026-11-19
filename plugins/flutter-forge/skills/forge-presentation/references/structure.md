@@ -39,18 +39,33 @@ A long page may group `widgets/<page_name>/` subfolders by section. Shared widge
 - Promote a feature-local widget to shared when a **second feature** needs it; add its row to
   `design.widget_catalog`.
 
-## Size thresholds (measured)
+## Size thresholds (strict targets)
 
-| Measure | Observed (UnitedApp) | Threshold | Level |
-|---|---|---|---|
-| `build()` lines | p95 77, max 134, 2 files over 120 | 120 (`quality.max_build_lines`) | finding |
-| `build()` cyclomatic complexity | p95 7, max 17; 3 of 209 over 10, all under 120 lines | 10 (`quality.max_build_complexity`) | finding; move logic to the state or a mapper |
-| File lines | p90 197, p95 247, max 458, 3 files over 300 | 300 | warn; split by section |
-| Classes per file | p95 2, max 7 | 1 public + private helpers; more than 3 | warn |
-| Indent depth (2-space levels) | p90 15, p95 18, max 25 | 20 | warn; extract a widget |
+The defaults are deliberately strict: they describe how the code should look, not how a legacy
+app looks today. They were set on 2026-11-19 after measuring UnitedApp (210 `build()`, 276
+files) and `forge_demo`, and are meant to be recalibrated as more projects are measured.
 
-`forge_demo` stays well below all of them (max file 108, max `build` 38). `forge-audit/scripts/check_presentation.py` checks these
-numbers and the naming rules; complexity is approximate.
+| Measure | Default | Profile key | Level | UnitedApp at this value |
+|---|---|---|---|---|
+| `build()` lines | 50 | `quality.max_build_lines` | finding | 47 of 210 over |
+| `build()` cyclomatic complexity (approx.) | 5 | `quality.max_build_complexity` | finding | 24 of 210 over |
+| File lines | 250 | `quality.max_file_lines` | warn | 13 of 276 over |
+| Indent depth (2-space levels of the whole file) | 12 | `quality.max_widget_depth` | warn | 64 of 276 over |
+| Classes per file | 3 (state/ and sealed hierarchies exempt) | `quality.max_classes_per_file` | warn | few |
+
+Notes:
+- Indent depth counts the class body (1) and the method (2) too, so 12 leaves about 8 levels of
+  widgets. A value of 10 flagged 38 % of UnitedApp and sits at the limit of `forge_demo`; a metric
+  limited to the inside of `build()` would allow a stricter number later.
+- Flutter's own style guide sets no file-size limit, so these numbers are empirical.
+- In `adopt`/`improve` projects, run the check with `--changed-from` so only new and changed files
+  are measured; a legacy app will not pass a whole-project run (UnitedApp: 44 % of files get at least
+  one of these findings). A project can keep looser values in its profile.
+- `forge_demo` meets all of them (its list screen was split into `_LoadMoreOnScroll`,
+  `_ListFooter` and a `listLength` getter on the state to do so).
+
+`forge-audit/scripts/check_presentation.py` checks these numbers and the naming rules; complexity
+is approximate.
 
 ## Keys for tests
 

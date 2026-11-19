@@ -26,7 +26,10 @@ All notable changes to this project are documented here. The format follows
 ### Added
 - `forge-presentation/references/structure.md`: naming (`XPage`, `XTile`, `XCard`, `XSection`,
   `snake_case` files), folder skeleton, extract/promote rules and size thresholds measured on a real
-  app (file 300 lines, 3 classes, nesting 20, `build()` 120 lines and cyclomatic complexity 10).
+  app and set as strict targets: `build()` 50 lines and cyclomatic complexity 5, file 250 lines,
+  nesting 12, 3 classes. **Behavior change:** `quality.max_build_lines` now defaults to 50 (was 120),
+  so projects that never set it get more findings; set it in the profile to keep the old value.
+  A legacy app (UnitedApp: 44 % of files) will not pass a whole-project run, so use `--changed-from`.
 - `forge-audit/scripts/check_presentation.py`: counts and matches size, approximate `build()`
   complexity, naming, `_buildX()` helpers, hardcoded colors/fonts, service locators in presentation
   and navigation inside state managers. `finding` fails the run; `warn` does not. Six unit tests.
