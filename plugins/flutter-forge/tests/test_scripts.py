@@ -320,6 +320,16 @@ class CheckCommentsTest(unittest.TestCase):
         self.assertEqual(len(without["findings"]), 1)      # default heuristic also matches /domain/
         self.assertEqual(with_rules["findings"][0]["kind"], "missing-doc")
 
+    def test_shared_widgets_need_docs_only_when_asked(self):
+        app = self._git_app()
+        os.makedirs(os.path.join(app, "lib/core/widgets"), exist_ok=True)
+        with open(os.path.join(app, "lib/core/widgets/badge.dart"), "w") as fh:
+            fh.write("class Badge extends StatelessWidget {}\n\n/// Documented.\nclass Chip2 extends StatelessWidget {}\n")
+        args = ("--root", app, "--files", "lib/core/widgets/badge.dart", "--format", "json")
+        self.assertEqual(json.loads(run("forge-audit", "check_comments.py", *args).stdout)["findings"], [])
+        found = json.loads(run("forge-audit", "check_comments.py", *args, "--shared-widgets", "lib/core/widgets").stdout)["findings"]
+        self.assertEqual([(f["kind"], f["line"]) for f in found], [("missing-doc", 1)])
+
     def test_layers_changed_from_is_relative_to_the_app_folder(self):
         app = self._git_app()
         rules = os.path.join(SKILLS, "forge-architecture", "presets", "clean.layers.json")

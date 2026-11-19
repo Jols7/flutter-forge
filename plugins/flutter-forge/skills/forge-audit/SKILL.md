@@ -32,7 +32,7 @@ the audit runs there, in a context that did not write the code.
 <quality.format_command>                                    # formatting (non-zero = unformatted files)
 python3 <this skill dir>/scripts/check_layers.py --rules <rules> --files <scope files…>
 python3 <this skill dir>/scripts/check_layers.py --rules <rules> --summary --no-fail   # project debt, for context only
-python3 <this skill dir>/scripts/check_comments.py --root . --files <scope dart files…>
+python3 <this skill dir>/scripts/check_comments.py --root . --shared-widgets <paths.shared_widgets> --files <scope dart files…>
 dart run dart_code_metrics:metrics analyze lib  # only if quality.dcm: true (or `dcm analyze lib`)
 ```
 

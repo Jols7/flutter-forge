@@ -51,7 +51,8 @@ finding only when it meets the confidence bar.
 ## 3. Widgets
 
 - Is `build` free of side effects (no I/O, no `.listen`, no state-manager creation)?
-- Is `build` within `quality.max_build_lines`? With `ui_helpers: forbid`, are there no
+- Is `build` within `quality.max_build_lines` and `quality.max_build_complexity`? (Complexity
+  counts `if`, `for`, `case`, `&&`, `||`, `??` and ternaries; DCM reports it when `quality.dcm`.) With `ui_helpers: forbid`, are there no
   `_buildX()` methods?
 - Do parts with their own rebuild boundary or state live in their own widgets?
 - Is `const` used wherever possible?
@@ -157,7 +158,7 @@ finding only when it meets the confidence bar.
 Run `../scripts/check_comments.py` on the scope first (`--changed-from <base>` for new and
 changed files, `--rules <layers.json>` when the domain is not under `/domain/`). It flags the mechanical cases:
 commented-out code, `TODO`/`FIXME` without a reference, decorative banners, and missing
-`///` on public domain contracts. Then judge what a script can't:
+`///` on public domain contracts and, with `--shared-widgets`, on shared widgets. Then judge what a script can't:
 - Do comments explain *why* (rule with reference, workaround with link, counter-intuitive
   decision, regex/formula) rather than restate *what*?
 - Would a rename or an extraction make the comment unnecessary?

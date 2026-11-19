@@ -2,19 +2,23 @@
 """Check Dart comments against the flutter-forge comments policy.
 
 Usage: check_comments.py [--root PROJECT] [--files F ...] [--changed-from REF] [--rules LAYERS.json]
+                         [--shared-widgets DIR]
                          [--format text|json] [--no-fail]
 
   --changed-from  check only files that differ from REF (plus untracked): the "new or changed
                   code" scope that adopt/improve modes require.
   --rules         layers.json whose `domain` (or `models`) layer says where public declarations
                   need `///`; without it, any `/domain/` folder.
+  --shared-widgets  project-relative folder of shared widgets (profile `paths.shared_widgets`);
+                  its public classes need `///` too.
 
 Flags what a script can decide reliably; whether a comment explains *why* is left to the
 reviewer (forge-audit checklist §14):
   commented-out-code  consecutive // lines that parse as Dart statements
   todo-without-ref    TODO/FIXME/HACK/XXX without (#123), (HU-12…), (G-2…) or a URL
   banner              decorative separators (// =====, // ----- SECTION -----)
-  missing-doc         public declarations in a domain/ folder without a /// doc comment
+  missing-doc         public declarations in a domain/ folder, or public classes in the shared widgets
+                      folder, without a /// doc comment
 Read-only, no network, Python 3.9+ stdlib. Exit 1 when findings exist (unless --no-fail).
 """
 from __future__ import annotations
@@ -96,7 +100,8 @@ def has_doc(lines: List[str], index: int) -> bool:
     return i >= 0 and lines[i].strip().startswith("///")
 
 
-def check_file(root: str, path: str, is_domain=lambda path: "/domain/" in "/" + path) -> List[Dict]:
+def check_file(root: str, path: str, is_domain=lambda path: "/domain/" in "/" + path,
+               shared_widgets: Optional[str] = None) -> List[Dict]:
     try:
         with open(os.path.join(root, path), encoding="utf-8") as fh:
             lines = fh.read().splitlines()
@@ -139,6 +144,12 @@ def check_file(root: str, path: str, is_domain=lambda path: "/domain/" in "/" + 
         if stripped.startswith("//") and not stripped.startswith("///") and BANNER.search(stripped):
             add("banner", i + 1, "decorative banner: extract or rename instead of separating sections with comments")
 
+    if shared_widgets and not is_domain(path) and path.startswith(shared_widgets.strip("/") + "/"):
+        for i, raw in enumerate(lines):
+            decl = PUBLIC_DECL.match(raw)
+            if decl and not has_doc(lines, i):
+                add("missing-doc", i + 1, "shared widget '%s' has no /// doc comment (what it renders, when to use it)" % decl.group(2))
+
     if is_domain(path):
         in_interface = False
         for i, raw in enumerate(lines):
@@ -164,6 +175,7 @@ def main(argv: List[str]) -> int:
     parser.add_argument("--files", nargs="*")
     parser.add_argument("--changed-from")
     parser.add_argument("--rules")
+    parser.add_argument("--shared-widgets", help="folder of shared widgets whose public classes need ///")
     parser.add_argument("--format", choices=["text", "json"], default="text")
     parser.add_argument("--no-fail", action="store_true")
     args = parser.parse_args(argv)
@@ -177,7 +189,7 @@ def main(argv: List[str]) -> int:
     files = [f for f in files if f.endswith(".dart") and not GENERATED.search("/" + f)]
     findings: List[Dict] = []
     for path in files:
-        findings.extend(check_file(root, path, is_domain))
+        findings.extend(check_file(root, path, is_domain, args.shared_widgets))
     if args.format == "json":
         print(json.dumps({"files": len(files), "findings": findings}, indent=2))
     else:
