@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// A centered message for a screen or region that has nothing to show.
+///
+/// Use it for the empty state; for a failure use [ErrorView].
 class EmptyView extends StatelessWidget {
   const EmptyView({
     super.key,

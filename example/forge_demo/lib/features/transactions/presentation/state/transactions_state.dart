@@ -85,6 +85,10 @@ final class TransactionsLoaded extends TransactionsState {
 
   bool get hasMore => nextPage != null;
 
+  /// Rows the list shows: the items plus one footer row while more can load or a load failed.
+  int get listLength =>
+      items.length + (hasMore || loadMore is LoadMoreFailed ? 1 : 0);
+
   TransactionsLoaded copyWith({
     List<Transaction>? items,
     int? Function()? nextPage,

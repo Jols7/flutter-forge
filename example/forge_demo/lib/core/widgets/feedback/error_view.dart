@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// A message with a retry button for a screen or region that failed to load.
+///
+/// Set `compact` to show it inline, for example under a list.
 class ErrorView extends StatelessWidget {
   const ErrorView({
     super.key,

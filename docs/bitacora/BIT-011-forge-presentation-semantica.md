@@ -204,3 +204,15 @@ plugin, ADR 0008 y entrada en `CHANGELOG`. Los hallazgos de la lista A a D queda
 fases 0 a 4, salvo lo diferido a propósito: `check_a11y.py` (hasta tener un proyecto con `a11y: on`),
 `forge_demo` sin cambios con `a11y` apagado, y `public_member_api_docs` como opción. Los umbrales de
 tamaño son empíricos (el style guide de Flutter no fija ninguno); recalibrar con más proyectos.
+
+## Recalibración de umbrales (2026-11-19, tras el cierre)
+Por decisión del usuario los umbrales pasan a ser objetivos estrictos y se nutrirán con más
+proyectos: `build()` 50 líneas, complejidad 5, archivo 250, anidamiento 12 (se propuso 10; con 10
+marcaba el 38 % de UnitedApp y `forge_demo` quedaba en su límite, porque la métrica cuenta la
+sangría de todo el archivo; una métrica solo dentro de `build()` permitiría endurecerlo).
+Con ellos, UnitedApp tiene avisos en 121 de 276 archivos (44 %) con anidamiento 10 y menos con 12:
+una auditoría completa no es viable en un proyecto desordenado, por eso en `adopt`/`improve` se usa
+`--changed-from`. **Decisión abierta:** si `build-lines` y `build-complexity` deben pasar a `warn` en
+esos modos, o si los valores estrictos son solo el default del modo `new`. `forge_demo` se
+refactorizó (`_LoadMoreOnScroll`, `_ListFooter`, `listLength`) para cumplirlos; 29 tests de Flutter
+y `flutter analyze` pasan.
