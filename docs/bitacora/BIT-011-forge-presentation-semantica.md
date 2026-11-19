@@ -195,5 +195,4 @@ pasando, una ADR y entrada en `CHANGELOG`.
   Complejidad ciclomática: sin script, la cubre DCM o la revisión (ver fase 2).
 - Fase 4 (2026-11-19): creados los 3 evals (`presentation-sealed-state-and-disposal`,
   `presentation-a11y-semantics`, `presentation-naming-and-structure`) con el formato de los
-  existentes. **No ejecutados**: cuestan sesiones reales y requieren `ANTHROPIC_API_KEY`
-  (workflow `evals.yml`, manual o semanal). `forge_demo` sin cambios (`a11y` apagado).
+  existentes. Ejecutados el 2026-11-19 con `claude plugin eval` (1 corrida por brazo, con y sin plugin, coste ~0,94 USD): `sealed-state` pasa con y sin plugin (1/1), `naming-and-structure` pasa con plugin (1) y falla sin él (0), `a11y-semantics` falló en la primera corrida por un criterio mío incorrecto (exigía marcar el tap target de `IconButton`, que ya cumple 48×48, y citar `accessibility.md` sin invocar la skill); lo corregí tras ver el fallo y la repetición pasó con plugin (1) y falló sin él (0). Una sola corrida por caso: indicio, no medida estable. `forge_demo` sin cambios (`a11y` apagado).
