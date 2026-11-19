@@ -1,7 +1,8 @@
 # Structure and naming inside `presentation/`
 
 Applies always (not tied to `a11y`). Numbers come from a read-only measurement of UnitedApp
-(275 presentation files) and `forge_demo` (10 files), 2026-11-19. Re-measure before tightening.
+(275 presentation files) and `forge_demo` (10 files), 2026-11-19. Re-measure before tightening. Flutter's own style guide sets no file-size limit, so the file, class
+and depth numbers are empirical, not an external standard.
 
 ## Names
 

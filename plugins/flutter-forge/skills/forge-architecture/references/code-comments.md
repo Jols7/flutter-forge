@@ -5,7 +5,10 @@ writing a comment, try to **rename or extract** first. A good name removes most 
 
 **Sources:** *Effective Dart: Documentation* (dart.dev/effective-dart/documentation, verified
 2026-11-19) for `///`, the one-sentence summary, the blank line and `[references]`. The Flutter
-style guide is also followed in spirit but **not yet verified** against its text (BIT-011).
+style guide (Style-guide-for-Flutter-repo, read 2026-11-19, first 100 000 of 103 336 characters)
+agrees: document public members, first paragraph one short self-contained sentence, avoid docs
+that restate the name, use `///` on private members only at public quality. It states no maximum
+file size.
 
 **Why English:** identifiers, the Dart/Flutter ecosystem, dartdoc output and the plugin's own
 rules are in English, so mixed-language code is avoided and any contributor can read it. A

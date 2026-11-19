@@ -25,7 +25,8 @@ structure ready to implement it properly later.
 - **Sources adopted** (checked 2026-11-19): Flutter accessibility docs and `flutter_test`
   guidelines; WCAG 2.2 SC 2.5.8 (24×24 CSS px, AA) and 1.4.4; Android 48 dp and iOS 44 pt tap
   targets; *Effective Dart: Documentation* (`///`, one-sentence summary, blank line, `[refs]`).
-  Still to verify when written: the Flutter style guide and the `flutter_test` guidelines page.
+  Flutter style guide read (no file-size limit, so size thresholds are empirical). The Apple HIG
+  page could not be read automatically: 44 pt rests on the Flutter docs.
 - **Code comments stay in English** (to be justified in `code-comments.md` in phase 2); `///` scope
   extends from `domain/` to `paths.shared_widgets`.
 

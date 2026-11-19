@@ -107,8 +107,7 @@ cuando `a11y: on`, salvo el primero)
 - [x] Definir el interruptor: nombre (`a11y`), valores, clave `accessibility.default` en
       `profile-schema.md` y quién lo lee (`requirements` → `deliver` → `blueprint`, `presentation`,
       `tests`, `audit`).
-- [ ] Verificar y fijar las fuentes (parcial 2026-11-19: Flutter a11y, Effective Dart Documentation y WCAG 2.5.8 verificadas; faltan style guide, página de testing de accesibilidad, WCAG 1.4.4 y guías Android/iOS): guía de accesibilidad de Flutter, `flutter_test` guidelines,
-      WCAG 2.2 (2.5.8, 1.4.4), guías de tap target de Android e iOS, *Effective Dart* y style guide.
+- [x] Verificar y fijar las fuentes (2026-11-19). Verificadas: guía de accesibilidad y página *Accessibility testing* de Flutter (48/44, guidelines, `ensureSemantics`), WCAG 2.5.8 y 1.4.4, *Effective Dart*, style guide de Flutter (sin límite de tamaño de archivo), principios de accesibilidad de Android. **Sin verificar:** Apple HIG (44 pt; página no legible automáticamente) y los tres puntos de abajo para revisión humana.
 - [x] ADR corto único: interruptor opt-in, fuentes adoptadas, comentarios en **inglés** (con su
       razón) y alcance de `///`.
 
