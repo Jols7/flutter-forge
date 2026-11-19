@@ -104,3 +104,6 @@
     referencia de estructura que remite aquí; la convención de keys se decide y aplica **solo en
     esta entrada**.
   - La columna "keys de prueba" del blueprint se diseña junto con la columna "a11y" de BIT-011.
+  - **Actualización 2026-11-19:** BIT-011 quedó cerrada (fases 0 a 4). La parte B ya no espera: la
+    columna "Semantics" ya existe en `blueprint-template.md` y `structure.md` deja un apartado de keys
+    que remite aquí.

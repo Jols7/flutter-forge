@@ -6,7 +6,37 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- **Accessibility is opt-in** (BIT-011, ADR 0008). A new switch `a11y: off | on` is set in the brief
+  (`forge-requirements`, field in the story template) or inherited from `accessibility.default` in
+  the profile (default `off`), and `forge-deliver` passes it to blueprint, presentation, tests and
+  audit. With `off` no skill requires or reports semantics. Behavior change: runs that used to get
+  accessibility findings by default no longer do; set `accessibility.default: on` to keep them.
+  Test keys for Patrol (BIT-012) do not depend on it.
+- `forge-presentation`: `references/accessibility.md` is now the single source of truth (loaded only
+  with `a11y: on`; `page-patterns.md` and `SKILL.md` point to it). Shorter `description`, a Riverpod
+  2.x template, and the check step runs `check_presentation.py`.
+- `forge-audit` checklist §10, `flutter-reviewer`, `forge-tests` (widget tests need
+  `ensureSemantics()`, both tap-target guidelines and a text-scale test that checks visible content),
+  `design-template.md` (Semantics section) and `blueprint-template.md` (Semantics column) apply
+  accessibility only with `a11y: on`.
+- `code-comments.md` cites *Effective Dart* and the Flutter style guide, explains why comments are in
+  English and adds a `///` writing guide with good and bad examples per layer.
+
 ### Added
+- `forge-presentation/references/structure.md`: naming (`XPage`, `XTile`, `XCard`, `XSection`,
+  `snake_case` files), folder skeleton, extract/promote rules and size thresholds measured on a real
+  app (file 300 lines, 3 classes, nesting 20, `build()` 120 lines and cyclomatic complexity 10).
+- `forge-audit/scripts/check_presentation.py`: counts and matches size, approximate `build()`
+  complexity, naming, `_buildX()` helpers, hardcoded colors/fonts, service locators in presentation
+  and navigation inside state managers. `finding` fails the run; `warn` does not. Six unit tests.
+- `check_comments.py --shared-widgets`: public classes in the shared widgets folder need `///`.
+- Profile keys: `accessibility.default`, `quality.max_build_complexity`, `max_file_lines`,
+  `max_classes_per_file`, `max_widget_depth`, `public_member_api_docs`.
+- ADR 0008 (accessibility opt-in).
+- Evals for `forge-presentation` (BIT-011): `presentation-sealed-state-and-disposal`,
+  `presentation-a11y-semantics` (off requires nothing, on does) and
+  `presentation-naming-and-structure`.
 - Evals for `forge-metrics` (BIT-008): `metrics-interpret-run` (report from a script digest: API-price
   wording, estimated split, no savings without a baseline, sessions to confirm) and
   `metrics-incomplete-no-invention` (an `INCOMPLETE` run never gets an invented total).
