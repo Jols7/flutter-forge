@@ -69,7 +69,7 @@ Assumptions are recorded, and only blocking gaps stop the run.
 | `forge-profile` | Detects the stack and architecture; asks whether to adopt, improve or migrate; writes the profile |
 | `forge-architecture` | Clean and Layered presets for BLoC, Riverpod and Provider; machine-checked layer rules; `Result`/`AppFailure` |
 | `forge-requirements` | Reads a story (file, issue, Drive, paste) or drafts one (INVEST + Gherkin); writes the brief and the gaps |
-| `forge-figma` | Figma MCP with the cheapest calls first; tokens by name; native M3 widgets; widget catalog; CSS mode |
+| `forge-figma` | Figma → Flutter specification (`design.md`): responsive first, tokens by name and value, exact per-element measures, reference captures, widget catalog; modes feature, standalone, delta, verify and CSS |
 | `forge-api-contract` | Postman v2.1, v3, cloud (CLI/MCP), OpenAPI or pasted JSON → schemas, nullability, redacted fixtures |
 | `forge-blueprint` | Every class of the feature, the screen-value → DTO trace, and a test plan mapped to ACs |
 | `forge-data-layer` | Entities, contracts, DTOs, mappers, data sources, repositories, the `guard()` helper, mock-first networking |

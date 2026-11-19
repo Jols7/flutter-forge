@@ -92,6 +92,10 @@ design:
   spacing: null                            # e.g. AppSpacing (lib/core/theme/app_spacing.dart)
   scaffold_widget: null                    # project scaffold to use instead of Scaffold
   widget_catalog: docs/widget-catalog.md
+  screenshots: local                       # local (refs/ ignored by git) | commit — reference captures of forge-figma
+  fidelity:                                # optional overrides of forge-figma/references/fidelity.md § 2
+    alignment_offset_dp: 8                 # accepted absolute offset of an aligned element
+    visual_extent_dp: 4                    # accepted gap between Figma's frame and the painted shape
 
 requirements:
   template: default                        # default (hu-v1) | path to a template (.flutter-forge/templates/hu.md);

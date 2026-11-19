@@ -1,8 +1,8 @@
 # BIT-013 · Fidelidad visual frente a Figma: diferencias de maquetación
 
-> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md)
+> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-009](BIT-009-modelo-y-esfuerzo.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md)
 
-- **Tipo:** auditoría, mejora · **Estado:** pendiente · **Alta:** 2026-11-19
+- **Tipo:** auditoría, mejora · **Estado:** en curso (fase 0 hecha, fase 1 en la rama `feat/bit-013-figma-fidelidad`; ADR [0009](../adr/0009-visual-fidelity-responsive-first.md)) · **Alta:** 2026-11-19
 - **Origen:** informe de solo lectura (2026-11-19) sobre diferencias de maquetación entre el diseño
   de Figma y el código generado, en la cadena `forge-figma` → `forge-presentation`. No se tocó
   código. **No es alcance de `forge-presentation`**: nace en cómo se traduce y se verifica el
@@ -144,3 +144,32 @@ neutro. Una sola corrida, un solo nodo, sin estados.
   la fase de `forge-presentation` (aplanar columnas, ignorar medidas), que **no se repitió** aquí.
 - Si tras la fase 1 la presentación con Sonnet sigue divergiendo con la misma especificación, se deriva a BIT-009
   con esa evidencia. Hasta entonces BIT-009 no cambia.
+
+## Fase 1 · `forge-figma` (2026-11-19, rama `feat/bit-013-figma-fidelidad`)
+
+**Hecho:** `references/fidelity.md` (prioridad, tolerancia inicial, políticas, veredicto, capturas) y
+`references/modes.md` (feature, standalone, delta, verify, css; con o sin HU; con o sin `forge-deliver`);
+`SKILL.md` reescrito y con `description` más corta; `design-template.md` como especificación (valor del
+token, gaps con valor / más cercano / diferencia / quién decide, medidas por elemento, comportamiento
+responsivo, referencias, veredicto); `figma-mapping.md` y `css-mode.md` sin "quitar anchos" y con gaps
+anidados; claves opcionales `design.screenshots` y `design.fidelity.*` en `profile-schema.md`;
+`scripts/theme_tokens.py` y `scripts/lint_design.py` con 16 tests (112 en total); 5 evals; ADR 0009 y
+`CHANGELOG`. BIT-009 enlazada en ambos sentidos.
+
+**Evals** (`claude plugin eval`, con y sin plugin, 1 corrida por brazo salvo donde se indica; indicio, no medida
+estable; coste total ≈ 4,0 USD con las tres rondas):
+- Primera ronda: 0/5 en ambos brazos. Las respuestas eran buenas; fallaron mis criterios (exigían artefactos
+  propios de la skill) y la skill no se invocaba. Corregido: criterios de tres puntos de comportamiento,
+  prompts que nombran `forge-figma` y un grader `skill-used` por caso.
+- Segunda ronda con el plugin: `figma-standalone-delta` pasa (sin plugin: 0), `figma-material-component-measures`
+  y `figma-missing-token-gap` pasan (sin plugin también pasan), `figma-responsive-priority` pasa en criterios
+  (sin plugin también; la skill no se invocó) y `figma-fixed-width-mapping` falló por un criterio incoherente con
+  el prompt (la paleta no traía `onPrimaryContainer`). Corregido y repetido 2 veces: con plugin 2/2, sin plugin 0/2.
+- **Lectura honesta:** discriminan bien `standalone-delta` y `fixed-width-mapping`; los otros tres los resuelve
+  también el modelo sin plugin, así que miden poco. `responsive-priority` no dispara la skill. Pendiente:
+  endurecerlos con casos que dependan de las reglas propias (veredicto, tabla de gaps con quién decide) y
+  repetir con más corridas.
+
+**Pendiente de la fase 1:** ninguna capacidad nueva. La verificación con Figma MCP real de los modos
+standalone y delta (corrida completa sobre la pantalla UNITED) queda para después de la fase 2, cuando
+`forge-presentation` pueda aplicar un `delta.md`.
