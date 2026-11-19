@@ -4,6 +4,6 @@ weight: 3
 ---
 
 The answer separates the two scenarios:
-- **Scenario A (`a11y: off`)**: reports no accessibility or semantics findings (no tooltip, label, tap-target or color-only remark as a requirement). It may mention, once, how to turn the rules on (`a11y: on` in the brief or `accessibility.default: on` in the profile).
-- **Scenario B (`a11y: on`)**: flags the `IconButton` without `tooltip`/label, the 48×48 (Android) / 44×44 (iOS) tap target, the status shown by color only (red/green amount without sign or icon), the composite tile that should be merged for screen readers, and the amount that is not localized. It points to `references/accessibility.md` as the rule source and, for tests, asks for `tester.ensureSemantics()` before `meetsGuideline`.
+- **Scenario A (`a11y: off`)**: reports no accessibility or semantics findings (no tooltip, label, tap-target, contrast or color-only remark presented as a requirement). It may mention, once, how to turn the rules on. Non-accessibility findings (logic, money formatting, hardcoded colors) are fine.
+- **Scenario B (`a11y: on`)**: adds accessibility findings: the `IconButton` without `tooltip`/semantic label, the status shown by color only (red/green amount without sign or icon), and the row that should read as one item (merged semantics) with a localized amount. It must not claim that the `IconButton` violates the 48×48 tap target, because the default already meets it.
 - It does not invent an accessibility requirement in scenario A.
