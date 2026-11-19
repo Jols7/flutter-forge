@@ -121,7 +121,11 @@ finding only when it meets the confidence bar.
 - Are tests deterministic: no real network or clock, `fakeAsync` for timers, no sleeps?
 - Does coverage of new domain/data code meet `testing.coverage_min`?
 
-## 10. Accessibility
+## 10. Accessibility (only when `a11y: on`)
+
+Skip this section entirely when the run's `a11y` is `off` (brief, else `accessibility.default`);
+do not report accessibility findings. When `on`, the rules and thresholds are in
+`../../forge-presentation/references/accessibility.md`; judge against them:
 
 - Do icon-only buttons have a tooltip or semantic label?
 - Are tap targets at least 48×48?

@@ -63,6 +63,7 @@ person who owns the story, never by the agent.
 - How the entry condition is obtained, i.e. which existing state or repository already knows it.
 - Copy for every error state the story mentions without text.
 - Design tokens that don't exist in the project theme.
+- Whether accessibility is required (`a11y: on | off`). Ask once if the story or requirements say nothing and the profile default is unclear; never turn it on silently.
 
 ## Mock data is not data
 

@@ -7,7 +7,7 @@
 | **critical** | Wrong behavior, data loss, security exposure or crash on a normal path | DTO non-nullable for a nullable field on a main screen; emitting after close in a loop; money parsed as `int`; layer violation that leaks secrets/tokens to UI; prod mocks enabled | block |
 | **high** | Breaks the architecture contract or a likely bug on a less common path | DTO used in presentation; repository throws strings / swallows errors; state manager resolving from service locator (untestable); missing disposal of controllers/timers; AC without implementation; uncaught failure type in an exhaustive flow | block |
 | **medium** | Maintainability or UX debt that will cost soon | bag-of-booleans state; duplicated widget; `build` > `quality.max_build_lines`; missing empty/error state; cross-feature import of data; flaky test pattern | notes |
-| **low** | Local polish with low risk | missing `const`; non-descriptive name; minor a11y label | notes |
+| **low** | Local polish with low risk | missing `const`; non-descriptive name; minor a11y label (only when `a11y: on`) | notes |
 | **improvement** | `improve` mode upgrades of legacy patterns in new code (never blocking) | new repository method could return `Result` | notes |
 
 The automated checks map to severities like this:

@@ -5,6 +5,7 @@ Under ~80 lines. Content is in `requirements.language`, and ids are neutral.
 ```markdown
 # Brief — <Feature name>
 Source: <story path/link/issue> · Status: <draft | approved YYYY-MM-DD> · Run: <slug>
+a11y: <off | on> (from the story or requirements; else `accessibility.default`)
 
 ## Scope
 Feature folder: <paths.features>/<slug>/

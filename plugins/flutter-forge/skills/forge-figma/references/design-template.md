@@ -37,6 +37,12 @@ Bottom: AppPrimaryButton("Transferir"), disabled until valid
 | preview loading | 12:410 | 3-line skeleton inside the card |
 | preview error | 12:420 | inline error + "Reintentar" |
 
+## Semantics (only when `a11y: on`)
+Omit this section when `off`. Labels per icon-only control, reading order, heading nodes, alt text
+for meaningful images; rules in `forge-presentation/references/accessibility.md`.
+| Component | Label / alt text | Role | Reading order |
+|---|---|---|---|
+
 ## Assets
 | Asset | Source node | Path | Variants |
 |---|---|---|---|
