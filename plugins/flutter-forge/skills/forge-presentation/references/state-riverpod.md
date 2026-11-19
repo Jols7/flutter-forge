@@ -36,6 +36,30 @@ class TransactionsNotifier extends AsyncNotifier<Paginated<Transaction>> {
 `AsyncValue` already models loading, error and data. Add a sealed state only when the screen
 has more states than that: empty, pagination, or several regions.
 
+### Riverpod 2.x variant
+
+```dart
+final transactionsProvider = AsyncNotifierProvider.family<TransactionsNotifier,
+    Paginated<Transaction>, String>(TransactionsNotifier.new);
+
+class TransactionsNotifier extends FamilyAsyncNotifier<Paginated<Transaction>, String> {
+  @override
+  Future<Paginated<Transaction>> build(String accountId) async {
+    final result = await ref.watch(transactionsRepositoryProvider).getTransactions(accountId: accountId);
+    return switch (result) {
+      Success(:final value) => value,
+      Failure(:final failure) => throw failure,
+    };
+  }
+
+  Future<void> retry() async => ref.invalidateSelf();
+}
+```
+
+The argument arrives in `build(arg)`, not the constructor. 2.x has no `ref.mounted`: keep the work
+inside `build` where possible, and for work after an `await` outside it, guard with a flag set in
+`ref.onDispose`. Verify against the installed 2.x version.
+
 ## Page
 
 ```dart

@@ -109,17 +109,9 @@ transformer instead.
 - Give items a stable `Key` (`ValueKey(item.id)`) when they can be reordered or removed.
 - Pull to refresh keeps the current data while refreshing.
 
-## Accessibility (checked by forge-audit)
+## Accessibility (opt-in)
 
-- Icon-only buttons get a `tooltip:` or `Semantics(label:)`.
-- Tap targets are at least 48×48 (`MaterialTapTargetSize.padded`, `minimumSize`).
-- The layout survives `textScaler` at 2.0: no fixed heights around text; use `Flexible` or
-  `Wrap`.
-- Status is never shown by color alone. Pair red and green amounts with a sign or an icon.
-- `ExcludeSemantics` on decorative images. `MergeSemantics` on composite tiles, so they read
-  as one item.
-- Errors are announced. Inline error text sits next to its field (`InputDecoration.errorText`
-  does this).
+Only when `a11y: on`: see `accessibility.md`. With `off`, nothing here applies.
 
 ## Responsiveness and platform
 
