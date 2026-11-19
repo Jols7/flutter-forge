@@ -15,15 +15,17 @@ regardless of this switch (BIT-012).
 
 | Rule | Value | Source |
 |---|---|---|
-| Tap target, Android | 48×48 dp (`androidTapTargetGuideline`) | Material / Android guidance |
-| Tap target, iOS | 44×44 pt (`iOSTapTargetGuideline`) | Apple HIG |
+| Tap target, Android | 48×48 (`androidTapTargetGuideline`) | Flutter docs, Accessibility testing |
+| Tap target, iOS | 44×44 (`iOSTapTargetGuideline`) | Flutter docs, Accessibility testing |
 | Tap target, WCAG minimum | 24×24 CSS px, level AA | WCAG 2.2 SC 2.5.8 |
 | Text resize | usable at 200 % | WCAG 2.2 SC 1.4.4 |
 | Contrast | `textContrastGuideline` | `flutter_test` |
 | Labeled targets | `labeledTapTargetGuideline` | `flutter_test` |
 
-Flutter's own docs verified so far do not state the tap-target values; the platform sources above
-are authoritative. Re-verify before changing a number.
+Verified 2026-11-19 against the Flutter *Accessibility testing* page (48×48, 44×44, the four
+guidelines and `ensureSemantics()` in its snippet), WCAG 2.2 (2.5.8, 1.4.4) and the Android
+principles page (labels, merged groups, headings, cues other than color). The Apple HIG page could
+not be read automatically, so 44 pt rests on the Flutter docs. Re-verify before changing a number.
 
 ## Rules
 
