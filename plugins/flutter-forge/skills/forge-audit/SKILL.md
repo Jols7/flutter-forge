@@ -1,6 +1,6 @@
 ---
 name: forge-audit
-description: Audit Flutter/Dart code for architecture conformance, design quality, redundancy, best practices, performance, testing and accessibility, against the project's own preset and layer rules. Automated checks run first (analyzer, formatter, layer/import checker, DCM when available). Then come a checklist review and three design lenses (state modeling, responsibility boundaries, abstraction timing). Findings are ranked critical/high/medium/low/improvement, with file:line, why and fix, a confidence bar of 0.8 or more and a merge verdict. It never edits code itself. Security-only requests go to forge-security. Use it after implementing or before merging, when the user asks for a code review, "audita el código", "revisa la calidad", "busca redundancias", "valida la arquitectura", "code review del feature", or when forge-deliver reaches the review phase (usually inside the flutter-reviewer agent).
+description: Audit Flutter/Dart code for architecture conformance, design quality, redundancy, best practices, performance, testing and, when `a11y` is on, accessibility, against the project's own preset and layer rules. Automated checks run first (analyzer, formatter, layer/import checker, DCM when available). Then come a checklist review and three design lenses (state modeling, responsibility boundaries, abstraction timing). Findings are ranked critical/high/medium/low/improvement, with file:line, why and fix, a confidence bar of 0.8 or more and a merge verdict. It never edits code itself. Security-only requests go to forge-security. Use it after implementing or before merging, when the user asks for a code review, "audita el código", "revisa la calidad", "busca redundancias", "valida la arquitectura", "code review del feature", or when forge-deliver reaches the review phase (usually inside the flutter-reviewer agent).
 ---
 
 # forge-audit
@@ -55,7 +55,7 @@ The sections are:
 7. data layer
 8. performance
 9. testing
-10. accessibility
+10. accessibility (only when `a11y: on`)
 11. l10n
 12. navigation
 13. dependencies

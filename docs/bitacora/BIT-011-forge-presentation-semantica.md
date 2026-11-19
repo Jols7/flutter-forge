@@ -2,7 +2,7 @@
 
 > [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-001](BIT-001-l10n-localizacion.md), [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-004](BIT-004-skills-forge-health-y-upgrade.md), [BIT-009](BIT-009-modelo-y-esfuerzo.md), [BIT-010](BIT-010-linea-base-forge-metrics.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md), [BIT-013](BIT-013-fidelidad-visual-frente-a-figma.md)
 
-- **Tipo:** auditoría, mejora · **Estado:** en curso (fases 0, 1 y 2 hechas; fase 0 con fuentes pendientes; rama `feat/bit-011-presentation-a11y-optin`) · **Alta:** 2026-11-19
+- **Tipo:** auditoría, mejora · **Estado:** en curso (fases 0 a 3 hechas; fase 0 con fuentes pendientes; rama `feat/bit-011-presentation-a11y-optin`) · **Alta:** 2026-11-19
 - **Origen:** auditoría de solo lectura de `forge-presentation` (2026-11-19), contrastada con la
   documentación de Flutter (accesibilidad, `flutter_test` guidelines, `SemanticsService`), WCAG 2.2
   (SC 2.5.8 y 1.4.4), *Effective Dart* y el *Flutter style guide*. No se modificó código.
@@ -133,13 +133,13 @@ cuando `a11y: on`, salvo el primero)
       `--changed-from` de adopt.
 
 *Fase 3 · Pruebas y auditoría (medio; toca otras skills, coordinar con BIT-002)*
-- [ ] Hacer condicional a `a11y: on`: `checklist.md` §10, los guidelines de `widget-tests.md`
+- [x] Hacer condicional a `a11y: on`: `checklist.md` §10, los guidelines de `widget-tests.md`
       (con `ensureSemantics()` obligatorio, `iOSTapTargetGuideline` y una prueba de texto grande que
       compruebe contenido visible, no solo "sin excepción"), una sección de semántica en
       `design-template.md` y una columna en `blueprint-template.md`.
-- [ ] Añadir a `hu-template.md` el campo `a11y` (con su pregunta en la lista de brechas), para que
+- [x] Añadir a `hu-template.md` el campo `a11y` (con su pregunta en la lista de brechas), para que
       la HU o los requisitos puedan activarlo.
-- [ ] Evaluar `check_a11y.py` en `forge-audit`, **solo para `on`** (`IconButton` sin `tooltip`,
+- [x] Evaluar `check_a11y.py` en `forge-audit`, **solo para `on`** (`IconButton` sin `tooltip`,
       `Icon` sin etiqueta, `Image` sin `semanticLabel`/`excludeFromSemantics`) y un chequeo de
       nombres y tamaños; decidirlo con datos de falsos positivos.
 
@@ -183,3 +183,14 @@ pasando, una ADR y entrada en `CHANGELOG`.
   el inglés y trae guía de `///` con ejemplos por capa. `check_comments.py` acepta `--shared-widgets`
   (con test); `public_member_api_docs` y `max_build_complexity` quedan como claves del profile.
   El script de complejidad ciclomática no existe todavía: evaluarlo en la fase 3 junto a `check_a11y.py`.
+- Fase 3 (2026-11-19): `a11y` condiciona checklist §10, `flutter-reviewer`, `forge-audit` (SKILL y
+  severity), `widget-tests.md`, `forge-tests/SKILL.md`, `hu-template.md` (campo y NFR), `hu-to-brief.md`
+  (brecha), `brief-template.md`, `design-template.md` (sección Semantics), `blueprint-template.md`
+  (columna) y `forge-deliver` (paso 3, lo registra en `state.json`). Se incluyeron `flutter-reviewer`,
+  `forge-audit/SKILL.md` y `severity.md`, que la entrada no listaba.
+  Evaluación de scripts (solo lectura sobre UnitedApp, proyecto sin a11y): `check_a11y.py` marcaría
+  el 100 % de 32 `IconButton`, 141 `Icon` y 25 `Image`, así que no hay datos de falsos positivos
+  (todo es real o decorativo). **Decisión:** si se escribe, que solo marque `IconButton` sin `tooltip`
+  (preciso); `Icon` e `Image` se dejan a la revisión (muchos son decorativos dentro de botones
+  etiquetados). **No implementado**: se pospone hasta que un proyecto active `a11y` y haya datos.
+  Complejidad ciclomática: sin script, la cubre DCM o la revisión (ver fase 2).

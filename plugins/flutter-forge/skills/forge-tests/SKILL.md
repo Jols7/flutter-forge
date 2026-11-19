@@ -30,7 +30,7 @@ Mirror `lib/` in `test/`, one test file per class under test. Use the templates:
 | Repository impl | §Repositories | success → `Success(entity)`; each mapped status → its `AppFailure`; business codes → `BusinessFailure`; parsing error → `ParsingFailure`; offline/timeout → `NetworkFailure` |
 | Use case / validator | §Domain | each rule from the brief (R-n), boundaries (min − 0.01, min, max, max + 0.01) |
 | State manager | `references/state-tests.md` | initial state; load success/empty/failure; retry; pagination; debounce + stale discard; no emit after close; side effects |
-| Page / widget | `references/widget-tests.md` | one test per sealed state; interactions dispatch the right intent; inline errors; disabled submit; semantics on icon buttons |
+| Page / widget | `references/widget-tests.md` | one test per sealed state; interactions dispatch the right intent; inline errors; disabled submit; semantics only when `a11y: on` |
 
 Naming: `group('<Class>')` + `test('AC-3: shows the insufficient funds error under the amount',
 …)`. Use the AC or rule id when the test proves one, and plain behavior wording otherwise.

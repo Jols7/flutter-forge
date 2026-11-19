@@ -16,18 +16,23 @@ skill's rules.
 2. **Explain level.** `explain: none | brief | full` from the brief (default `brief`), per
    `references/explain.md`. Collect `why[]` and `review_points[]` as you go, and record each
    gate decision when it is taken, not at the end.
-3. **Phases.** All of them by default. A brief can request a subset, e.g. `phases: [contract,
+3. **Accessibility switch.** `a11y: off | on` comes from the brief (`forge-requirements` sets it
+   from the story or requirements); if absent, `accessibility.default` in the profile (default
+   `off`). Record it in `state.json` and pass it to blueprint, presentation, tests and audit.
+   With `off` no phase requires or reports semantics (ADR 0008). Test keys (BIT-012) are
+   independent of it.
+4. **Phases.** All of them by default. A brief can request a subset, e.g. `phases: [contract,
    blueprint]` or `[audit, security]`, and the phase table below says what each subset needs.
-4. **Profile.** If `.flutter-forge/profile.yaml` is missing, run `forge-profile` first.
-5. **Run folder.** The slug is the kebab-case feature name. In `.flutter-forge/runs/<slug>/`:
+5. **Profile.** If `.flutter-forge/profile.yaml` is missing, run `forge-profile` first.
+6. **Run folder.** The slug is the kebab-case feature name. In `.flutter-forge/runs/<slug>/`:
    - If `state.json` exists, **resume**. Read it, report the completed phases and the open
      gates, and continue from `next_phase`. Do not redo completed phases unless their inputs
      changed (for example, a new story version or a new contract).
    - Otherwise, create `state.json` from `references/run-state.md`.
-6. **Baseline (new runs, optional).** Take `baseline_estimate_hours` from the brief. In
+7. **Baseline (new runs, optional).** Take `baseline_estimate_hours` from the brief. In
    interactive mode, if it is missing, ask once how many hours the work would take without the
    agent, and accept "no sé". Record it in `state.json` before the first phase. Never infer it.
-7. If `.flutter-forge/overlays/forge-deliver.md` exists, read it; its rules win. Examples: phases
+8. If `.flutter-forge/overlays/forge-deliver.md` exists, read it; its rules win. Examples: phases
    to skip, extra gates, or the report language.
 
 ## Phases

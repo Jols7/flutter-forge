@@ -44,10 +44,12 @@ Intents: selectDestination, amountChanged (local validation → debounce 300 ms 
 Side effects: succeeded → navigate to receipt; BusinessFailure(INSUFFICIENT_FUNDS) → inline error on amount (AC-5)
 
 ## Widgets (reuse ladder)
-| Design component | Decision | Path |
-|---|---|---|
-| Amount input | extend `AppAmountField` (+ `errorText`) | lib/core/widgets/inputs/app_amount_field.dart |
-| Account selector tile | create (feature-local) | lib/features/transfers/presentation/widgets/account_option_tile.dart |
+| Design component | Decision | Path | Semantics (only `a11y: on`) |
+|---|---|---|---|
+| Amount input | extend `AppAmountField` (+ `errorText`) | lib/core/widgets/inputs/app_amount_field.dart | label from l10n `amountFieldLabel` |
+| Account selector tile | create (feature-local) | lib/features/transfers/presentation/widgets/account_option_tile.dart | `MergeSemantics`, selected state |
+
+Drop the Semantics column when `a11y` is `off`. A "test keys" column (BIT-012) is designed with it.
 
 ## Routes and DI
 - Route `/transfers/new` → `BlocProvider(create: (_) => getIt<TransferCubit>(param1: fromAccountId))`

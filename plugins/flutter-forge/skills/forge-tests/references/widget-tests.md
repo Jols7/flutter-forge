@@ -62,10 +62,12 @@ A fake extends the ViewModel with a settable `state` and calls `notifyListeners`
 - Prefer `find.byType(WidgetClass)`, then `find.text(<ARB text>)`, then
   `find.byKey(const Key('transfer_submit'))`. Add keys to the app only when a finder is
   ambiguous, and mention it in the report.
-- Assert user-visible outcomes (text, enabled state, semantics), not private widget
+- Assert user-visible outcomes (text, enabled state), not private widget
   internals.
 - Disabled button: `expect(tester.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNull)`.
-- Accessibility smoke: `expect(tester, meetsGuideline(androidTapTargetGuideline))`,
-  `labeledTapTargetGuideline` and `textContrastGuideline` on new pages.
-- Text scale smoke: pump with `MediaQuery(data: MediaQueryData(textScaler: TextScaler.linear(2)), …)`
-  and expect no overflow exceptions (`tester.takeException()` is null).
+- Accessibility and text-scale tests: **only when the run's `a11y` is `on`**. With `off`, write
+  none and assert nothing about semantics. When `on`, follow
+  `../../forge-presentation/references/accessibility.md` § Tests: `tester.ensureSemantics()`
+  before any `meetsGuideline`, both tap-target guidelines, `labeledTapTargetGuideline`,
+  `textContrastGuideline`, and a 2.0 text-scale test that asserts the content is still visible
+  (not only that `tester.takeException()` is null).
