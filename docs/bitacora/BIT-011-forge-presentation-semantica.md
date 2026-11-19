@@ -212,7 +212,8 @@ marcaba el 38 % de UnitedApp y `forge_demo` quedaba en su límite, porque la mé
 sangría de todo el archivo; una métrica solo dentro de `build()` permitiría endurecerlo).
 Con ellos, UnitedApp tiene avisos en 121 de 276 archivos (44 %) con anidamiento 10 y menos con 12:
 una auditoría completa no es viable en un proyecto desordenado, por eso en `adopt`/`improve` se usa
-`--changed-from`. **Decisión abierta:** si `build-lines` y `build-complexity` deben pasar a `warn` en
-esos modos, o si los valores estrictos son solo el default del modo `new`. `forge_demo` se
+`--changed-from`. **Decisión (2026-11-19):** en `adopt`/`improve` `build-lines` y `build-complexity` son `warn` y los
+defaults vuelven a los valores holgados (120 / 10 / 300 / 20); los estrictos son el default de `new`.
+El profile siempre manda. Implementado con `--mode` o `architecture.mode` (2 tests nuevos). `forge_demo` se
 refactorizó (`_LoadMoreOnScroll`, `_ListFooter`, `listLength`) para cumplirlos; 29 tests de Flutter
 y `flutter analyze` pasan.

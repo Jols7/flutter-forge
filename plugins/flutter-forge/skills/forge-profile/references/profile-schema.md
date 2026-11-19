@@ -126,6 +126,8 @@ quality:
   analyze_command: flutter analyze
   format_command: dart format --output=none --set-exit-if-changed lib test
   dcm: false                               # Dart Code Metrics available
+  # Size limits below are the defaults for `mode: new`. With `adopt`/`improve` they default to the looser
+  # 120 / 10 / 300 / 20 (build lines / complexity / file / depth) and build size is a warning, not a finding.
   max_build_lines: 50                      # build() size before it is a finding
   max_file_lines: 250                      # presentation file size (warn)
   max_classes_per_file: 3                  # presentation file (warn; state/ exempt)

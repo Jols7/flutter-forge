@@ -3,15 +3,18 @@
 
 Usage: check_presentation.py [--root PROJECT] [--files F ...] [--changed-from REF] [--profile PROFILE.yaml]
                              [--max-build-lines N] [--max-build-complexity N] [--max-file-lines N]
-                             [--max-classes N] [--max-depth N] [--ui-helpers allow|forbid]
+                             [--max-classes N] [--max-depth N] [--ui-helpers allow|forbid] [--mode new|adopt|improve]
                              [--format text|json] [--no-fail]
 
 Thresholds come from flags, else from `quality.*` / `architecture.ui_helpers` in --profile, else
 the defaults below (deliberately strict targets; see forge-presentation/references/structure.md).
+In `adopt` and `improve` mode (flag or `architecture.mode`) the defaults are the looser LEGACY
+numbers (build 120 lines / complexity 10, file 300, depth 20) and build-lines and build-complexity
+are warnings, so an existing app is not failed wholesale. Values set in the profile always win.
 Scope: files under presentation/, pages/, widgets/, screens/ or state/ (generated code skipped).
 
-  build-lines        build() longer than max_build_lines                          [finding]
-  build-complexity   build() cyclomatic complexity above max_build_complexity     [finding]
+  build-lines        build() longer than max_build_lines                          [finding; warn in adopt/improve]
+  build-complexity   build() cyclomatic complexity above max_build_complexity     [finding; warn in adopt/improve]
                      APPROXIMATE (regex, no Dart parser): counts if, for, while, case, catch,
                      &&, ||, ?? and ternaries. Prefer DCM's number when quality.dcm is true.
   file-lines         file longer than max_file_lines                              [warn]
@@ -40,6 +43,9 @@ GENERATED = re.compile(r"(\.g|\.freezed|\.gr|\.config|\.mocks)\.dart$|/generated
 IN_SCOPE = re.compile(r"/(presentation|pages|widgets|screens|state)/")
 DEFAULTS = {"max_build_lines": 50, "max_build_complexity": 5, "max_file_lines": 250,
             "max_classes": 3, "max_depth": 12, "ui_helpers": "allow"}
+# adopt/improve: an existing app is measured against looser numbers and its size findings are warnings
+LEGACY = {"max_build_lines": 120, "max_build_complexity": 10, "max_file_lines": 300,
+          "max_classes": 3, "max_depth": 20}
 PROFILE_KEYS = {"max_build_lines": "max_build_lines", "max_build_complexity": "max_build_complexity",
                 "max_file_lines": "max_file_lines", "max_classes": "max_classes_per_file",
                 "max_depth": "max_widget_depth", "ui_helpers": "ui_helpers"}
@@ -67,6 +73,9 @@ def read_profile(path: Optional[str]) -> Dict[str, object]:
         return out
     with open(path, encoding="utf-8") as fh:
         text = fh.read()
+    m = re.search(r"^\s*mode:\s*(new|adopt|improve|migrate)\b", text, re.M)
+    if m:
+        out["mode"] = m.group(1)
     for name, key in PROFILE_KEYS.items():
         m = re.search(r"^\s*%s:\s*([\w]+)" % re.escape(key), text, re.M)
         if m:
@@ -94,6 +103,8 @@ def build_methods(clean: str):
 
 
 def check_file(root: str, path: str, cfg: Dict[str, object]) -> List[Dict]:
+    legacy = cfg.get("mode") in ("adopt", "improve")
+    size_severity = "warn" if legacy else "finding"
     try:
         with open(os.path.join(root, path), encoding="utf-8") as fh:
             raw = fh.read()
@@ -111,10 +122,10 @@ def check_file(root: str, path: str, cfg: Dict[str, object]) -> List[Dict]:
     for start, end, body in build_methods(clean):
         n = end - start + 1
         if n > cfg["max_build_lines"]:
-            add("build-lines", start, "finding", "build() is %d lines (max %d): extract widgets" % (n, cfg["max_build_lines"]))
+            add("build-lines", start, size_severity, "build() is %d lines (max %d): extract widgets" % (n, cfg["max_build_lines"]))
         cc = 1 + len(BRANCH.findall(body))
         if cc > cfg["max_build_complexity"]:
-            add("build-complexity", start, "finding",
+            add("build-complexity", start, size_severity,
                 "build() complexity ~%d (max %d, approximate): move logic into the state or a mapper" % (cc, cfg["max_build_complexity"]))
     if len(lines) > cfg["max_file_lines"]:
         add("file-lines", 1, "warn", "%d lines (max %d): split by section" % (len(lines), cfg["max_file_lines"]))
@@ -163,13 +174,20 @@ def main(argv: List[str]) -> int:
     p.add_argument("--profile")
     for k in ("max-build-lines", "max-build-complexity", "max-file-lines", "max-classes", "max-depth"):
         p.add_argument("--" + k, type=int)
+    p.add_argument("--mode", choices=["new", "adopt", "improve", "migrate"],
+                   help="architecture mode; default from --profile, else new")
     p.add_argument("--ui-helpers", choices=["allow", "forbid"])
     p.add_argument("--format", choices=["text", "json"], default="text")
     p.add_argument("--no-fail", action="store_true")
     a = p.parse_args(argv)
     root = os.path.abspath(a.root)
+    prof = read_profile(a.profile)
+    mode = a.mode or prof.get("mode") or "new"
     cfg = dict(DEFAULTS)
-    cfg.update(read_profile(a.profile))
+    if mode in ("adopt", "improve"):
+        cfg.update(LEGACY)
+    cfg.update({k: v for k, v in prof.items() if k != "mode"})
+    cfg["mode"] = mode
     for k in DEFAULTS:
         v = getattr(a, k)
         if v is not None:

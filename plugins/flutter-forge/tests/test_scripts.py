@@ -389,6 +389,28 @@ class CheckPresentationTest(unittest.TestCase):
         self.assertEqual([f["kind"] for f in found], ["classes-per-file"])
         self.assertEqual(out.returncode, 0)
 
+    def test_adopt_mode_uses_looser_numbers_and_warns(self):
+        body = "class A { Widget build(BuildContext c) {\n" + "  x();\n" * 60 + "} }\n"
+        files = {"lib/f/presentation/widgets/a.dart": body}
+        out, found = self._check(files)
+        self.assertEqual([(f["kind"], f["severity"]) for f in found], [("build-lines", "finding")])
+        self.assertEqual(out.returncode, 1)
+        out, found = self._check(files, "--mode", "adopt")
+        self.assertEqual(found, [])                      # 60 lines is under the legacy 120
+        out, found = self._check(files, "--mode", "improve", "--max-build-lines", "50")
+        self.assertEqual([(f["kind"], f["severity"]) for f in found], [("build-lines", "warn")])
+        self.assertEqual(out.returncode, 0)
+
+    def test_mode_comes_from_the_profile(self):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        prof = os.path.join(tmp, "p.yaml")
+        with open(prof, "w") as fh:
+            fh.write("architecture:\n  mode: adopt\n")
+        out, found = self._check({"lib/f/presentation/widgets/a.dart": "class A { Widget build(BuildContext c) {\n" + "  x();\n" * 60 + "} }\n"},
+                                 "--profile", prof)
+        self.assertEqual(found, [])
+
     def test_profile_sets_thresholds(self):
         tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, tmp)
