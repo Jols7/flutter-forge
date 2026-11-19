@@ -85,7 +85,7 @@ nothing in widget trees that the code already says. `///` goes on shared widgets
 
 ## Step 4 — Verify
 
-Run `quality.analyze_command` until it is clean. Widget and state tests come from
+Run `quality.analyze_command` until it is clean. Then run `../forge-audit/scripts/check_presentation.py` on the files you wrote and fix its findings. Widget and state tests come from
 `forge-tests`. When this skill runs alone, offer to run it next.
 
 ## Anti-patterns

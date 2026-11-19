@@ -18,6 +18,12 @@ The automated checks map to severities like this:
   - `layer` → high;
   - `cross-feature` → medium.
 
+`check_presentation.py` severities map as follows (the script marks them `finding` or `warn`):
+- `build-lines`, `build-complexity` → medium; `ui-helper`, `hardcoded-style` → medium;
+- `locator-in-ui`, `navigation-in-state` → high in new code, low in legacy files in adopt mode;
+- `file-lines`, `classes-per-file`, `nesting-depth`, `file-name` (`warn`) → low.
+Complexity is approximate: confirm with DCM or by reading the method before reporting it.
+
 `check_comments.py` findings map to these severities:
 - `commented-out-code` → medium;
 - `todo-without-ref` → low;

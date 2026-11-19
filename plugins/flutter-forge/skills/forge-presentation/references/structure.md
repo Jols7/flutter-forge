@@ -48,9 +48,8 @@ A long page may group `widgets/<page_name>/` subfolders by section. Shared widge
 | Classes per file | p95 2, max 7 | 1 public + private helpers; more than 3 | warn |
 | Indent depth (2-space levels) | p90 15, p95 18, max 25 | 20 | warn; extract a widget |
 
-`forge_demo` stays well below all of them (max file 108, max `build` 38). Nothing enforces file
-size, class count, depth or names yet: they are guidance until a script checks them (BIT-011
-phase 3).
+`forge_demo` stays well below all of them (max file 108, max `build` 38). `forge-audit/scripts/check_presentation.py` checks these
+numbers and the naming rules; complexity is approximate.
 
 ## Keys for tests
 
