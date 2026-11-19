@@ -238,3 +238,29 @@ El estado cargando salió `pass-with-accepted`. Corrección a la tabla de la fas
 
 **Pendiente:** repetir la presentación (no solo el diseño) con Sonnet aplicando ese `delta.md` para decidir si
 BIT-009 recibe evidencia; cerrar la fase de decisión de umbrales con más proyectos.
+
+## Prueba de la fase de presentación con Sonnet (2026-11-19)
+
+Un agente Sonnet 5.5 siguió `forge-presentation` (con `responsive.md`) y aplicó el `delta.md` al código de UNITED
+(worktree `UnitedApp-bit013`, cambios sin commit en 4 archivos: página, tarjeta, barra de niveles y `AmountInput`
+con parámetros opcionales de default igual al anterior). Verificado por mí: `flutter analyze` limpio, 100 tests
+del simulador y widgets pasan, y la sonda responsiva pasa de **23 a 0** combinaciones con overflow (54/54), incluido
+`big-amounts` a 320 dp y escala 2.0. La jerarquía anidada quedó con sus gaps (24 / 16 / 4) y los anchos fijos se
+volvieron fracciones. Una sola corrida: indicio, no medida.
+
+**Lectura para BIT-009:** con una especificación explícita, Sonnet 5.5 aplicó bien la fase de presentación; no hay
+evidencia de que el modelo, y no el contrato, explique las discrepancias de otras sesiones. BIT-009 no cambia.
+
+**Faltas del delta (recall):** el `delta.md` no listó la diferencia importe↔divisa (gap 8 alineado abajo), que sí
+estaba en `design.md`; el agente de presentación la encontró al contrastar. Corregido en `modes.md`: recorrer la
+tabla de Medidas fila por fila y terminar con "filas revisadas N · diferencias M".
+
+**Fricciones y correcciones:** alineación en palabras de Flutter (no "bottom"), un solo número por celda (rangos e
+insets se resuelven y se marcan `[inferido]`), una regla por fila en Responsive behavior (sin alternativas), la
+fracción indica su referencia, el árbol y la tabla son normativos, formato solo con `quality.format_command`, y
+nombrar la extensión de un widget compartido en el informe. **Fuera del plugin:** el `Divider` transparente por el
+tema de la página es una regla de UNITED (va en su overlay `forge-presentation`).
+
+**Residuo:** `check_responsive.py` sigue marcando `ammount_input.dart:98` (el código de divisa junto al `Flexible`):
+falso positivo probable por texto corto; si se repite en otros proyectos, valorar una excepción para `Text` de
+longitud acotada. La sonda no ejercita el campo de entrada (el `TextField` desplaza internamente).

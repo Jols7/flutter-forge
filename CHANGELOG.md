@@ -23,6 +23,12 @@ All notable changes to this project are documented here. The format follows
 - `code-comments.md` cites *Effective Dart* and the Flutter style guide, explains why comments are in
   English and adds a `///` writing guide with good and bad examples per layer.
 
+### Changed (BIT-013, presentation run)
+- After applying a `delta.md` to a real screen with `forge-presentation`: Measures hold one number per cell and
+  Flutter alignment words, Responsive behavior one rule per row with the fraction's reference, the delta walks
+  the Measures table row by row, `forge-presentation` formats with the project's command and names shared-widget
+  extensions in the report.
+
 ### Changed (BIT-013, real-Figma validation)
 - `forge-figma` after an end-to-end run on a real screen (standalone + delta): colors with no token
   (`fidelity.md` § 8), screenshot size, tie and font-family policies, `Spacing` column and `Source` in

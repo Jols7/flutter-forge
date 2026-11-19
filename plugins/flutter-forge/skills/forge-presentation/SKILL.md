@@ -53,7 +53,8 @@ domain, and widgets get state. Nothing in this layer knows about HTTP or JSON.
 - **Reuse ladder** for every component in `design.md`:
   1. exact match → reuse it;
   2. close match → extend it with an **optional** parameter whose default keeps the old
-     behavior;
+     behavior (name it in the report; when `design.widget_catalog` does not exist, say so: `forge-figma`
+     builds it);
   3. otherwise create it: feature-local in `presentation/widgets/`, or shared in
      `paths.shared_widgets`. A shared widget is exported from the barrel when there is one,
      and gets a row in `design.widget_catalog`.
@@ -91,7 +92,7 @@ nothing in widget trees that the code already says. `///` goes on shared widgets
 
 ## Step 4 — Verify
 
-Run `quality.analyze_command` until it is clean. Then run `../forge-audit/scripts/check_presentation.py` and `../forge-audit/scripts/check_responsive.py` on the files you wrote and fix their findings. Widget and state tests come from
+Run `quality.analyze_command` until it is clean, and format only with the project's `quality.format_command` (never a bare `dart format` when the project uses another line length; revert any file you did not touch). Then run `../forge-audit/scripts/check_presentation.py` and `../forge-audit/scripts/check_responsive.py` on the files you wrote and fix their findings. Widget and state tests come from
 `forge-tests`. When this skill runs alone, offer to run it next.
 
 ## Anti-patterns

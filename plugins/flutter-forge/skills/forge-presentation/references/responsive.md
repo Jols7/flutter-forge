@@ -27,7 +27,7 @@ the project's Flutter version before a layout branches on them.
 | Label next to a value in a `Row` | label `Expanded`, value `Flexible` (+ `FittedBox(fit: BoxFit.scaleDown)` for money, or `maxLines` and ellipsis for text) | a bare `Text` beside an `Expanded` |
 | Several labels in one row | `Wrap`, or one `Expanded` per item | `Row` of bare `Text`s |
 | Equal items (chips, segments) | `Expanded` each; `Wrap` when they may not fit | a fixed width per item |
-| Width from the design | constraints from the parent; a fraction (`FractionallySizedBox`, `LayoutBuilder`) for a decorative line | `width: 343` copied from the frame |
+| Width from the design | constraints from the parent; a fraction (`FractionallySizedBox`, `LayoutBuilder`) for a decorative line, of the reference `design.md` names (default: the available width) | `width: 343` copied from the frame |
 | Height around text | minimum height (`ConstrainedBox(minHeight:)`, padding) | a fixed `height` that clips at 2.0 |
 | Fixed size | only icons, avatars, thumbnails, divider and border thickness, progress-bar thickness, minimum touch areas (`../../forge-figma/references/fidelity.md` § 3) | fixed boxes for anything that holds text |
 | Screen taller than the viewport | `SingleChildScrollView` or slivers; the primary action in the footer stays reachable | a `Column` that overflows |
@@ -40,8 +40,9 @@ the project's Flutter version before a layout branches on them.
 
 ## Building from `design.md`
 
-1. Implement the Measures table **exactly**: gap, padding, radius, border, alignment, type role and
-   color token per element.
+1. Implement the Measures table **exactly**: spacing, padding, radius, border, alignment, type role and
+   color token per element. The layout tree's gaps are equally normative; if the two disagree, ask or
+   follow the tree and note it.
 2. Keep the nesting of the layout tree. Each level with its own gap is its own `Column`/`Row`
    (`spacing:` of that level). Do not flatten two levels into one list with spacers: an outer gap of
    24 is not a 16 plus a `SizedBox(8)` somewhere else.

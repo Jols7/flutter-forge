@@ -57,7 +57,10 @@ One row per visible element that has a measure the template cannot infer. Sizes 
 `flexible`. Color and role are per element (a label and its value can differ). *Spacing* is the gap
 between children (not a design gap). *Source*: `Figma` (design context), `metadata` or `capture`
 (sampled); tag anything inferred as `[inferido]` or `[inferido: motivo]`. Hex values belong only in
-Tokens, Gaps and References, not in this table.
+Tokens, Gaps and References, not in this table. One **single number** per cell: when the design gives a
+range or an inset (a 12 dp frame around a 4 dp bar, a gap of "0 to 4"), resolve it to the painted value
+and tag it `[inferido: motivo]`. *Alignment* uses Flutter's words (`start`, `center`, `end`, `baseline`,
+`stretch`, `spaceBetween`), never "bottom". The layout tree's gaps and this table are both normative.
 | Element | Size | Padding | Spacing | Radius / border | Alignment | Type role | Color token | Source |
 |---|---|---|---|---|---|---|---|---|
 | Preview card | flexible (min none) | 16 | 16 | 16 / 1 · primary @16% (D-1) | center | — | surfaceContainerLow | Figma |
@@ -77,6 +80,8 @@ A state that shares a block with another one (header, chips, progress) does not 
 *Shares layout with*, and its verdict inherits the shared block's defects once.
 
 ## Responsive behavior
+One rule per row, no alternatives ("maxLines 1 or wrap" forces the implementer to guess). A fraction
+states its reference ("0.75 of the available width", or "of the amount's width").
 | Component | Width rule | When space runs out | Source |
 |---|---|---|---|
 | Summary row | label `Expanded`, value `Flexible` | label wraps; value `FittedBox(scaleDown)` | inferido |

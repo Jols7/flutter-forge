@@ -29,7 +29,9 @@ For a change to something that already exists (bug, design update, visual improv
 1. Locate the code. Take the path the person gave, else search the widget or page by name and by
    the visible texts. If several candidates remain, ask.
 2. Read the Figma node (cheapest calls first, one node), and the code of that subtree only.
-3. Compare element by element with `references/fidelity.md` and write `delta.md`:
+3. Compare with `references/fidelity.md` and write `delta.md`. When a `design.md` exists, walk its
+   Measures table **row by row** and the layout tree level by level, so a difference nobody noticed
+   (a gap, an alignment) is still caught; end with "rows checked N · differences M". Table:
 
    | # | Element | Design | Code (`file:line`) | Type | Weight | Evidence | Verdict | Fix owner |
    |---|---|---|---|---|---|---|---|---|
