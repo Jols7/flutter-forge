@@ -75,6 +75,9 @@ diseño → código → comparación.
   (UNITED, `forge_demo`).
 
 **Notas**
+- Relación con BIT-011 (2026-11-19): la extracción de semántica desde Figma (etiquetas, orden de
+  foco, textos alternativos) en `design-template.md` es **condicional a `a11y: on`**. Esta entrada
+  trata la fidelidad visual y no depende de ese interruptor.
 - Las referencias a líneas se comprobaron contra el árbol del 2026-11-19; reverificar si los
   archivos cambian antes de actuar.
 - La causa raíz es una hipótesis: confirmarla con una comparación real diseño ↔ código de al menos

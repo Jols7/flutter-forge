@@ -21,6 +21,10 @@
       **testabilidad de los widgets** (keys para pruebas) salieron a **BIT-012** el 2026-11-19.
 
 **Notas**
+- Coordinación con BIT-011 (2026-11-19): los guidelines de accesibilidad de `widget-tests.md`
+  (`meetsGuideline`, `ensureSemantics()`, tap targets, texto grande) pasan a ser **condicionales a
+  `a11y: on`**; con `off` los tests de widget no los exigen. El cambio lo hace la fase 3 de BIT-011;
+  al revisar la estrategia de pruebas aquí, no reintroducirlos como obligatorios.
 - Se escribió "test_integration" y "test_unit"; se asumen `integration_test` y `test/` (unit).
 - Relacionado con B3 de `Curriculum/07_estudio-agente/04-brechas-y-diferenciador.md`
   (Patrol en CI y evals para `forge-tests` / `forge-e2e`).
