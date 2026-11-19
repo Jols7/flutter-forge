@@ -15,7 +15,7 @@ concurrency:
 jobs:
   plugin:
     name: Plugin manifests and skills
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,7 +36,7 @@ jobs:
 
   scripts:
     name: Scripts (Python ${{ matrix.python }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         python: ["3.9", "3.12"]
@@ -51,7 +51,7 @@ jobs:
 
   example:
     name: Example app (analyze, test, forge scanners)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: example/forge_demo
