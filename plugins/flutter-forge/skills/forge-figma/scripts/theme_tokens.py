@@ -170,6 +170,11 @@ def match(figma: str, hexa: Tuple[str, float], tokens: Dict[str, dict], accessor
     return result
 
 
+def norm_font(name: str) -> str:
+    """`DM Sans`, `DMSans` and `dm-sans` are the same family."""
+    return re.sub(r"[\s_\-]+", "", name).lower()
+
+
 def fonts(root: str) -> List[str]:
     return sorted({m.strip() for m in FONT_FAMILY.findall(read(os.path.join(root, "pubspec.yaml")))})
 
@@ -212,7 +217,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         else:
             out["matches"].append(match(figma, hexa, out["tokens"], accessor))
     families = fonts(root)
-    out["fonts"] = {"project": families, "missing": [f for f in args.font if f not in families]}
+    known = {norm_font(f) for f in families}
+    out["fonts"] = {"project": families, "missing": [f for f in args.font if norm_font(f) not in known]}
 
     if args.format == "json":
         print(json.dumps(out, indent=2, ensure_ascii=False))

@@ -23,7 +23,8 @@ the design was read correctly, only whether the file is complete and consistent.
 
 Section names accept the English headings of the template and their Spanish forms. Read-only,
 stdlib only (Python 3.9+). Exit 1 when an error exists (unless --no-fail). The summary counts
-(`gaps`, `reuse`, `extend`, `create`, `inferred`, `to_confirm`) feed `state.json`.
+(`gaps`, `reuse`, `extend`, `create`, `inferred`, `to_confirm`) feed `state.json`. `inferred` counts
+`[inferido]`, `[inferido: motivo]` and a table cell that is just `inferido`.
 """
 from __future__ import annotations
 
@@ -153,7 +154,7 @@ def lint(path: str, root: Optional[str], refs_dir: Optional[str]) -> dict:
     if stray:
         add("hex-outside-tokens", "warn", "hex literals outside Tokens/Gaps: %s" % ", ".join(stray[:6]))
 
-    summary = {"gaps": len(seen), **counts, "inferred": len(re.findall(r"\[inferid[oa]\]", text, re.I)),
+    summary = {"gaps": len(seen), **counts, "inferred": len(re.findall(r"\[inferid[oa][^\]]*\]|\|\s*inferid[oa]\s*\|", text, re.I)),
                "to_confirm": len(re.findall(r"\[por confirmar\]|\[to confirm\]", text, re.I)),
                "captures": len(images)}
     return {"file": path, "summary": summary, "findings": findings}

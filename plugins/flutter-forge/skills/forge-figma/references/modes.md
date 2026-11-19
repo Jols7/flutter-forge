@@ -31,11 +31,18 @@ For a change to something that already exists (bug, design update, visual improv
 2. Read the Figma node (cheapest calls first, one node), and the code of that subtree only.
 3. Compare element by element with `references/fidelity.md` and write `delta.md`:
 
-   | # | Element | Design | Code (`file:line`) | Type | Verdict | Fix owner |
-   |---|---|---|---|---|---|---|
+   | # | Element | Design | Code (`file:line`) | Type | Weight | Evidence | Verdict | Fix owner |
+   |---|---|---|---|---|---|---|---|---|
+
+   *Weight*: `high` (visible at first glance or breaks a device) or `low` (cosmetic). *Evidence*:
+   `static` (read from nodes and code), `visual` (compared on a capture) or `unverified`.
 
    Only defects and decisions are rows to act on; accepted differences are listed apart, with the
-   reason. A bug report limits the comparison to the reported element and its neighbors.
+   reason; end with a verdict per screen and state (`fidelity.md` § 6). `delta.md` is where the verdict
+   lives in this mode; when a `design.md` is in the same folder, it points here. A state that shares a
+   layout block with another inherits that block's defects (list them once).
+
+   A bug report limits the comparison to the reported element and its neighbors.
 4. Stop there. `forge-presentation` applies the fixes (it never flattens a nested hierarchy or
    changes a shared widget's required parameters). Re-run **verify** afterwards.
 

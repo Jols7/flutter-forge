@@ -54,21 +54,27 @@ Footer: AppPrimaryButton("Transferir")
 
 #### Measures
 One row per visible element that has a measure the template cannot infer. Sizes say `fixed` or
-`flexible`. Color and role are per element (a label and its value can differ).
-| Element | Size | Padding | Gap | Radius / border | Alignment | Type role | Color token |
-|---|---|---|---|---|---|---|---|
-| Preview card | flexible (min none) | 16 | 16 | 16 / 1 · primary @16% (D-1) | center | — | surfaceContainerLow |
-| "Ganarías" | flexible | — | — | — | end | bodySmall | onPrimaryContainer |
-| Summary row label | flexible (`Expanded`) | — | 8 between rows | — | start | bodySmall | onSurfaceVariant |
-| Summary row value | flexible (`Flexible`) | — | — | — | end | titleMedium | onSurface |
-| Underline | fixed 1 high · 268 wide (decorative) | — | — | — | center | — | primary |
+`flexible`. Color and role are per element (a label and its value can differ). *Spacing* is the gap
+between children (not a design gap). *Source*: `Figma` (design context), `metadata` or `capture`
+(sampled); tag anything inferred as `[inferido]` or `[inferido: motivo]`. Hex values belong only in
+Tokens, Gaps and References, not in this table.
+| Element | Size | Padding | Spacing | Radius / border | Alignment | Type role | Color token | Source |
+|---|---|---|---|---|---|---|---|---|
+| Preview card | flexible (min none) | 16 | 16 | 16 / 1 · primary @16% (D-1) | center | — | surfaceContainerLow | Figma |
+| "Ganarías" | flexible | — | — | — | end | bodySmall | onPrimaryContainer | Figma |
+| Summary row label | flexible (`Expanded`) | — | 8 between rows | — | start | bodySmall | onSurfaceVariant | Figma |
+| Summary row value | flexible (`Flexible`) | — | — | — | end | titleMedium | onSurface | Figma |
+| Underline | fixed 1 high · width relative | — | — | — | center | — | primary `[inferido: muestreo]` | capture |
 
 ### States
-| State | Node | Shows |
-|---|---|---|
-| amount below minimum | 12:400 | field error text |
-| preview loading | 12:410 | 3-line skeleton inside the card |
-| preview error | 12:420 | inline error + "Reintentar" |
+| State | Node | Shows | Shares layout with |
+|---|---|---|---|
+| amount below minimum | 12:400 | field error text | main |
+| preview loading | 12:410 | 3-line skeleton inside the card | main |
+| preview error | 12:420 | inline error + "Reintentar" | main |
+
+A state that shares a block with another one (header, chips, progress) does not repeat it: list it in
+*Shares layout with*, and its verdict inherits the shared block's defects once.
 
 ## Responsive behavior
 | Component | Width rule | When space runs out | Source |
@@ -100,7 +106,8 @@ for meaningful images; rules in `forge-presentation/references/accessibility.md`
 (Without a story: write "No story. Behavior marked `[por confirmar]`.")
 
 ## Accepted differences and verdict
-Filled by the verify step (`fidelity.md` § 6). Verdict per screen/state: pass · pass-with-accepted · fail.
+Filled by the verify step (`fidelity.md` § 6). When a `delta.md` exists in the same folder, it holds
+the detailed verdict and this section only points to it. Verdict per screen/state: pass · pass-with-accepted · fail.
 | Screen / state | Verdict | Accepted differences (reason) | Defects (owner) |
 |---|---|---|---|
 ```

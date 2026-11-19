@@ -25,10 +25,10 @@ A difference forced by rule 1 is **accepted**, written down with its reason, and
 | Measure | Exact when | Accepted difference | Defect |
 |---|---|---|---|
 | Color | the token, or an accessor with the **same value** | same name but different value is a **decision** (§ 5), never silent | wrong token; hardcoded literal |
-| Typography | role, family and size match | `height` from the role instead of the design's line height | wrong role (12 → 14), wrong family without a gap |
-| Gap, padding | the design's number, nesting kept | changed to satisfy rule 1 (reason recorded) | a different number with no reason; a flattened hierarchy |
+| Typography | role, family and size match | `height` from the role instead of the design's line height | wrong role (12 → 14), a role patched with `copyWith(fontSize:)` when the right role exists; a different family is never `pass`: it is a gap (§ 5) |
+| Spacing between children, padding | the design's number, nesting kept | changed to satisfy rule 1 (reason recorded) | a different number with no reason; a flattened hierarchy |
 | Radius, border width | equal | none | any difference |
-| Alignment | the relation (start, center, end, space-between) is equal | absolute offset up to **8 dp** from flexible layout (*initial*) | a different relation |
+| Alignment | the relation is the same mechanism (start, center, end, space-between, with the same padding) | absolute offset up to **8 dp** **only when the relation is the same** (*initial*) | a different relation, even if today's offset is small (`space-between` is not "centered under each item": they diverge on wider screens) |
 | Order, hierarchy | equal | none | any difference |
 | Size | see § 3 | design width of the frame (390) or a design `min-width` that does not fit 320 dp | a fixed size on something that should grow |
 | Painted extent | equal | up to **4 dp** when Figma's frame is larger than the painted shape (a 12 dp frame for a 4 dp bar) (*initial*) | more than 4 dp |
@@ -72,8 +72,16 @@ difference, and who decides (`team` for a new theme token, `agent` for a provisi
 used by the project). Run `scripts/theme_tokens.py`: it also catches a same-name token with a
 different value (BIT-013 phase 0, case H).
 
+**Tie or by-value match** (several accessors share the value, or only the value matches, for example
+`On Primary` `#ffffff` with no `onPrimary`): a gap with status *aliased*, decided by the agent, never a
+blocker. Record the chosen accessor and why (the project's neutral one, such as `white`).
+
+**Role patched with `copyWith`.** If the theme has no role with the design's size (for example
+`headline/super small` 20 versus a theme role of 24), that is a missing-role gap decided by the team. If
+a matching role exists and the code overrides it, it is a defect (wrong role).
+
 **Font family.** A role whose family is not in the theme or in `pubspec.yaml` is a gap with a
-decision (add the font and theme role, or accept the substitute and say so). It is not an
+decision, even when size and weight match (the glyphs differ) (add the font and theme role, or accept the substitute and say so). It is not an
 "observation": the family is part of the look.
 
 **Material widget with its own measures.** Compare the design's measures with the widget's
@@ -102,9 +110,23 @@ How to verify, cheapest first:
 
 ## 7. Reference captures
 
-Always capture the reference, one per screen and per state that changes layout, at the design's
-size. Save them under `<design folder>/refs/<screen>-<state>.png` and list them in References.
+Always capture the reference, one per screen and per state that changes layout, at the node's natural
+size. `get_screenshot` renders the frame **with its canvas margin or shadow** (a 390×844 frame comes back
+as 410×864, and `contentsOnly` does not change it): keep the file as is and write its size in References;
+do not crop by hand. Save them under `<design folder>/refs/<screen>-<state>.png` and list them in References.
 They are local by default (`design.screenshots: local`, add `refs/` to `.gitignore`); `commit`
 versions them. They can contain mock or personal data: never put them in a public place. The MCP
 returns a short-lived URL: download it with the command it prints (`curl -f -L -o <file> <url>`) and
 never keep the URL.
+
+## 8. Colors with no token in the design
+
+Dividers, underlines, arrows and progress tracks are vectors: the variable behind their color is not
+exposed. Resolve in this order and say which one you used in the Measures `Source` column:
+1. the CSS variable or fallback in that node's design context (some tokens appear only in the node of
+   another state: read them there, do not call variables again per state);
+2. sampling the reference capture (the pixel color at a point of the element, compared with the
+   background to recover an alpha); mark it `[inferido: muestreo]` with the value found;
+3. `[por confirmar]`, never a silent guess.
+Chrome fonts (the status bar's Roboto) are never passed to `theme_tokens.py --font`: only the families of
+the nodes in scope.

@@ -38,7 +38,8 @@ breaks on small phones, tablets, landscape or large text.
 3. **Design context** for **one full screen per distinct layout**, client framework Flutter/Dart.
    It carries the exact numbers (gaps per nesting level, padding, sizes, radii, type roles, token per
    text). Read them there; do not estimate from the picture.
-4. For every other state, request **only the node that changes**.
+4. For every other state, request **only the node that changes**. A token used only in that state shows
+   up in its design context (CSS variable); do not call variables again per state.
 5. **Screenshot** of every screen and every state that changes layout, saved to `refs/`
    (`references/fidelity.md` § 7). It is the reference for the verify step.
 6. If the MCP offers code-connect mappings, read them. A mapped component is an exact reuse.
@@ -47,7 +48,7 @@ The returned code (often React + Tailwind) is a **visual reference**, never tran
 
 ## Step 2 — Resolve tokens
 
-Run `scripts/theme_tokens.py --root <project> --match "<Figma token>=<hex>" … --font <family>` with
+Run `python3 scripts/theme_tokens.py --root <project> --match "<Figma token>=<hex>" … --font <family>` with
 the variables from step 1. It answers exact / value-differs / by-value / tie / overlay / gap for each
 token and which fonts are missing, so no color file is read by hand. A `value-differs`, an overlay
 with a different base, a missing font or a tie is a **design gap** (never a literal), written with
@@ -65,6 +66,7 @@ Apply `references/figma-mapping.md`. Key rules:
   rule in Responsive behavior, not a `width:`.
 - **Material 3 components become Flutter widgets**, not SVG fragments. When the design's measures
   differ from the widget's defaults, decide with `fidelity.md` § 5 and record it.
+- **Colors with no token** (dividers, underlines, tracks): `references/fidelity.md` § 8.
 - **Assets:** download only real illustrations and images the project lacks; note each path and
   resolution variants.
 - **Component descriptions** in Figma are requirements ("default MXN", "only used in this flow").
@@ -72,7 +74,8 @@ Apply `references/figma-mapping.md`. Key rules:
 
 ## Step 4 — Reuse ladder and catalog
 
-Open `design.widget_catalog`. If it is missing, build it first (`references/widget-catalog.md`). For
+Open `design.widget_catalog`. If it is missing, build it first (`references/widget-catalog.md`); when you may
+not write outside the output folder, list the proposed catalog rows under Components instead and say so. For
 each component: exact match or code-connect → **reuse**; close match → **extend** with an optional
 parameter whose default keeps every call site unchanged; no match → **create** (feature-local in
 `presentation/widgets/`, or shared in `paths.shared_widgets`, exported from the barrel and added to
@@ -81,7 +84,7 @@ is matched.
 
 ## Step 5 — Write and lint `design.md`
 
-Use `references/design-template.md`. Then run `scripts/lint_design.py <design.md> --root <project>` and
+Use `references/design-template.md`. Then run `python3 scripts/lint_design.py <design.md> --root <project>` and
 fix every error; its summary gives the gap, reuse/extend/create and capture counts for `state.json`.
 
 ## Delta and verify

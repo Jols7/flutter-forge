@@ -111,6 +111,13 @@ class ThemeTokensTest(unittest.TestCase):
     def test_fonts_are_read_from_pubspec(self):
         self.assertEqual(tokens_mod.fonts(self.root), ["DMSans"])
 
+    def test_font_names_compare_without_spaces_or_case(self):
+        self.assertEqual(tokens_mod.norm_font("DM Sans"), tokens_mod.norm_font("DMSans"))
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            tokens_mod.main(["--root", self.root, "--accessor", "AppColors", "--font", "DM Sans", "--font", "Montserrat"])
+        self.assertIn("font-missing Montserrat", out.getvalue())
+        self.assertNotIn("font-missing DM Sans", out.getvalue())
+
     def test_dynamic_scheme_has_no_static_values(self):
         write(self.root, ".flutter-forge/profile.yaml", "design:\n  colors: Theme.of(context).colorScheme\n")
         with contextlib.redirect_stdout(io.StringIO()) as out:
@@ -212,6 +219,11 @@ class LintDesignTest(unittest.TestCase):
                 .replace("## Responsive behavior", "## Comportamiento responsivo").replace("## References", "## Referencias")
                 .replace("#### Measures", "#### Medidas"))
         self.assertEqual(self.rules(self.lint(text)), set())
+
+    def test_inferred_tags_with_a_reason_and_cells_are_counted(self):
+        text = GOOD_DESIGN + "\nNote [inferido: muestreo] and [inferido] and [por confirmar]\n| a | inferido |\n"
+        summary = self.lint(text)["summary"]
+        self.assertEqual((summary["inferred"], summary["to_confirm"]), (3, 1))
 
     def test_hex_outside_the_token_tables_only_warns(self):
         report = self.lint(GOOD_DESIGN + "\n## Notes\nUse #123456 here.\n")

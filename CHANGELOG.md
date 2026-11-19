@@ -23,6 +23,13 @@ All notable changes to this project are documented here. The format follows
 - `code-comments.md` cites *Effective Dart* and the Flutter style guide, explains why comments are in
   English and adds a `///` writing guide with good and bad examples per layer.
 
+### Changed (BIT-013, real-Figma validation)
+- `forge-figma` after an end-to-end run on a real screen (standalone + delta): colors with no token
+  (`fidelity.md` § 8), screenshot size, tie and font-family policies, `Spacing` column and `Source` in
+  Measures, delta table with weight and evidence, verdict location and shared layouts between states.
+  `theme_tokens.py` compares font names ignoring spaces and case; `lint_design.py` counts `[inferido: …]`.
+  Scripts are executable.
+
 ### Added (BIT-013 phase 2, ADR 0010)
 - `forge-presentation/references/responsive.md`: the single source for adaptive layout (targets: phones from
   320 dp, tablet, landscape, text scale 1.0 to 2.0, longest content; rules for rows, fixed sizes, scroll,

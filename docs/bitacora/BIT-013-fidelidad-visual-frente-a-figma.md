@@ -202,3 +202,39 @@ entregan (ADR 0009).
 **Pendiente:** prueba de extremo a extremo con Figma real (standalone y delta) sobre UNITED, y repetir la
 presentación con Sonnet para decidir si BIT-009 recibe evidencia; umbral de `fixed-height-text` por afinar con
 más proyectos; fase 3 (goldens y capturas en E2E) sigue condicionada a datos.
+
+## Prueba con Figma real (2026-11-19, tras la fase 2)
+
+Un agente Sonnet ejecutó `forge-figma` en modo **standalone** y luego **delta** sobre la pantalla del simulador
+(nodos `78627:22552` resultado y `80362:35721` cargando), sin HU ni `forge-deliver`, escribiendo solo en
+`.flutter-forge/design/simulador-resultado/` del worktree. 10 llamadas al MCP (1 guía, 1 variables, 2 metadata,
+2 contexto de diseño —pantalla completa y solo el nodo que cambia—, 3 capturas, una redundante), ≈ 3,5 minutos,
+`lint_design.py` sin errores.
+
+**Resultado:** `delta.md` encontró 13 defectos y 3 decisiones y recuperó todas las diferencias de la fase 0
+(A a J: gap 24 aplanado, color de "Ganarías" e importe, roles de las filas, borde de la nota, capa de estado
+`#8D4E2A`, Montserrat) y añadió cinco que yo no había visto: la relación de alineación de las etiquetas de nivel
+(`space-between` frente a centradas), el espacio título↔subtítulo de la nota (0 frente a 4), el subrayado fijo de
+268, el color probable de divisores y subrayado, y las dos filas sin `Flexible` (`check_responsive.py` coincide).
+El estado cargando salió `pass-with-accepted`. Corrección a la tabla de la fase 0: la fila M (alineación) pasa de
+"aceptable" a **defecto**, porque la tolerancia de 8 dp solo vale cuando la relación es la misma.
+
+**Fricciones registradas y corregidas** (14 puntos del informe del agente):
+- Tamaño de captura (el MCP devuelve el marco con margen: 410×864 para un 390×844): se documenta, no se recorta.
+- `theme_tokens.py` daba `DM Sans` como faltante frente a `DMSans`: ahora normaliza (test); solo se pasan al script
+  las familias de los nodos en alcance (nunca las del chrome, como Roboto).
+- Color de vectores sin token (divisor, subrayado, track): `fidelity.md` § 8 (variable del nodo → muestreo de la
+  captura con alpha → `[por confirmar]`); columna *Source* en Medidas.
+- Tokens que solo aparecen en otro estado: se leen del contexto de ese nodo, sin repetir variables.
+- Empate o coincidencia solo por valor (`On Primary` = `white`): gap *aliased*, lo decide el agente, no bloquea.
+- Familia distinta con mismo tamaño y peso: nunca `pass`, es gap. Rol parcheado con `copyWith(fontSize:)`: gap de rol
+  faltante si no existe rol, defecto si existe.
+- La palabra "gap" se usaba para dos cosas: la columna de Medidas ahora se llama *Spacing*.
+- Dónde va el veredicto en modo delta (`delta.md`), estados que comparten layout (columna *Shares layout with*,
+  defectos heredados una vez), columnas *Weight* y *Evidence* en la tabla delta, catálogo en solo lectura (filas
+  propuestas bajo Components).
+- `lint_design.py`: cuenta `[inferido: motivo]` y la celda `inferido`; el aviso de hex fuera de Tokens se documentó.
+- Los scripts no eran ejecutables y `SKILL.md` los invocaba sin `python3`: ahora `chmod +x` y `python3 scripts/…`.
+
+**Pendiente:** repetir la presentación (no solo el diseño) con Sonnet aplicando ese `delta.md` para decidir si
+BIT-009 recibe evidencia; cerrar la fase de decisión de umbrales con más proyectos.
