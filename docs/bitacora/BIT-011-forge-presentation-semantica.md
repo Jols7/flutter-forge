@@ -2,7 +2,7 @@
 
 > [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-001](BIT-001-l10n-localizacion.md), [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-004](BIT-004-skills-forge-health-y-upgrade.md), [BIT-009](BIT-009-modelo-y-esfuerzo.md), [BIT-010](BIT-010-linea-base-forge-metrics.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md), [BIT-013](BIT-013-fidelidad-visual-frente-a-figma.md)
 
-- **Tipo:** auditoría, mejora · **Estado:** en curso (fases 0 a 4 hechas salvo CHANGELOG/cierre; fase 0 con fuentes pendientes; rama `feat/bit-011-presentation-a11y-optin`) · **Alta:** 2026-11-19
+- **Tipo:** auditoría, mejora · **Estado:** hecho (cerrada 2026-11-19; rama `feat/bit-011-presentation-a11y-optin`; ADR [0008](../adr/0008-accessibility-opt-in.md); `CHANGELOG` Unreleased) · **Alta:** 2026-11-19
 - **Origen:** auditoría de solo lectura de `forge-presentation` (2026-11-19), contrastada con la
   documentación de Flutter (accesibilidad, `flutter_test` guidelines, `SemanticsService`), WCAG 2.2
   (SC 2.5.8 y 1.4.4), *Effective Dart* y el *Flutter style guide*. No se modificó código.
@@ -45,60 +45,60 @@ implementarla bien más adelante. Por eso se invierte el modelo actual (semánti
 
 *A. Semántica y accesibilidad* (reclasificados el 2026-11-19 bajo la política opt-in: aplican solo
 cuando `a11y: on`, salvo el primero)
-- [ ] **Alta.** No existe el interruptor `a11y` ni nadie lo lee. Es el hallazgo nuevo que ordena
+- [x] **Alta.** No existe el interruptor `a11y` ni nadie lo lee. Es el hallazgo nuevo que ordena
       a los demás.
-- [ ] **Alta (solo `on`).** "Checked by forge-audit" no se cumple: no hay script de accesibilidad;
+- [ ] **Alta (solo `on`).** (diferido a propósito, ver Cierre) "Checked by forge-audit" no se cumple: no hay script de accesibilidad;
       solo la pregunta manual §10.
-- [ ] **Alta (solo `on`).** `forge-tests/references/widget-tests.md:68` recomienda
+- [x] **Alta (solo `on`).** `forge-tests/references/widget-tests.md:68` recomienda
       `meetsGuideline(...)` sin `tester.ensureSemantics()`: sin semántica activa las guías no miden
       nada. El ejemplo `forge_demo` sí la usa (`transactions_page_test.dart:85`).
-- [ ] **Alta (solo `on`).** La accesibilidad no se pide aguas arriba: `hu-template.md` solo la cita
+- [x] **Alta (solo `on`).** La accesibilidad no se pide aguas arriba: `hu-template.md` solo la cita
       como ejemplo de NFR; `forge-figma` no extrae etiquetas, orden de foco ni textos alternativos;
       el blueprint no tiene columna de semántica.
-- [ ] **Media (solo `on`).** Cobertura incompleta: encabezados (`header`), orden de lectura
+- [x] **Media (solo `on`).** Cobertura incompleta: encabezados (`header`), orden de lectura
       (`sortKey`), etiquetas de campos y de estados de carga (`semanticsLabel`), anuncios asíncronos
       (`liveRegion`, `SemanticsService.announce` y `MediaQueryData.supportsAnnounce`; la API cambió
       y Android desaconseja los anuncios), lectura localizada de importes y fechas.
-- [ ] **Media (solo `on`).** Falta `iOSTapTargetGuideline` (44 pt) junto a
+- [x] **Media (solo `on`).** Falta `iOSTapTargetGuideline` (44 pt) junto a
       `androidTapTargetGuideline` (48 dp); WCAG 2.2 pide 24×24 como mínimo AA y 200 % de texto. La
       skill no cita ninguna fuente.
-- [ ] **Media (solo `on`).** Choque no documentado: las restricciones de tamaño de
+- [x] **Media (solo `on`).** Choque no documentado: las restricciones de tamaño de
       `leading`/`trailing` en `ListTile` frente a los 48×48.
-- [ ] **Media (solo `on`).** El smoke test de texto grande solo detecta excepciones de overflow,
+- [x] **Media (solo `on`).** El smoke test de texto grande solo detecta excepciones de overflow,
       no contenido truncado.
-- [ ] **Media.** Cuatro skills hablan de accesibilidad (`presentation`, `audit`, `tests`, `figma`)
+- [x] **Media.** Cuatro skills hablan de accesibilidad (`presentation`, `audit`, `tests`, `figma`)
       sin una fuente de verdad: umbrales repetidos con riesgo de divergir.
-- [ ] **Baja (solo `on`).** `ValidationFailure.serverMessage` se muestra tal cual: puede ser texto
+- [x] **Baja (solo `on`).** `ValidationFailure.serverMessage` se muestra tal cual: puede ser texto
       sin localizar ni pensado para lector de pantalla.
 - [x] ~~**Media.** El ejemplo `transaction_tile.dart` no cumple la política (`semanticLabel: null`,
       sin `MergeSemantics`).~~ Con `off` deja de ser un incumplimiento (2026-11-19). Se corrige solo
       si se activa `a11y` en el ejemplo, en un commit aparte.
 
 *B. Comentarios y documentación*
-- [ ] **Alta.** La política no cita *Effective Dart* (Documentation) ni el *Flutter style guide*;
+- [x] **Alta.** La política no cita *Effective Dart* (Documentation) ni el *Flutter style guide*;
       coincide en espíritu pero no es auditable ni defendible.
-- [ ] **Media.** `check_comments.py` exige `///` solo en `domain/`; los widgets compartidos lo piden
+- [x] **Media.** `check_comments.py` exige `///` solo en `domain/`; los widgets compartidos lo piden
       en `forge-presentation` pero nadie lo verifica.
-- [ ] **Media.** Sin criterio de redacción del `///` (resumen de una frase, línea en blanco, detalle;
+- [x] **Media.** Sin criterio de redacción del `///` (resumen de una frase, línea en blanco, detalle;
       `[Referencia]`, `{@template}`, ejemplos) ni ejemplos buenos y malos por capa.
-- [ ] **Baja.** El idioma fijo (inglés) no tiene su razón registrada.
+- [x] **Baja.** El idioma fijo (inglés) no tiene su razón registrada.
 
 *C. Nomenclatura y distribución dentro de presentación*
-- [ ] **Media.** `conventions.md` §8 no cubre nombres de páginas (`XPage`), widgets (`XTile`, `XCard`,
+- [x] **Media.** `conventions.md` §8 no cubre nombres de páginas (`XPage`), widgets (`XTile`, `XCard`,
       `XSection`) ni archivos (`snake_case`, lint `file_names`).
-- [ ] **Media.** Solo se limita `build` (añadido 2026-11-19: complejidad ciclomática máx. 10 por `build()`, `quality.max_build_complexity`; medido en UnitedApp, 3 de 209 la superan y los 3 miden ≤120 líneas, así que complementa al límite de líneas; hoy sin script, lo cubre DCM o la revisión): no hay umbral por archivo, por anidamiento de widgets ni por
+- [x] **Media.** Solo se limita `build` (añadido 2026-11-19: complejidad ciclomática máx. 10 por `build()`, `quality.max_build_complexity`; medido en UnitedApp, 3 de 209 la superan y los 3 miden ≤120 líneas, así que complementa al límite de líneas; hoy sin script, lo cubre DCM o la revisión): no hay umbral por archivo, por anidamiento de widgets ni por
       clases por archivo. Una página de 600 líneas con widgets privados puede cumplir y seguir
       siendo ilegible.
-- [ ] **Media.** Sin criterio de extracción ni de promoción de widget local a compartido (p. ej.
+- [x] **Media.** Sin criterio de extracción ni de promoción de widget local a compartido (p. ej.
       "al usarlo una segunda feature"); hoy depende de lo que diga `design.md`.
-- [ ] **Media.** Sin esqueleto recomendado de `pages/`, `widgets/`, `state/` ni regla para
+- [x] **Media.** Sin esqueleto recomendado de `pages/`, `widgets/`, `state/` ni regla para
       subcarpetas y secciones de pantallas largas.
-- [ ] **Baja.** `TransactionsFailure` (estado) frente a `Failure<T>` (resultado) se confunde al leer.
-- [ ] **Media.** `check_layers.py` solo valida importaciones; nada comprueba nombres, tamaño de
+- [x] **Baja.** `TransactionsFailure` (estado) frente a `Failure<T>` (resultado) se confunde al leer.
+- [x] **Media.** `check_layers.py` solo valida importaciones; nada comprueba nombres, tamaño de
       archivo ni anidamiento.
 
 *D. Evals*
-- [ ] **Alta.** No hay ningún eval de `forge-presentation` (tampoco de `forge-tests`,
+- [x] **Alta.** No hay ningún eval de `forge-presentation` (tampoco de `forge-tests`,
       `forge-data-layer` ni `forge-e2e`). Sin eval no cuenta como capacidad (criterio de BIT-004).
 
 ## Plan de implementación (aprobado 2026-11-19)
@@ -107,7 +107,7 @@ cuando `a11y: on`, salvo el primero)
 - [x] Definir el interruptor: nombre (`a11y`), valores, clave `accessibility.default` en
       `profile-schema.md` y quién lo lee (`requirements` → `deliver` → `blueprint`, `presentation`,
       `tests`, `audit`).
-- [x] Verificar y fijar las fuentes (2026-11-19). Verificadas: guía de accesibilidad y página *Accessibility testing* de Flutter (48/44, guidelines, `ensureSemantics`), WCAG 2.5.8 y 1.4.4, *Effective Dart*, style guide de Flutter (sin límite de tamaño de archivo), principios de accesibilidad de Android. **Sin verificar:** Apple HIG (44 pt; página no legible automáticamente) y los tres puntos de abajo para revisión humana.
+- [x] Verificar y fijar las fuentes (2026-11-19). Verificadas: guía de accesibilidad y página *Accessibility testing* de Flutter (48/44, guidelines, `ensureSemantics`), WCAG 2.5.8 y 1.4.4, *Effective Dart*, style guide de Flutter (sin límite de tamaño de archivo), principios de accesibilidad de Android. **Confirmado por el usuario (2026-11-19):** Apple HIG (44 pt), Android 48 dp en su fuente primaria, el tramo final del style guide y la API de anuncios contra la versión instalada de Flutter. Los datos concretos que vio no quedaron anotados aquí.
 - [x] ADR corto único: interruptor opt-in, fuentes adoptadas, comentarios en **inglés** (con su
       razón) y alcance de `///`.
 
@@ -196,3 +196,11 @@ pasando, una ADR y entrada en `CHANGELOG`.
 - Fase 4 (2026-11-19): creados los 3 evals (`presentation-sealed-state-and-disposal`,
   `presentation-a11y-semantics`, `presentation-naming-and-structure`) con el formato de los
   existentes. Ejecutados el 2026-11-19 con `claude plugin eval` (1 corrida por brazo, con y sin plugin, coste ~0,94 USD): `sealed-state` pasa con y sin plugin (1/1), `naming-and-structure` pasa con plugin (1) y falla sin él (0), `a11y-semantics` falló en la primera corrida por un criterio mío incorrecto (exigía marcar el tap target de `IconButton`, que ya cumple 48×48, y citar `accessibility.md` sin invocar la skill); lo corregí tras ver el fallo y la repetición pasó con plugin (1) y falló sin él (0). Una sola corrida por caso: indicio, no medida estable. `forge_demo` sin cambios (`a11y` apagado).
+
+## Cierre (2026-11-19)
+Criterio de cierre cumplido: referencia única de accesibilidad con el interruptor de extremo a
+extremo, tests que miden semántica cuando está activa (`ensureSemantics`), evals pasando con
+plugin, ADR 0008 y entrada en `CHANGELOG`. Los hallazgos de la lista A a D quedan atendidos por las
+fases 0 a 4, salvo lo diferido a propósito: `check_a11y.py` (hasta tener un proyecto con `a11y: on`),
+`forge_demo` sin cambios con `a11y` apagado, y `public_member_api_docs` como opción. Los umbrales de
+tamaño son empíricos (el style guide de Flutter no fija ninguno); recalibrar con más proyectos.

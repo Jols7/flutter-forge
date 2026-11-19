@@ -21,7 +21,7 @@ Cada entrada vive en su propio archivo en [`docs/bitacora/`](bitacora/). Este do
 | [BIT-008](bitacora/BIT-008-telemetria-y-metricas.md) | Telemetría y métricas del agente (B4): beneficio, ahorro, costo y tiempo por tipo de corrida | revisión, mejora | cerrada (2026-11-17; la línea base sigue en BIT-010) | 2026-11-17 |
 | [BIT-009](bitacora/BIT-009-modelo-y-esfuerzo.md) | Revisión de modelo y esfuerzo por agente y skill (costo vs. calidad) | revisión, mejora | pendiente | 2026-11-17 |
 | [BIT-010](bitacora/BIT-010-linea-base-forge-metrics.md) | Línea base de `forge-metrics`: mediana, rango y ahorro con corridas reales | medición | pendiente (se acumula con el uso) | 2026-11-17 |
-| [BIT-011](bitacora/BIT-011-forge-presentation-semantica.md) | `forge-presentation`: semántica y accesibilidad (opt-in con `a11y`), política de comentarios y estructura de código | auditoría, mejora | pendiente | 2026-11-19 |
+| [BIT-011](bitacora/BIT-011-forge-presentation-semantica.md) | `forge-presentation`: semántica y accesibilidad (opt-in con `a11y`), política de comentarios y estructura de código | auditoría, mejora | hecho (2026-11-19) | 2026-11-19 |
 | [BIT-012](bitacora/BIT-012-e2e-patrol-dispositivo-y-keys.md) | E2E con Patrol: ejecución fiable (selección de dispositivo) y keys en los widgets para pruebas | auditoría, mejora | pendiente | 2026-11-19 |
 | [BIT-013](bitacora/BIT-013-fidelidad-visual-frente-a-figma.md) | Fidelidad visual frente a Figma: diferencias de maquetación, tolerancia y verificación (`forge-figma` → `forge-presentation`) | auditoría, mejora | pendiente | 2026-11-19 |
 
