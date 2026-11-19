@@ -36,13 +36,20 @@ class AccountCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Text(
-                formatMoney(
-                  account.balance,
-                  currency: account.currency,
-                  locale: locale,
+              const SizedBox(width: 8),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Text(
+                    formatMoney(
+                      account.balance,
+                      currency: account.currency,
+                      locale: locale,
+                    ),
+                    style: textTheme.titleLarge,
+                  ),
                 ),
-                style: textTheme.titleLarge,
               ),
             ],
           ),
