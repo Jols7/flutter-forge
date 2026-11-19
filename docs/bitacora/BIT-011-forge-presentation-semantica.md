@@ -2,7 +2,7 @@
 
 > [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-001](BIT-001-l10n-localizacion.md), [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-004](BIT-004-skills-forge-health-y-upgrade.md), [BIT-009](BIT-009-modelo-y-esfuerzo.md), [BIT-010](BIT-010-linea-base-forge-metrics.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md), [BIT-013](BIT-013-fidelidad-visual-frente-a-figma.md)
 
-- **Tipo:** auditoría, mejora · **Estado:** pendiente (plan aprobado 2026-11-19) · **Alta:** 2026-11-19
+- **Tipo:** auditoría, mejora · **Estado:** en curso (fase 0 en progreso; rama `feat/bit-011-presentation-a11y-optin`) · **Alta:** 2026-11-19
 - **Origen:** auditoría de solo lectura de `forge-presentation` (2026-11-19), contrastada con la
   documentación de Flutter (accesibilidad, `flutter_test` guidelines, `SemanticsService`), WCAG 2.2
   (SC 2.5.8 y 1.4.4), *Effective Dart* y el *Flutter style guide*. No se modificó código.
@@ -104,12 +104,12 @@ cuando `a11y: on`, salvo el primero)
 ## Plan de implementación (aprobado 2026-11-19)
 
 *Fase 0 · Decisiones y fuentes (bajo)*
-- [ ] Definir el interruptor: nombre (`a11y`), valores, clave `accessibility.default` en
+- [x] Definir el interruptor: nombre (`a11y`), valores, clave `accessibility.default` en
       `profile-schema.md` y quién lo lee (`requirements` → `deliver` → `blueprint`, `presentation`,
       `tests`, `audit`).
-- [ ] Verificar y fijar las fuentes: guía de accesibilidad de Flutter, `flutter_test` guidelines,
+- [ ] Verificar y fijar las fuentes (parcial 2026-11-19: Flutter a11y, Effective Dart Documentation y WCAG 2.5.8 verificadas; faltan style guide, página de testing de accesibilidad, WCAG 1.4.4 y guías Android/iOS): guía de accesibilidad de Flutter, `flutter_test` guidelines,
       WCAG 2.2 (2.5.8, 1.4.4), guías de tap target de Android e iOS, *Effective Dart* y style guide.
-- [ ] ADR corto único: interruptor opt-in, fuentes adoptadas, comentarios en **inglés** (con su
+- [x] ADR corto único: interruptor opt-in, fuentes adoptadas, comentarios en **inglés** (con su
       razón) y alcance de `///`.
 
 *Fase 1 · Contenido de `forge-presentation` (bajo a medio)*

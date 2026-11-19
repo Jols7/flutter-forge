@@ -128,6 +128,9 @@ quality:
   dcm: false                               # Dart Code Metrics available
   max_build_lines: 120                     # build() size before it is a finding
 
+accessibility:
+  default: off                             # off | on. Per-run `a11y` in the brief overrides it. With `off` no skill requires or reports semantics; with `on` forge-presentation loads references/accessibility.md. Does not affect test keys (BIT-012)
+
 security:
   level: standard                          # standard (MASVS-L1) | high (L2 + resilience: fintech, health)
   sensitive_data: [credentials, pii]       # credentials | pii | financial | health | location
