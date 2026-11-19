@@ -1,6 +1,6 @@
 # BIT-013 · Fidelidad visual frente a Figma: diferencias de maquetación
 
-> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-009](BIT-009-modelo-y-esfuerzo.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md)
+> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-009](BIT-009-modelo-y-esfuerzo.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md), [BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md)
 
 - **Tipo:** auditoría, mejora · **Estado:** en curso (fase 0 hecha, fase 1 en la rama `feat/bit-013-figma-fidelidad`; ADR [0009](../adr/0009-visual-fidelity-responsive-first.md)) · **Alta:** 2026-11-19
 - **Origen:** informe de solo lectura (2026-11-19) sobre diferencias de maquetación entre el diseño
@@ -264,3 +264,8 @@ tema de la página es una regla de UNITED (va en su overlay `forge-presentation`
 **Residuo:** `check_responsive.py` sigue marcando `ammount_input.dart:98` (el código de divisa junto al `Flexible`):
 falso positivo probable por texto corto; si se repite en otros proyectos, valorar una excepción para `Text` de
 longitud acotada. La sonda no ejercita el campo de entrada (el `TextField` desplaza internamente).
+
+## Derivada (2026-11-19)
+La pregunta de cuándo el código puede desviarse del diseño por claridad se separó a
+[BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md) (prioridad baja). Aquí queda la regla
+vigente "nunca cambiar valores / no aplanar", conservadora a propósito.
