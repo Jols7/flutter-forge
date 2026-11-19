@@ -1,6 +1,6 @@
 # BIT-002 · Estrategia de pruebas: unit, widget, integration_test y Patrol
 
-> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-003](BIT-003-secrets-de-github.md), [BIT-005](BIT-005-flavors.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md)
+> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-003](BIT-003-secrets-de-github.md), [BIT-005](BIT-005-flavors.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md), [BIT-013](BIT-013-fidelidad-visual-frente-a-figma.md)
 
 - **Tipo:** auditoría, mejora · **Estado:** pendiente · **Alta:** 2026-11-14
 - **Dónde mirar:** skills `forge-tests` y `forge-e2e`, `.github/workflows/ci.yml` y

@@ -1,6 +1,6 @@
 # BIT-012 · E2E con Patrol: ejecución fiable y testabilidad de los widgets
 
-> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-011](BIT-011-forge-presentation-semantica.md)
+> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-013](BIT-013-fidelidad-visual-frente-a-figma.md)
 
 - **Tipo:** auditoría, mejora · **Estado:** pendiente · **Alta:** 2026-11-19
 - **Origen:** separada de BIT-002 (2026-11-19), que mezclaba la estrategia general de pruebas con

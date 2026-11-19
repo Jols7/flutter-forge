@@ -23,6 +23,7 @@ Cada entrada vive en su propio archivo en [`docs/bitacora/`](bitacora/). Este do
 | [BIT-010](bitacora/BIT-010-linea-base-forge-metrics.md) | Línea base de `forge-metrics`: mediana, rango y ahorro con corridas reales | medición | pendiente (se acumula con el uso) | 2026-11-17 |
 | [BIT-011](bitacora/BIT-011-forge-presentation-semantica.md) | `forge-presentation`: semántica y accesibilidad, política de comentarios y estructura de código | auditoría, mejora | pendiente | 2026-11-19 |
 | [BIT-012](bitacora/BIT-012-e2e-patrol-dispositivo-y-keys.md) | E2E con Patrol: ejecución fiable (selección de dispositivo) y keys en los widgets para pruebas | auditoría, mejora | pendiente | 2026-11-19 |
+| [BIT-013](bitacora/BIT-013-fidelidad-visual-frente-a-figma.md) | Fidelidad visual frente a Figma: diferencias de maquetación, tolerancia y verificación (`forge-figma` → `forge-presentation`) | auditoría, mejora | pendiente | 2026-11-19 |
 
 ## Convenciones
 
