@@ -96,3 +96,11 @@
   una corrida de `forge-e2e` no modifica código de producción para añadir keys.
 - **Relacionado:** BIT-002 (estrategia de pruebas), BIT-011 (semántica y accesibilidad;
   comparten la idea de "declarar en el blueprint") y la Parte A de esta misma entrada.
+- **Decisiones cruzadas con BIT-011 (2026-11-19):**
+  - Las keys y los `Semantics(identifier:)` para Patrol son **independientes del interruptor
+    `a11y`** de BIT-011: se emiten aunque la accesibilidad esté apagada.
+  - **Orden:** esta parte B espera a que termine la fase 1 de BIT-011, porque ambas editan
+    `forge-presentation/SKILL.md` y `blueprint-template.md`. BIT-011 deja un apartado en su
+    referencia de estructura que remite aquí; la convención de keys se decide y aplica **solo en
+    esta entrada**.
+  - La columna "keys de prueba" del blueprint se diseña junto con la columna "a11y" de BIT-011.

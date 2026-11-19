@@ -20,3 +20,7 @@
 - Nota: el tema está escrito como "i10n" en la solicitud; el nombre correcto es
   l10n (localization). Buscar con ese nombre.
 - Pendiente de ubicar el código de UNITED para la comparación.
+- Relación con BIT-011 (2026-11-19): las etiquetas semánticas (`Semantics(label:)`, `tooltip`,
+  textos para lector de pantalla) son texto localizable y deben pasar por l10n, pero **solo cuando
+  el interruptor `a11y` está en `on`**. Por defecto está apagado; no hay claves de ARB de
+  accesibilidad que añadir hasta entonces.
