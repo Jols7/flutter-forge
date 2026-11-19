@@ -51,6 +51,7 @@ finding only when it meets the confidence bar.
 ## 3. Widgets
 
 - Is `build` free of side effects (no I/O, no `.listen`, no state-manager creation)?
+- Run `../scripts/check_presentation.py` first; it counts and matches, you judge.
 - Is `build` within `quality.max_build_lines` and `quality.max_build_complexity`? (Complexity
   counts `if`, `for`, `case`, `&&`, `||`, `??` and ternaries; DCM reports it when `quality.dcm`.) With `ui_helpers: forbid`, are there no
   `_buildX()` methods?

@@ -342,6 +342,64 @@ class CheckCommentsTest(unittest.TestCase):
         self.assertEqual([v["file"] for v in json.loads(out.stdout)["reported"]], ["lib/features/a/domain/a.dart"])
 
 
+class CheckPresentationTest(unittest.TestCase):
+    def _check(self, files, *args):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        for rel, text in files.items():
+            os.makedirs(os.path.dirname(os.path.join(tmp, rel)), exist_ok=True)
+            with open(os.path.join(tmp, rel), "w") as fh:
+                fh.write(text)
+        out = run("forge-audit", "check_presentation.py", "--root", tmp, "--format", "json", *args)
+        return out, json.loads(out.stdout)["findings"]
+
+    def test_example_app_is_clean(self):
+        out = run("forge-audit", "check_presentation.py", "--root", EXAMPLE)
+        self.assertEqual(out.returncode, 0, out.stdout)
+
+    def test_build_complexity_counts_branches_but_not_strings_or_nullable_types(self):
+        branches = "".join("if (a%d) {}\n" % i for i in range(11))
+        good = "class A { String? n; Widget build(BuildContext c) { var s = 'if (x) && ?'; return Text(s); } }\n"
+        bad = "class B { Widget build(BuildContext c) {\n%s return a ? b : c; } }\n" % branches
+        out, found = self._check({"lib/f/presentation/widgets/a.dart": good, "lib/f/presentation/widgets/b.dart": bad})
+        self.assertEqual([(f["file"].split("/")[-1], f["kind"]) for f in found], [("b.dart", "build-complexity")])
+        self.assertEqual(out.returncode, 1)
+
+    def test_build_lines_use_the_threshold_flag(self):
+        body = "class A { Widget build(BuildContext c) {\n" + "  x();\n" * 6 + "} }\n"
+        files = {"lib/f/presentation/widgets/a.dart": body}
+        self.assertEqual(self._check(files)[1], [])
+        self.assertEqual([f["kind"] for f in self._check(files, "--max-build-lines", "5")[1]], ["build-lines"])
+
+    def test_naming_and_antipatterns(self):
+        files = {
+            "lib/f/presentation/pages/Home.dart": "class Home {}\n",
+            "lib/f/presentation/widgets/w.dart": "class W { Widget _buildX() => Container(color: Color(0xFF112233)); final s = getIt<Repo>(); }\n",
+            "lib/f/presentation/state/c.dart": "class C { void go(c) { Navigator.of(c); } }\n",
+        }
+        _, found = self._check(files, "--ui-helpers", "forbid")
+        self.assertEqual(sorted(f["kind"] for f in found),
+                         ["file-name", "hardcoded-style", "locator-in-ui", "navigation-in-state", "ui-helper"])
+
+    def test_sealed_state_files_and_warnings_do_not_fail(self):
+        states = "sealed class S {}\n" + "".join("final class S%d extends S {}\n" % i for i in range(6))
+        out, found = self._check({"lib/f/presentation/state/s.dart": states})
+        self.assertEqual(found, [])
+        out, found = self._check({"lib/f/presentation/widgets/many.dart": "class A {}\nclass B {}\nclass C {}\nclass D {}\n"})
+        self.assertEqual([f["kind"] for f in found], ["classes-per-file"])
+        self.assertEqual(out.returncode, 0)
+
+    def test_profile_sets_thresholds(self):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp)
+        prof = os.path.join(tmp, "p.yaml")
+        with open(prof, "w") as fh:
+            fh.write("quality:\n  max_build_lines: 5\narchitecture:\n  ui_helpers: forbid\n")
+        out, found = self._check({"lib/f/presentation/widgets/a.dart": "class A { Widget build(BuildContext c) {\n" + "  x();\n" * 6 + "} }\n"},
+                                 "--profile", prof)
+        self.assertEqual([f["kind"] for f in found], ["build-lines"])
+
+
 class ResultContractTest(unittest.TestCase):
     """The shipped example result must satisfy the shipped schema (needs jsonschema; CI installs it)."""
 
