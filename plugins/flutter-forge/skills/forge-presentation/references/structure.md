@@ -58,9 +58,12 @@ Notes:
   widgets. A value of 10 flagged 38 % of UnitedApp and sits at the limit of `forge_demo`; a metric
   limited to the inside of `build()` would allow a stricter number later.
 - Flutter's own style guide sets no file-size limit, so these numbers are empirical.
-- In `adopt`/`improve` projects, run the check with `--changed-from` so only new and changed files
-  are measured; a legacy app will not pass a whole-project run (UnitedApp: 44 % of files get at least
-  one of these findings). A project can keep looser values in its profile.
+- **Modes.** The strict numbers are the default of `new` projects. In `adopt` and `improve` (from
+  `architecture.mode`, or `--mode`) the script uses the looser legacy numbers (`build()` 120 lines,
+  complexity 10, file 300, depth 20) and reports `build-lines` and `build-complexity` as warnings, so
+  an existing app is not failed wholesale (UnitedApp at the strict numbers: 44 % of files with a
+  finding). Values set in the profile always win. Run it with `--changed-from` to measure only new
+  and changed files, and tighten the profile as the app improves.
 - `forge_demo` meets all of them (its list screen was split into `_LoadMoreOnScroll`,
   `_ListFooter` and a `listLength` getter on the state to do so).
 

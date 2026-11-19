@@ -29,7 +29,10 @@ All notable changes to this project are documented here. The format follows
   app and set as strict targets: `build()` 50 lines and cyclomatic complexity 5, file 250 lines,
   nesting 12, 3 classes. **Behavior change:** `quality.max_build_lines` now defaults to 50 (was 120),
   so projects that never set it get more findings; set it in the profile to keep the old value.
-  A legacy app (UnitedApp: 44 % of files) will not pass a whole-project run, so use `--changed-from`.
+  In `adopt` and `improve` mode (`architecture.mode` or `--mode`) the check
+  defaults to the looser legacy numbers (120 lines, complexity 10, file 300, depth 20) and reports
+  `build-lines` and `build-complexity` as warnings, so an existing app (UnitedApp: 44 % of files at
+  the strict numbers) is not failed wholesale; profile values always win.
 - `forge-audit/scripts/check_presentation.py`: counts and matches size, approximate `build()`
   complexity, naming, `_buildX()` helpers, hardcoded colors/fonts, service locators in presentation
   and navigation inside state managers. `finding` fails the run; `warn` does not. Six unit tests.
