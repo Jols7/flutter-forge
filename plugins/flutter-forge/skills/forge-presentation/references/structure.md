@@ -43,6 +43,7 @@ A long page may group `widgets/<page_name>/` subfolders by section. Shared widge
 | Measure | Observed (UnitedApp) | Threshold | Level |
 |---|---|---|---|
 | `build()` lines | p95 77, max 134, 2 files over 120 | 120 (`quality.max_build_lines`) | finding |
+| `build()` cyclomatic complexity | p95 7, max 17; 3 of 209 over 10, all under 120 lines | 10 (`quality.max_build_complexity`) | finding; move logic to the state or a mapper |
 | File lines | p90 197, p95 247, max 458, 3 files over 300 | 300 | warn; split by section |
 | Classes per file | p95 2, max 7 | 1 public + private helpers; more than 3 | warn |
 | Indent depth (2-space levels) | p90 15, p95 18, max 25 | 20 | warn; extract a widget |

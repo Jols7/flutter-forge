@@ -127,6 +127,8 @@ quality:
   format_command: dart format --output=none --set-exit-if-changed lib test
   dcm: false                               # Dart Code Metrics available
   max_build_lines: 120                     # build() size before it is a finding
+  max_build_complexity: 10                 # cyclomatic complexity of one build() (ifs, ternaries, &&, ||, case)
+  public_member_api_docs: false            # true: require /// everywhere (analyzer lint), not only domain and shared widgets
 
 accessibility:
   default: off                             # off | on. Per-run `a11y` in the brief overrides it. With `off` no skill requires or reports semantics; with `on` forge-presentation loads references/accessibility.md. Does not affect test keys (BIT-012)
