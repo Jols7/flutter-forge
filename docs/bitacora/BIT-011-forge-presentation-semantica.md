@@ -217,3 +217,7 @@ defaults vuelven a los valores holgados (120 / 10 / 300 / 20); los estrictos son
 El profile siempre manda. Implementado con `--mode` o `architecture.mode` (2 tests nuevos). `forge_demo` se
 refactorizó (`_LoadMoreOnScroll`, `_ListFooter`, `listLength`) para cumplirlos; 29 tests de Flutter
 y `flutter analyze` pasan.
+
+## Enmienda posterior (2026-11-19, BIT-013 fase 2)
+La prueba de texto 2.0 pasó de la accesibilidad a una matriz de robustez de layout que siempre corre (ADR 0010);
+`accessibility.md` ya solo remite a ella. La semántica sigue siendo opt-in.

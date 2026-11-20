@@ -60,6 +60,33 @@ Riverpod projects wrap it in `ProviderScope(overrides: overrides, child: …)`, 
 takes `List<Override> overrides`. Projects using intl_utils use `S.delegate` and
 `S.delegate.supportedLocales`.
 
+## `test/helpers/pump_app_at.dart` (responsive matrix)
+
+```dart
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'pump_app.dart';
+
+extension PumpAppAt on WidgetTester {
+  /// Renders [widget] in a logical [size] at [textScale] and resets the view when the test ends.
+  Future<void> pumpAppAt(Size size, double textScale, Widget widget) async {
+    view.physicalSize = size * 3;
+    view.devicePixelRatio = 3;
+    platformDispatcher.textScaleFactorTestValue = textScale;
+    addTearDown(() {
+      view.resetPhysicalSize();
+      view.resetDevicePixelRatio();
+      platformDispatcher.clearTextScaleFactorTestValue();
+    });
+    await pumpApp(widget);
+  }
+}
+```
+
+If `textScaleFactorTestValue` is deprecated in the project's Flutter version, wrap the widget in
+`MediaQuery(data: MediaQueryData(textScaler: TextScaler.linear(textScale)), child: widget)` instead.
+
 ## Coverage of new domain/data files
 
 ```bash

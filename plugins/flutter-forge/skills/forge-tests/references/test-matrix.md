@@ -9,8 +9,8 @@
 | data | Remote data source | request shape (method, path with encoding, query, headers, body); DTO returned; exceptions not swallowed | cancellation passes the token |
 | data | Repository impl | `Success` mapping; every status → failure type; business codes; parsing; network/timeout | cache hit/miss/TTL when cached |
 | presentation | State manager | initial; each load outcome; retry; pagination (append, end, load-more failure keeps items); debounce + stale discard; disposal guard; side-effect trigger | analytics events |
-| presentation | Page | each sealed state renders its widget; intents on tap/type; error copy from failure mapping; submit disabled rules | goldens for stable components; text-scale 2.0 smoke |
-| presentation | Shared widget (new or extended) | each parameter's effect; the **old default behavior unchanged** when extended | goldens |
+| presentation | Page | each sealed state renders its widget; intents on tap/type; error copy from failure mapping; submit disabled rules; **responsive matrix** (`widget-tests.md` § Responsive matrix) | goldens for stable components |
+| presentation | Shared widget (new or extended) | each parameter's effect; the **old default behavior unchanged** when extended; responsive matrix when it holds text | goldens |
 | e2e | Flow (forge-e2e) | happy path from entry to exit; main failure path that is reachable in the test environment | — |
 
 ## Mapping acceptance criteria

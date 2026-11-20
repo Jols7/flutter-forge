@@ -92,6 +92,10 @@ design:
   spacing: null                            # e.g. AppSpacing (lib/core/theme/app_spacing.dart)
   scaffold_widget: null                    # project scaffold to use instead of Scaffold
   widget_catalog: docs/widget-catalog.md
+  screenshots: local                       # local (refs/ ignored by git) | commit — reference captures of forge-figma
+  fidelity:                                # optional overrides of forge-figma/references/fidelity.md § 2
+    alignment_offset_dp: 8                 # accepted absolute offset of an aligned element
+    visual_extent_dp: 4                    # accepted gap between Figma's frame and the painted shape
 
 requirements:
   template: default                        # default (hu-v1) | path to a template (.flutter-forge/templates/hu.md);
@@ -129,6 +133,7 @@ quality:
   # Size limits below are the defaults for `mode: new`. With `adopt`/`improve` they default to the looser
   # 120 / 10 / 300 / 20 (build lines / complexity / file / depth) and build size is a warning, not a finding.
   max_build_lines: 50                      # build() size before it is a finding
+  max_fixed_width: 240                     # dp; a literal SizedBox/Container width at or above this is flagged by check_responsive.py
   max_file_lines: 250                      # presentation file size (warn)
   max_classes_per_file: 3                  # presentation file (warn; state/ exempt)
   max_widget_depth: 12                     # indentation levels (warn)

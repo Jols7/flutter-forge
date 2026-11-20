@@ -20,7 +20,9 @@ Estado: completed | completed-with-gaps | failing-tests | blocked · Modo: inter
 Creados (n) · Modificados (m) — lista agrupada por capa, con rutas.
 
 ## Diseño
-Componentes reutilizados / extendidos / creados · tokens sin equivalente.
+Componentes reutilizados / extendidos / creados · tokens sin equivalente (gaps y quién decide).
+Fidelidad visual: veredicto (`pass` · `pass-with-accepted` · `fail`), diferencias aceptadas con su motivo, defectos y responsable.
+Responsividad: hallazgos de `check_responsive.py` pendientes y resultado de la matriz (tamaños × escala de texto).
 
 ## Contrato
 Endpoints (real / mock-agreed) · **Rutas mockeadas:** `POST transfers` (quitar cuando exista).

@@ -23,6 +23,58 @@ All notable changes to this project are documented here. The format follows
 - `code-comments.md` cites *Effective Dart* and the Flutter style guide, explains why comments are in
   English and adds a `///` writing guide with good and bad examples per layer.
 
+### Changed (BIT-013, presentation run)
+- After applying a `delta.md` to a real screen with `forge-presentation`: Measures hold one number per cell and
+  Flutter alignment words, Responsive behavior one rule per row with the fraction's reference, the delta walks
+  the Measures table row by row, `forge-presentation` formats with the project's command and names shared-widget
+  extensions in the report.
+
+### Changed (BIT-013, real-Figma validation)
+- `forge-figma` after an end-to-end run on a real screen (standalone + delta): colors with no token
+  (`fidelity.md` § 8), screenshot size, tie and font-family policies, `Spacing` column and `Source` in
+  Measures, delta table with weight and evidence, verdict location and shared layouts between states.
+  `theme_tokens.py` compares font names ignoring spaces and case; `lint_design.py` counts `[inferido: …]`.
+  Scripts are executable.
+
+### Added (BIT-013 phase 2, ADR 0010)
+- `forge-presentation/references/responsive.md`: the single source for adaptive layout (targets: phones from
+  320 dp, tablet, landscape, text scale 1.0 to 2.0, longest content; rules for rows, fixed sizes, scroll,
+  lists, tablet) and for building from the `design.md` Measures without flattening nested gaps.
+- `forge-audit/scripts/check_responsive.py` (bare `Text` beside an `Expanded`, fixed widths and heights,
+  `ListView(children)`, `MediaQuery.of`, forms without scroll) with tests, wired into the audit, the
+  checklist (§ 15), the severity map, `flutter-reviewer` and CI. It flags both real overflows of the
+  BIT-013 phase 0 case.
+- `forge-tests`: a responsive matrix (sizes × text scales × longest content, helper `pumpAppAt`).
+- `forge-deliver`: a visual check at the end of the presentation phase when a `design.md` exists, and an
+  optional `design` block in `state.json` / `result.json` (fidelity verdict, accepted differences,
+  responsive check and matrix). No phase was added.
+- Evals `presentation-responsive-layout` and `audit-responsive-overflow`; profile key
+  `quality.max_fixed_width`.
+
+### Changed (BIT-013 phase 2)
+- **Behavior change (amends ADR 0008):** the text-scale test is no longer tied to `a11y: on`. Layout
+  robustness (overflow, clipped content) is always tested; semantics stay opt-in.
+- `forge_demo`: `AccountCard` no longer overflows with large balances (`Flexible` + `FittedBox`).
+
+### Added (BIT-013 phase 1, ADR 0009)
+- `forge-figma` is now a specification producer with a priority order: responsive first, then exact
+  colors, fonts, order, alignment, radius and borders, then spacing, with flexible dimensions. New
+  `references/fidelity.md` (tolerance, policies for missing tokens, fonts and Material defaults,
+  verdict, reference captures) and `references/modes.md` (feature, standalone, delta, verify, css; with
+  or without a story; with or without `forge-deliver`).
+- `forge-figma/scripts/theme_tokens.py` (token → value map; matches Figma tokens by name **and**
+  value, catches overlays with another base color and missing fonts) and `lint_design.py` (structure
+  of `design.md`; counts for `state.json`), with tests.
+- Five evals: `figma-fixed-width-mapping`, `figma-missing-token-gap`, `figma-material-component-measures`,
+  `figma-standalone-delta`, `figma-responsive-priority`.
+- Profile keys `design.screenshots` and `design.fidelity.*` (optional).
+
+### Changed (BIT-013 phase 1)
+- `design.md` template: tokens carry their value, gaps have value / nearest / difference / decider,
+  per-element Measures (gap per nesting level, type role and color per element), Responsive behavior,
+  References (captures) and a verdict. `figma-mapping.md` no longer says "remove fixed widths"; it says
+  how each is made flexible and keeps nested gaps. Shorter skill `description`.
+
 ### Added
 - `forge-presentation/references/structure.md`: naming (`XPage`, `XTile`, `XCard`, `XSection`,
   `snake_case` files), folder skeleton, extract/promote rules and size thresholds measured on a real

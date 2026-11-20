@@ -38,7 +38,7 @@ AC-1 … AC-n (one line each, linking to the story for full text)
 Sensitive: <fields> · Masking: <rule> · Never log: <fields> · Re-auth: <action> · Limits: <…>
 
 ## Design
-Figma: <file/nodes per state> · Tokens without theme match: <list or none yet>
+Figma: <file/nodes per state> · Story: yes|no · Tokens without theme match: <list or none yet> · Target devices: phones from 320 dp, tablet, landscape (default)
 
 ## Gaps
 | Id | Question | Type | Placeholder if non-blocking |

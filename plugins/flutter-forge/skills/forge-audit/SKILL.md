@@ -1,6 +1,6 @@
 ---
 name: forge-audit
-description: Audit Flutter/Dart code for architecture conformance, design quality, redundancy, best practices, performance, testing and, when `a11y` is on, accessibility, against the project's own preset and layer rules. Automated checks run first (analyzer, formatter, layer/import checker, DCM when available). Then come a checklist review and three design lenses (state modeling, responsibility boundaries, abstraction timing). Findings are ranked critical/high/medium/low/improvement, with file:line, why and fix, a confidence bar of 0.8 or more and a merge verdict. It never edits code itself. Security-only requests go to forge-security. Use it after implementing or before merging, when the user asks for a code review, "audita el código", "revisa la calidad", "busca redundancias", "valida la arquitectura", "code review del feature", or when forge-deliver reaches the review phase (usually inside the flutter-reviewer agent).
+description: Audit Flutter/Dart code for architecture conformance, design quality, redundancy, best practices, performance, testing, responsiveness and design fidelity and, when `a11y` is on, accessibility, against the project's own preset and layer rules. Automated checks run first (analyzer, formatter, layer/import checker, DCM when available). Then come a checklist review and three design lenses (state modeling, responsibility boundaries, abstraction timing). Findings are ranked critical/high/medium/low/improvement, with file:line, why and fix, a confidence bar of 0.8 or more and a merge verdict. It never edits code itself. Security-only requests go to forge-security. Use it after implementing or before merging, when the user asks for a code review, "audita el código", "revisa la calidad", "busca redundancias", "valida la arquitectura", "code review del feature", or when forge-deliver reaches the review phase (usually inside the flutter-reviewer agent).
 ---
 
 # forge-audit
@@ -33,6 +33,7 @@ the audit runs there, in a context that did not write the code.
 python3 <this skill dir>/scripts/check_layers.py --rules <rules> --files <scope files…>
 python3 <this skill dir>/scripts/check_layers.py --rules <rules> --summary --no-fail   # project debt, for context only
 python3 <this skill dir>/scripts/check_presentation.py --root . --profile .flutter-forge/profile.yaml --files <scope dart files…>   # size, complexity (approx.), naming, anti-patterns
+python3 <this skill dir>/scripts/check_responsive.py --root . --profile .flutter-forge/profile.yaml --files <scope dart files…>   # overflow-prone rows, fixed widths, scroll (always, not tied to a11y)
 python3 <this skill dir>/scripts/check_comments.py --root . --shared-widgets <paths.shared_widgets> --files <scope dart files…>
 dart run dart_code_metrics:metrics analyze lib  # only if quality.dcm: true (or `dcm analyze lib`)
 ```
@@ -61,6 +62,7 @@ The sections are:
 12. navigation
 13. dependencies
 14. comments
+15. responsiveness and design fidelity
 
 ## Step 3 — Design lenses
 

@@ -1,6 +1,6 @@
 ---
 name: forge-presentation
-description: Implement the presentation layer of a Flutter feature from its blueprint and design notes - pages, sealed-state managers (BLoC/Cubit, Riverpod, Provider), widgets, navigation, failure messages, forms and lists. Use when asked to create or change a screen, page, view, cubit, bloc, notifier or provider, wire navigation, or "crea la pantalla", "maqueta la vista", "agrega el estado de carga"; and when forge-deliver reaches implementation. Accessibility is opt-in (`a11y`).
+description: Implement the presentation layer of a Flutter feature from its blueprint and design notes - pages, sealed-state managers (BLoC/Cubit, Riverpod, Provider), widgets, navigation, failure messages, forms and lists. Use when asked to create or change a screen, page, view, cubit, bloc, notifier or provider, wire navigation, or "crea la pantalla", "maqueta la vista", "agrega el estado de carga"; and when forge-deliver reaches implementation. Responsive by default; accessibility is opt-in (`a11y`).
 ---
 
 # forge-presentation
@@ -20,10 +20,12 @@ domain, and widgets get state. Nothing in this layer knows about HTTP or JSON.
    - `references/state-riverpod.md`, or
    - `references/state-provider.md`.
 
-   Load `references/page-patterns.md` and `references/structure.md` too. If `a11y` is `on`
+   Load `references/page-patterns.md`, `references/structure.md` and `references/responsive.md` too
+   (responsive rules always apply, whatever `a11y` says). If `a11y` is `on`
    (brief, else `accessibility.default`, default `off`), also load `references/accessibility.md`.
 3. Read the run's `blueprint.md` (state design, widgets, routes) and `design.md` when it exists.
-   The design notes say which widgets to reuse, extend or create, and which tokens to use.
+   The design notes say which widgets to reuse, extend or create, which tokens to use, and (Measures,
+   Responsive behavior) the exact spacing, type role and color per element.
 4. In `adopt`/`improve`, open the canonical feature's page and state manager, and mirror where
    the state manager is created, how the page consumes it and which scaffold or buttons it
    uses.
@@ -51,10 +53,15 @@ domain, and widgets get state. Nothing in this layer knows about HTTP or JSON.
 - **Reuse ladder** for every component in `design.md`:
   1. exact match → reuse it;
   2. close match → extend it with an **optional** parameter whose default keeps the old
-     behavior;
+     behavior (name it in the report; when `design.widget_catalog` does not exist, say so: `forge-figma`
+     builds it);
   3. otherwise create it: feature-local in `presentation/widgets/`, or shared in
      `paths.shared_widgets`. A shared widget is exported from the barrel when there is one,
      and gets a row in `design.widget_catalog`.
+- **Layout from the specification** (`references/responsive.md` § Building from `design.md`): follow
+  the Measures table exactly, keep each nesting level's gap in its own `Column`/`Row` (never flatten
+  two levels into one list with spacers), and make dimensions flexible so nothing overflows at 320 dp,
+  tablet, landscape or text scale 2.0.
 - Use the theme for all styling: colors, text styles and spacing tokens from `design.*`. There
   are no hex literals and no `TextStyle(fontFamily: …)`. A token that is missing from the theme
   is a gap reported by `forge-figma`; never replace it with a literal.
@@ -85,7 +92,7 @@ nothing in widget trees that the code already says. `///` goes on shared widgets
 
 ## Step 4 — Verify
 
-Run `quality.analyze_command` until it is clean. Then run `../forge-audit/scripts/check_presentation.py` on the files you wrote and fix its findings. Widget and state tests come from
+Run `quality.analyze_command` until it is clean, and format only with the project's `quality.format_command` (never a bare `dart format` when the project uses another line length; revert any file you did not touch). Then run `../forge-audit/scripts/check_presentation.py` and `../forge-audit/scripts/check_responsive.py` on the files you wrote and fix their findings. Widget and state tests come from
 `forge-tests`. When this skill runs alone, offer to run it next.
 
 ## Anti-patterns
@@ -101,6 +108,8 @@ Run `quality.analyze_command` until it is clean. Then run `../forge-audit/script
 | Calling repository or `context.read` in `build` | Load in the route builder (`..load()`) or `build()` of the notifier | `build` runs many times |
 | `context.watch` scattered in helper methods | Select once at the top; pass state down | One rebuild boundary; readable |
 | Spinner on every keystroke | Debounce + delayed loading + stale discard | No flicker; correct results |
+| A bare `Text` beside an `Expanded`, a `width:` copied from the design, a fixed `height` around text | `Flexible`/`FittedBox`, constraints from the parent, minimum heights | Overflow on small phones and large text |
+| Flattening nested gaps into one list with spacers | One `Column`/`Row` per level with its own `spacing:` | The design's 24 becomes 16 + 8 |
 | Hex colors and raw `TextStyle`s | Theme / tokens from the profile | Theming and dark mode keep working |
 | Changing an existing widget's required parameters | Optional parameter, old behavior as default | Every call site keeps compiling |
 | Navigation inside a state manager | Side effect via listener (`BlocListener`, `ref.listen`, one-shot event) | State stays UI-agnostic |

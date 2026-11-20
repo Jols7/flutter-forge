@@ -1,6 +1,6 @@
 # BIT-009 · Revisión de modelo y esfuerzo por agente y skill
 
-> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-008](BIT-008-telemetria-y-metricas.md), [BIT-010](BIT-010-linea-base-forge-metrics.md), [BIT-011](BIT-011-forge-presentation-semantica.md)
+> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-008](BIT-008-telemetria-y-metricas.md), [BIT-010](BIT-010-linea-base-forge-metrics.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-013](BIT-013-fidelidad-visual-frente-a-figma.md)
 
 - **Tipo:** revisión, mejora · **Estado:** pendiente · **Alta:** 2026-11-17
 - **Dónde mirar:** frontmatter de `plugins/flutter-forge/agents/*.md` y de
@@ -67,3 +67,7 @@ efectivo lo manda el agente; cuando se invoca suelta, el de la sesión.
   de justificar el cambio con datos. Hacer primero BIT-008, o al menos su script de métricas.
 - Relacionado con B3 (evals con repos sembrados, que dan recall y precisión por configuración).
 - Los modelos y precios cambian: la tabla de hipótesis se valida con los vigentes al medir.
+
+- Evidencia desde BIT-013 (2026-11-19): en la fase de diseño de `forge-figma` un control con Sonnet 5.5 igualó
+  o superó al run de Opus 5.5 cuando el contrato de `design.md` exigía medidas por elemento; no justifica
+  por sí solo cambiar el modelo de esa skill. Sin evidencia todavía sobre `forge-presentation`.

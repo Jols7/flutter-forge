@@ -10,15 +10,18 @@ Use this when the person pastes CSS from Figma's inspect panel instead of a link
 3. **Semi-pseudocode widget tree:**
    - It is a tree, not a file. Leave out imports, the class and `build`.
    - Use native Flutter widgets, plus catalog widgets when the catalog has an exact match.
-   - Keep the **exact numbers**: padding, gaps, sizes, radii and letter spacing.
+   - Keep the **exact numbers**: padding, gaps, radii and letter spacing; sizes only where they stay fixed
+     (`fidelity.md` § 3). Keep nested gaps nested.
    - CSS `line-height` becomes `height: lineHeightPx / fontSizePx`, written as the division so
      the source stays visible (`height: 24 / 16`).
    - Put repeated children once in a named helper (`_Item(...)`).
 4. **Color table** `Hex | Token`: each hex mapped to the theme token by the profile's palette.
    When several tokens share a hex, pick the one that fits the context and flag the tie.
    With no palette known, leave the raw `Color(0xFF…)` values and say so; never invent tokens.
-5. **Notes for the implementer:** ambiguous matches, assets to confirm, and states the CSS
-   hints at but doesn't show (selected, disabled, error).
+5. **Responsive behavior:** one line per fixed width or height in the CSS saying how it was made
+   flexible (or why it stays fixed), per `fidelity.md` § 3. Never copy a frame width.
+6. **Notes for the implementer:** ambiguous matches, assets to confirm, accepted differences and
+   states the CSS hints at but doesn't show (selected, disabled, error).
 
 ## CSS → Flutter cheat sheet
 

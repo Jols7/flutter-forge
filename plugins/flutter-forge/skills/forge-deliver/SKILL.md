@@ -44,7 +44,7 @@ skill's rules.
 | 3 | contract | forge-api-contract | collection/spec/pasted endpoints (skip if no data) | `contract.md`, fixtures | — |
 | 4 | blueprint | forge-blueprint | brief (+ design, contract) | `blueprint.md` | **Gate 2** classes + test plan |
 | 5 | data | forge-data-layer | blueprint, contract | code | — |
-| 6 | presentation | forge-presentation | blueprint, design | code | — |
+| 6 | presentation | forge-presentation | blueprint, design | code + visual check | — |
 | 7 | l10n | forge-l10n | blueprint keys | ARB + generated | — |
 | 8 | tests | forge-tests | blueprint test plan, fixtures | tests, `tests.md` | — |
 | 9 | e2e | forge-e2e | flow from brief; device + credentials | flow test | — |
@@ -57,6 +57,12 @@ Rules between phases:
   must be resumable from any point in a new session.
 - **When a phase starts,** append it to `phase_log` with the time from `date -u`. Every time in
   `state.json` comes from that command (`references/run-state.md`).
+- **Visual check (end of 6, only when `design.md` exists).** Run the static comparison of
+  `forge-figma/references/fidelity.md` § 6 (Measures table against the code, nested gaps kept), run
+  `forge-audit/scripts/check_responsive.py` on the files written, and write the verdict and accepted
+  differences into `design.md`. A `fail` goes back to `forge-presentation` once; if it persists, report
+  it as a defect with its owner and continue. Record `design` in `state.json` and `result.json`.
+  No phase is added: `phases` and the metrics mapping are unchanged.
 - **Tests failing (8–9).** Fix and re-run, up to 3 cycles per failure (the rule in
   `forge-tests`), and count each cycle in `retries`. After that, continue to the review and mark
   the run `status: failing-tests`. Never hide a failure.
@@ -101,7 +107,8 @@ whole review unless the fixes were broad, meaning they touched more than ~30 % o
 - Write `report.md` from `references/report-template.md`, in the profile's
   `requirements.language`. It covers:
   - AC → implementation → test traceability;
-  - the design mapping and the files;
+  - the design mapping, the fidelity verdict (with accepted differences) and the responsive check;
+  - the files;
   - the mocked routes;
   - tests and coverage;
   - findings and their status;

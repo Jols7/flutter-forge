@@ -30,7 +30,7 @@ Mirror `lib/` in `test/`, one test file per class under test. Use the templates:
 | Repository impl | §Repositories | success → `Success(entity)`; each mapped status → its `AppFailure`; business codes → `BusinessFailure`; parsing error → `ParsingFailure`; offline/timeout → `NetworkFailure` |
 | Use case / validator | §Domain | each rule from the brief (R-n), boundaries (min − 0.01, min, max, max + 0.01) |
 | State manager | `references/state-tests.md` | initial state; load success/empty/failure; retry; pagination; debounce + stale discard; no emit after close; side effects |
-| Page / widget | `references/widget-tests.md` | one test per sealed state; interactions dispatch the right intent; inline errors; disabled submit; semantics only when `a11y: on` |
+| Page / widget | `references/widget-tests.md` | one test per sealed state; interactions dispatch the right intent; inline errors; disabled submit; **responsive matrix always** (sizes × text scales × longest content); semantics only when `a11y: on` |
 
 Naming: `group('<Class>')` + `test('AC-3: shows the insufficient funds error under the amount',
 …)`. Use the AC or rule id when the test proves one, and plain behavior wording otherwise.
@@ -64,6 +64,7 @@ Naming: `group('<Class>')` + `test('AC-3: shows the insufficient funds error und
 | Real network, real secure storage, real clock in unit tests | mocktail, fakes, injectable clock/timers (`fakeAsync`) | Deterministic tests |
 | States without `==` and `expect: [isA<...>()]` everywhere | Value equality on states; exact expected states | Catches wrong field values |
 | Snapshot/golden tests as the only widget tests | Behavior tests first; goldens only for stable visual components | Goldens break on unrelated changes |
+| Testing text scale only when `a11y` is on, or only "no exception" | The responsive matrix always, asserting key content is on screen | Overflow and clipping are layout defects (ADR 0010) |
 | Skipping failure paths because "the happy path works" | Every `AppFailure` the screen handles | Errors are where apps break |
 
 ## Finish

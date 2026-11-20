@@ -1,8 +1,8 @@
 # BIT-013 · Fidelidad visual frente a Figma: diferencias de maquetación
 
-> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md)
+> [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-009](BIT-009-modelo-y-esfuerzo.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md), [BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md)
 
-- **Tipo:** auditoría, mejora · **Estado:** pendiente · **Alta:** 2026-11-19
+- **Tipo:** auditoría, mejora · **Estado:** en curso (fase 0 hecha, fase 1 en la rama `feat/bit-013-figma-fidelidad`; ADR [0009](../adr/0009-visual-fidelity-responsive-first.md)) · **Alta:** 2026-11-19
 - **Origen:** informe de solo lectura (2026-11-19) sobre diferencias de maquetación entre el diseño
   de Figma y el código generado, en la cadena `forge-figma` → `forge-presentation`. No se tocó
   código. **No es alcance de `forge-presentation`**: nace en cómo se traduce y se verifica el
@@ -82,3 +82,190 @@ diseño → código → comparación.
   archivos cambian antes de actuar.
 - La causa raíz es una hipótesis: confirmarla con una comparación real diseño ↔ código de al menos
   una pantalla antes de fijar el plan.
+
+## Fase 0 · Calibración con un caso real (2026-11-19)
+
+**Caso:** UnitedApp, run `simulador-inversion` (plugin 0.7.0, Opus 5.5), Figma `nvBFVP60JHUgTiaJMcqBCK`
+nodo `78627:22552` (resultado Control 16) contra el código de `lib/screens/investment_simulator/` en el
+commit `84e1467` (worktree `UnitedApp-bit013`, rama `feat/bit-013-calibracion-figma`). Medidas leídas con
+`get_design_context` y `get_metadata`; comparación estática más una sonda de layout desechable (no se
+versiona) que renderiza el resultado a 6 tamaños × 3 escalas de texto × 3 variantes.
+
+**Resultado sobre la hipótesis:** se confirma, con dos matices.
+1. La pérdida de fidelidad ocurre en **dos capas**, no solo en `forge-figma`: `design.md` aplanó o
+   calló medidas (separación de las filas, color por texto, borde de la nota) y `forge-presentation`
+   además aplanó columnas anidadas que `design.md` sí describía bien (ver A).
+2. La **responsividad es el defecto mayor** y nadie lo mide: 23 de 54 combinaciones tienen overflow.
+
+| # | Tipo | Diseño | Código | Veredicto propuesto | Origen |
+|---|---|---|---|---|---|
+| A | espaciado | importe → barra de niveles: 24 (columna anidada) | 16 (columna plana + `SizedBox(8)` en otro punto) | defecto | presentation (`design.md` lo tenía bien) |
+| B | espaciado | filas del resumen: 8 entre ellas | 16 | defecto | `design.md` calla |
+| C | espaciado | divisor ↔ flecha: 4 | 0 | defecto menor | `design.md` calla |
+| D | alineación/espaciado | importe y divisa: 8, alineados abajo | 4, centrados (`AmountInput` compartido) | defecto | `design.md` calla |
+| E | color | "Ganarías" y su importe: `On Primary Container` | `onSurfaceVariant` y `primary` | defecto | `design.md` calla (color por texto) |
+| F | tipografía (rol) | etiqueta 12 (`body/small`), valor 16 (`title/medium`) | `bodyMedium` 14, `titleSmall` 14 | defecto | `design.md` calla |
+| G | borde | nota con borde 1 px al 16 % | `hasBorder: false` | defecto | `design.md` calla |
+| H | color (valor) | `State Layers/Primary/Opacity-16` = `#8D4E2A` al 16 % | `primary` (`#FF7E2B`) al 16 % | **decisión**: equivalencia por nombre con valor distinto; se resolvió "por convención" sin avisar | `design.md` (D-1 mal descrito) |
+| I | color | divisores: variable `Outline Variant` `#D7C2B9` presente en el nodo | `primary` al 16 % | probable defecto; verificar | `design.md` no lo cita |
+| J | fuente | `title/*` y `label large` en Montserrat | `DMSans` (Montserrat no está en `assets/fonts`) | **gap global** (hoy solo una "Observación") | tema del proyecto |
+| K | tamaño | selector de divisa 34 px de alto | caja de 48 px (área táctil) | decisión (no es `a11y`) | presentation |
+| L | espaciado | barra → etiqueta: 12 (marco de 12 con pista de 4) | 8 | aceptable (≤4 px) | — |
+| M | alineación | etiquetas con `space-between` | centradas por tramo (≤5 px) | aceptable por flexibilidad | — |
+| N | ancho | nota 326, tarjeta `min-w 300`, subrayado 268 | estiran; la tarjeta no impone 300; subrayado fijo 268 | aceptable (gana la responsividad); el subrayado fijo no se adapta | — |
+
+**Responsividad (sonda, 54 combinaciones: 31 correctas, 23 con overflow).**
+- Con importes grandes y escala 1.0: overflow a 320 dp (54 px) y 360 dp (14 px).
+- Teléfonos (12 combinaciones por escala): fallan 2 con escala 1.0, 9 con 1.5 y 12 con 2.0. Tablet y
+  horizontal no fallan en ninguna.
+- Los dos puntos son `simulation_result_card.dart:30` (fila título/importe) y `:89` (`_ResultRow`):
+  un `Text` sin `Flexible` junto a un `Expanded`. Es el patrón que `check_responsive.py` debe marcar.
+- `design.md` no declara ningún comportamiento responsivo, y el diseño en sí (`min-w 300`) no cabe en 320 dp.
+
+**Implicaciones para el plan**
+- `design.md` debe fijar **espaciado entre hermanos, color y rol tipográfico por elemento**, y conservar
+  la jerarquía de columnas anidadas; `forge-presentation` no debe aplanarlas (A).
+- Las equivalencias de token se declaran con **valor** y con quién decide (H); `theme_tokens.py` compara
+  el valor, no solo el nombre.
+- Una diferencia de familia tipográfica es un gap de diseño con decisión, no una observación (J).
+- La matriz responsiva (tamaños × escala de texto × importe largo) detecta lo que ninguna skill ve hoy.
+
+**Control de modelo (2026-11-19).** Subagente Sonnet 5.5 sin acceso al run ni a la pantalla existente, mismo nodo
+(`78627:22552`), 5 llamadas de Figma, siguiendo `forge-figma` tal cual. **Limitación:** mi prompt le pidió medidas
+por elemento, color por texto y gaps anidados sin aplanar; la skill hoy no lo pide, así que no es un control
+neutro. Una sola corrida, un solo nodo, sin estados.
+- Su `design.md` recoge **todas** las diferencias A a G que el de Opus callaba: gaps anidados (24 / 8 / 4),
+  separación de filas 8, importe y divisa a 8 alineados abajo, `On Primary Container` en "Ganarías", roles
+  `bodySmall`/`titleMedium` en las filas, borde de la nota, y marca H (valor de la capa de estado) y J (Montserrat)
+  como gaps con decisión. Solo dudó en colores de vectores (los marcó `[por confirmar]`).
+- Conclusión provisional: **en la fase de diseño el modelo no explica la diferencia**; la omisión de Opus nace de
+  que el contrato de `design.md` no exige esas medidas. Con el contrato explícito, Sonnet entrega la
+  especificación completa. Las discrepancias vistas en otras sesiones de Sonnet quedan sin explicar y apuntan a
+  la fase de `forge-presentation` (aplanar columnas, ignorar medidas), que **no se repitió** aquí.
+- Si tras la fase 1 la presentación con Sonnet sigue divergiendo con la misma especificación, se deriva a BIT-009
+  con esa evidencia. Hasta entonces BIT-009 no cambia.
+
+## Fase 1 · `forge-figma` (2026-11-19, rama `feat/bit-013-figma-fidelidad`)
+
+**Hecho:** `references/fidelity.md` (prioridad, tolerancia inicial, políticas, veredicto, capturas) y
+`references/modes.md` (feature, standalone, delta, verify, css; con o sin HU; con o sin `forge-deliver`);
+`SKILL.md` reescrito y con `description` más corta; `design-template.md` como especificación (valor del
+token, gaps con valor / más cercano / diferencia / quién decide, medidas por elemento, comportamiento
+responsivo, referencias, veredicto); `figma-mapping.md` y `css-mode.md` sin "quitar anchos" y con gaps
+anidados; claves opcionales `design.screenshots` y `design.fidelity.*` en `profile-schema.md`;
+`scripts/theme_tokens.py` y `scripts/lint_design.py` con 16 tests (112 en total); 5 evals; ADR 0009 y
+`CHANGELOG`. BIT-009 enlazada en ambos sentidos.
+
+**Evals** (`claude plugin eval`, con y sin plugin, 1 corrida por brazo salvo donde se indica; indicio, no medida
+estable; coste total ≈ 4,0 USD con las tres rondas):
+- Primera ronda: 0/5 en ambos brazos. Las respuestas eran buenas; fallaron mis criterios (exigían artefactos
+  propios de la skill) y la skill no se invocaba. Corregido: criterios de tres puntos de comportamiento,
+  prompts que nombran `forge-figma` y un grader `skill-used` por caso.
+- Segunda ronda con el plugin: `figma-standalone-delta` pasa (sin plugin: 0), `figma-material-component-measures`
+  y `figma-missing-token-gap` pasan (sin plugin también pasan), `figma-responsive-priority` pasa en criterios
+  (sin plugin también; la skill no se invocó) y `figma-fixed-width-mapping` falló por un criterio incoherente con
+  el prompt (la paleta no traía `onPrimaryContainer`). Corregido y repetido 2 veces: con plugin 2/2, sin plugin 0/2.
+- **Lectura honesta:** discriminan bien `standalone-delta` y `fixed-width-mapping`; los otros tres los resuelve
+  también el modelo sin plugin, así que miden poco. `responsive-priority` no dispara la skill. Pendiente:
+  endurecerlos con casos que dependan de las reglas propias (veredicto, tabla de gaps con quién decide) y
+  repetir con más corridas.
+
+**Pendiente de la fase 1:** ninguna capacidad nueva. La verificación con Figma MCP real de los modos
+standalone y delta (corrida completa sobre la pantalla UNITED) queda para después de la fase 2, cuando
+`forge-presentation` pueda aplicar un `delta.md`.
+
+## Fase 2 · Consumidores (2026-11-19, misma rama; ADR [0010](../adr/0010-responsive-matrix-independent-of-a11y.md))
+
+**Hecho:**
+- `forge-presentation`: `references/responsive.md` (única fuente: objetivos, reglas, cómo construir desde las
+  Medidas sin aplanar gaps); `SKILL.md`, `page-patterns.md` y `accessibility.md` solo enlazan.
+- `forge-tests`: matriz responsiva siempre activa (`widget-tests.md`, helper `pumpAppAt` en `helpers.md`,
+  `test-matrix.md`, `SKILL.md`). **Enmienda a ADR 0008:** la prueba de texto grande deja de depender de `a11y`.
+- `forge-audit`: `scripts/check_responsive.py` (8 pruebas), checklist § 15, mapa de severidades, `flutter-reviewer`
+  y un paso en CI. `forge_demo` salió marcado por la regla (saldo sin `Flexible` junto a un `Expanded`) y se corrigió.
+- `forge-deliver`: verificación visual al cierre de la fase de presentación si hay `design.md`, bloque
+  `design` opcional en `state.json` y `result.json`, plantilla de informe. Sin fase nueva (las métricas no cambian).
+- `forge-blueprint` y `forge-requirements`: una línea cada uno.
+
+**Calibración del script en UNITED (solo lectura):** 276 archivos, 50 hallazgos (18 `row-text-no-flex`, 18
+`fixed-height-text`, 7 `row-texts-no-flex`, 4 `media-query-of`, 3 `fixed-width`); marca las dos filas que
+desbordaban en la pantalla del simulador. Falsos positivos probables: etiquetas cortas junto a un `Flexible`
+(p. ej. el código de divisa de `AmountInput`). En `adopt`/`improve` todo es `warn`.
+
+**Evals de la fase 2** (2 corridas por brazo): `presentation-responsive-layout` 2/2 con plugin y 0/2 sin él;
+`audit-responsive-overflow` 2/2 con plugin y 0/2 sin él. Siguen siendo indicio, no medida estable.
+
+**Coordinación con otras BIT:** BIT-002 no debe reintroducir la prueba de texto grande como condicional a `a11y`
+(nota añadida allí); BIT-012 no se ve afectada (las keys siguen independientes). Los hooks del plugin no se
+entregan (ADR 0009).
+
+**Pendiente:** prueba de extremo a extremo con Figma real (standalone y delta) sobre UNITED, y repetir la
+presentación con Sonnet para decidir si BIT-009 recibe evidencia; umbral de `fixed-height-text` por afinar con
+más proyectos; fase 3 (goldens y capturas en E2E) sigue condicionada a datos.
+
+## Prueba con Figma real (2026-11-19, tras la fase 2)
+
+Un agente Sonnet ejecutó `forge-figma` en modo **standalone** y luego **delta** sobre la pantalla del simulador
+(nodos `78627:22552` resultado y `80362:35721` cargando), sin HU ni `forge-deliver`, escribiendo solo en
+`.flutter-forge/design/simulador-resultado/` del worktree. 10 llamadas al MCP (1 guía, 1 variables, 2 metadata,
+2 contexto de diseño —pantalla completa y solo el nodo que cambia—, 3 capturas, una redundante), ≈ 3,5 minutos,
+`lint_design.py` sin errores.
+
+**Resultado:** `delta.md` encontró 13 defectos y 3 decisiones y recuperó todas las diferencias de la fase 0
+(A a J: gap 24 aplanado, color de "Ganarías" e importe, roles de las filas, borde de la nota, capa de estado
+`#8D4E2A`, Montserrat) y añadió cinco que yo no había visto: la relación de alineación de las etiquetas de nivel
+(`space-between` frente a centradas), el espacio título↔subtítulo de la nota (0 frente a 4), el subrayado fijo de
+268, el color probable de divisores y subrayado, y las dos filas sin `Flexible` (`check_responsive.py` coincide).
+El estado cargando salió `pass-with-accepted`. Corrección a la tabla de la fase 0: la fila M (alineación) pasa de
+"aceptable" a **defecto**, porque la tolerancia de 8 dp solo vale cuando la relación es la misma.
+
+**Fricciones registradas y corregidas** (14 puntos del informe del agente):
+- Tamaño de captura (el MCP devuelve el marco con margen: 410×864 para un 390×844): se documenta, no se recorta.
+- `theme_tokens.py` daba `DM Sans` como faltante frente a `DMSans`: ahora normaliza (test); solo se pasan al script
+  las familias de los nodos en alcance (nunca las del chrome, como Roboto).
+- Color de vectores sin token (divisor, subrayado, track): `fidelity.md` § 8 (variable del nodo → muestreo de la
+  captura con alpha → `[por confirmar]`); columna *Source* en Medidas.
+- Tokens que solo aparecen en otro estado: se leen del contexto de ese nodo, sin repetir variables.
+- Empate o coincidencia solo por valor (`On Primary` = `white`): gap *aliased*, lo decide el agente, no bloquea.
+- Familia distinta con mismo tamaño y peso: nunca `pass`, es gap. Rol parcheado con `copyWith(fontSize:)`: gap de rol
+  faltante si no existe rol, defecto si existe.
+- La palabra "gap" se usaba para dos cosas: la columna de Medidas ahora se llama *Spacing*.
+- Dónde va el veredicto en modo delta (`delta.md`), estados que comparten layout (columna *Shares layout with*,
+  defectos heredados una vez), columnas *Weight* y *Evidence* en la tabla delta, catálogo en solo lectura (filas
+  propuestas bajo Components).
+- `lint_design.py`: cuenta `[inferido: motivo]` y la celda `inferido`; el aviso de hex fuera de Tokens se documentó.
+- Los scripts no eran ejecutables y `SKILL.md` los invocaba sin `python3`: ahora `chmod +x` y `python3 scripts/…`.
+
+**Pendiente:** repetir la presentación (no solo el diseño) con Sonnet aplicando ese `delta.md` para decidir si
+BIT-009 recibe evidencia; cerrar la fase de decisión de umbrales con más proyectos.
+
+## Prueba de la fase de presentación con Sonnet (2026-11-19)
+
+Un agente Sonnet 5.5 siguió `forge-presentation` (con `responsive.md`) y aplicó el `delta.md` al código de UNITED
+(worktree `UnitedApp-bit013`, cambios sin commit en 4 archivos: página, tarjeta, barra de niveles y `AmountInput`
+con parámetros opcionales de default igual al anterior). Verificado por mí: `flutter analyze` limpio, 100 tests
+del simulador y widgets pasan, y la sonda responsiva pasa de **23 a 0** combinaciones con overflow (54/54), incluido
+`big-amounts` a 320 dp y escala 2.0. La jerarquía anidada quedó con sus gaps (24 / 16 / 4) y los anchos fijos se
+volvieron fracciones. Una sola corrida: indicio, no medida.
+
+**Lectura para BIT-009:** con una especificación explícita, Sonnet 5.5 aplicó bien la fase de presentación; no hay
+evidencia de que el modelo, y no el contrato, explique las discrepancias de otras sesiones. BIT-009 no cambia.
+
+**Faltas del delta (recall):** el `delta.md` no listó la diferencia importe↔divisa (gap 8 alineado abajo), que sí
+estaba en `design.md`; el agente de presentación la encontró al contrastar. Corregido en `modes.md`: recorrer la
+tabla de Medidas fila por fila y terminar con "filas revisadas N · diferencias M".
+
+**Fricciones y correcciones:** alineación en palabras de Flutter (no "bottom"), un solo número por celda (rangos e
+insets se resuelven y se marcan `[inferido]`), una regla por fila en Responsive behavior (sin alternativas), la
+fracción indica su referencia, el árbol y la tabla son normativos, formato solo con `quality.format_command`, y
+nombrar la extensión de un widget compartido en el informe. **Fuera del plugin:** el `Divider` transparente por el
+tema de la página es una regla de UNITED (va en su overlay `forge-presentation`).
+
+**Residuo:** `check_responsive.py` sigue marcando `ammount_input.dart:98` (el código de divisa junto al `Flexible`):
+falso positivo probable por texto corto; si se repite en otros proyectos, valorar una excepción para `Text` de
+longitud acotada. La sonda no ejercita el campo de entrada (el `TextField` desplaza internamente).
+
+## Derivada (2026-11-19)
+La pregunta de cuándo el código puede desviarse del diseño por claridad se separó a
+[BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md) (prioridad baja). Aquí queda la regla
+vigente "nunca cambiar valores / no aplanar", conservadora a propósito.
