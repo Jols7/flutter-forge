@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-24
+
+Additive for the orchestrator contract: `result.json` keeps `schema: 1` (it gains an optional `design`
+block) and every skill and agent name stays. Three behavior changes to note: accessibility is opt-in
+(`a11y`), `quality.max_build_lines` defaults to 50, and the text-scale test is always on.
+
 ### Changed
 - **Accessibility is opt-in** (BIT-011, ADR 0008). A new switch `a11y: off | on` is set in the brief
   (`forge-requirements`, field in the story template) or inherited from `accessibility.default` in
