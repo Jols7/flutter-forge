@@ -2,7 +2,7 @@
 
 > [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-009](BIT-009-modelo-y-esfuerzo.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-012](BIT-012-e2e-patrol-dispositivo-y-keys.md), [BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md)
 
-- **Tipo:** auditoría, mejora · **Estado:** en curso (fase 0 hecha, fase 1 en la rama `feat/bit-013-figma-fidelidad`; ADR [0009](../adr/0009-visual-fidelity-responsive-first.md)) · **Alta:** 2026-11-19
+- **Tipo:** auditoría, mejora · **Estado:** hecho (cerrada 2026-11-26; fases 0 a 2 y prueba con Figma real en `main` vía PR #4, `flutter-forge` 0.8.0; ADR [0009](../adr/0009-visual-fidelity-responsive-first.md) y [0010](../adr/0010-responsive-matrix-independent-of-a11y.md)) · **Alta:** 2026-11-19
 - **Origen:** informe de solo lectura (2026-11-19) sobre diferencias de maquetación entre el diseño
   de Figma y el código generado, en la cadena `forge-figma` → `forge-presentation`. No se tocó
   código. **No es alcance de `forge-presentation`**: nace en cómo se traduce y se verifica el
@@ -18,45 +18,45 @@ flexibles **no tiene una tolerancia declarada**. Ninguna skill cierra el ciclo
 diseño → código → comparación.
 
 **Hallazgos**
-- [ ] **Alta. Las reglas de mapeo descartan medidas a propósito.** `figma-mapping.md` dice
+- [x] **Alta. Las reglas de mapeo descartan medidas a propósito.** `figma-mapping.md` dice
       "Fixed width on a text container → remove; constrain by parent" (línea 13), "Fill container
       → `Expanded`" (línea 11) y "Hug contents → default sizing, no fixed width" (línea 12);
       `SKILL.md:105` repite "Fixed widths from the frame → Flexible layout + padding". Da layouts
       flexibles, pero cambia anchos, alineaciones y proporciones respecto al diseño. Es una decisión
       razonable que **no se declara como tolerancia**: nadie define cuánta diferencia es aceptable.
-- [ ] **Alta. Nadie compara el resultado con el diseño.** `forge-deliver` no tiene fase de
+- [x] **Alta. Nadie compara el resultado con el diseño.** `forge-deliver` no tiene fase de
       verificación visual; `forge-audit` no revisa fidelidad al diseño; `forge-tests` pide goldens
       "solo para componentes visuales estables" y como complemento (`SKILL.md:66`,
       `test-matrix.md:12-13`); `forge-e2e` no toma capturas comparables.
-- [ ] **Alta. El contrato es un esquema, no una especificación.** `design.md` guarda "estructura
+- [x] **Alta. El contrato es un esquema, no una especificación.** `design.md` guarda "estructura
       solamente" (pseudocódigo con `spacing: 16`). `forge-presentation` implementa a partir de eso y
       no vuelve a ver el diseño: cualquier tamaño, alineación o jerarquía que no esté en el esquema
       se **infiere**.
-- [ ] **Media. La captura de referencia es opcional.** `forge-figma` toma captura solo "when you
+- [x] **Media. La captura de referencia es opcional.** `forge-figma` toma captura solo "when you
       need a visual target for a node you have not seen" (`SKILL.md:36`). No se guarda una captura
       de referencia por pantalla junto a `design.md`, así que tampoco hay contra qué comparar luego.
-- [ ] **Media. Tokens ausentes.** Si un token no existe en el tema, se reporta como *gap* y no se
+- [x] **Media. Tokens ausentes.** Si un token no existe en el tema, se reporta como *gap* y no se
       reemplaza (`SKILL.md:49`, `design-template.md:13-15`). Protege el tema, pero deja el valor del
       diseño sin implementar y el componente queda con el valor por defecto de Material.
-- [ ] **Media. Material por defecto frente a diseño personalizado.** El mapeo envía componentes de
+- [x] **Media. Material por defecto frente a diseño personalizado.** El mapeo envía componentes de
       Figma a widgets Material (`FilledButton`, `ListTile`), que traen tamaños y espaciados propios
       que pueden diferir del diseño (p. ej. la restricción de `leading` y `trailing` de `ListTile`,
       ya citada en BIT-011 por los 48×48).
 
 **Qué quiero saber / hacer** (a decidir; sin plan cerrado todavía)
-- [ ] Declarar una **tolerancia de fidelidad** (qué se considera diferencia aceptable y cuál es un
+- [x] Declarar una **tolerancia de fidelidad** (qué se considera diferencia aceptable y cuál es un
       defecto), por tipo de medida: ancho, alineación, espaciado, tipografía, color.
-- [ ] Decidir qué parte del diseño pasa de esquema a **especificación** en `design.md` (medidas y
+- [x] Decidir qué parte del diseño pasa de esquema a **especificación** en `design.md` (medidas y
       alineaciones que importan, no solo estructura) sin perder el layout flexible.
-- [ ] Guardar una **captura de referencia por pantalla y estado** junto a `design.md`, no solo
+- [x] Guardar una **captura de referencia por pantalla y estado** junto a `design.md`, no solo
       cuando falta un objetivo visual.
-- [ ] Definir una **fase de verificación visual** con criterios y evidencia (¿en `forge-deliver`,
+- [x] Definir una **fase de verificación visual** con criterios y evidencia (¿en `forge-deliver`,
       en `forge-audit` o en ambos?) y su coste: medir antes de imponerla.
 - [ ] Decidir cómo se cierra el ciclo: capturas comparables en `forge-e2e`, goldens ampliados en
       `forge-tests`, o una comparación guiada por el agente contra la captura de referencia.
-- [ ] Política para tokens ausentes: seguir reportando el *gap*, pero dejar constancia visible de
+- [x] Política para tokens ausentes: seguir reportando el *gap*, pero dejar constancia visible de
       la diferencia resultante y quién decide (¿extensión del tema propuesta, valor provisional?).
-- [ ] Política para widgets Material con medidas propias: cuándo se acepta el valor por defecto,
+- [x] Política para widgets Material con medidas propias: cuándo se acepta el valor por defecto,
       cuándo se ajusta con parámetros y cuándo se crea un widget propio.
 
 **Decisiones y criterio de hecho**
@@ -269,3 +269,15 @@ longitud acotada. La sonda no ejercita el campo de entrada (el `TextField` despl
 La pregunta de cuándo el código puede desviarse del diseño por claridad se separó a
 [BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md) (prioridad baja). Aquí queda la regla
 vigente "nunca cambiar valores / no aplanar", conservadora a propósito.
+
+## Cierre (2026-11-26)
+
+**Criterio de cierre cumplido:** la fidelidad visual tiene tolerancia declarada (`forge-figma/references/fidelity.md`, ADR 0009), la especificación de `design.md` recoge medidas por elemento y comportamiento responsivo, la verificación visual es un paso de `forge-deliver` (fase 6, si hay `design.md`), la matriz responsiva es siempre activa (ADR 0010) y la cadena se probó sobre una pantalla real de UnitedApp (fase 0 y prueba con Figma real). Todo está en `main` (merge de `feat/bit-013-figma-fidelidad`, PR #4, y `flutter-forge` 0.8.0 con entrada en `CHANGELOG`). `python3 -m unittest discover -s plugins/flutter-forge/tests` pasa: 122 tests, 1 omitido.
+
+**Qué queda abierto (seguimiento, no bloquea el cierre):**
+- **Calibrar umbrales con más proyectos.** Las tolerancias son provisionales (ADR 0009: "thresholds provisional") y `fixed-height-text` de `check_responsive.py` está en `warn` sin calibrar. Mismo criterio que BIT-011.
+- **Fase 3 diferida a datos:** goldens ampliados y capturas comparables en `forge-e2e`. Queda diferida hasta tener datos de si la verificación estática y la matriz responsiva bastan. El cierre del ciclo es parcial: hoy la comparación es estática (`fidelity.md` § 6), no por píxel. Por eso la casilla "cómo se cierra el ciclo" queda sin marcar.
+- **Evals con poder discriminante limitado:** de los cinco de fidelidad, `standalone-delta` y `fixed-width-mapping` discriminan; los otros tres los resuelve también el modelo sin plugin. Los de responsividad (2/2 con plugin, 0/2 sin él) son indicio, no medida estable.
+- **Falso positivo conocido:** `check_responsive.py` marca `ammount_input.dart:98` (código de divisa junto a un `Flexible`); valorar una excepción para `Text` de longitud acotada si se repite.
+
+**Decisiones que no cambian:** BIT-009 no recibe evidencia de que el modelo, y no el contrato, explique las discrepancias (ver "Prueba de la fase de presentación con Sonnet"). La regla "nunca cambiar valores / no aplanar" sigue vigente; la desviación justificada se trata en [BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md).
