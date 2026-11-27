@@ -52,8 +52,9 @@ diseño → código → comparación.
       cuando falta un objetivo visual.
 - [x] Definir una **fase de verificación visual** con criterios y evidencia (¿en `forge-deliver`,
       en `forge-audit` o en ambos?) y su coste: medir antes de imponerla.
-- [ ] Decidir cómo se cierra el ciclo: capturas comparables en `forge-e2e`, goldens ampliados en
-      `forge-tests`, o una comparación guiada por el agente contra la captura de referencia.
+- [x] Decidir cómo se cierra el ciclo: capturas comparables en `forge-e2e`, goldens ampliados en
+      `forge-tests`, o una comparación guiada por el agente contra la captura de referencia
+      (decidido 2026-11-26: comparación guiada con un render de widget test; ver "Fase 3 · Medición").
 - [x] Política para tokens ausentes: seguir reportando el *gap*, pero dejar constancia visible de
       la diferencia resultante y quién decide (¿extensión del tema propuesta, valor provisional?).
 - [x] Política para widgets Material con medidas propias: cuándo se acepta el valor por defecto,
@@ -281,3 +282,31 @@ vigente "nunca cambiar valores / no aplanar", conservadora a propósito.
 - **Falso positivo conocido:** `check_responsive.py` marca `ammount_input.dart:98` (código de divisa junto a un `Flexible`); valorar una excepción para `Text` de longitud acotada si se repite.
 
 **Decisiones que no cambian:** BIT-009 no recibe evidencia de que el modelo, y no el contrato, explique las discrepancias (ver "Prueba de la fase de presentación con Sonnet"). La regla "nunca cambiar valores / no aplanar" sigue vigente; la desviación justificada se trata en [BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md).
+
+## Fase 3 · Medición: ¿basta la verificación estática? (2026-11-26)
+
+**Caso:** el mismo nodo de UNITED (`78627:22552`), worktree nuevo `UnitedApp-bit013` sobre `84e1467` (el anterior se perdió:
+estaba *prunable* y los cambios no tenían commit). `delta.md` regenerado con Figma real (variables, metadata, contexto de
+diseño y captura), cambios aplicados en 4 archivos **sin commit**. Se renderizó la página a 390×844 con un widget test
+desechable (fuentes DMSans y Unbounded cargadas; sin Montserrat ni iconos Material) antes y después, y se comparó cada
+render con `get_screenshot`. Sin simulador: la pantalla necesita sesión y el widget test basta.
+
+**Resultado**
+- La comparación estática encontró 12 defectos y 3 gaps/decisiones (15 filas revisadas); tras aplicarlos, el render coincide
+  con Figma en espaciado, color, roles y jerarquía. Quedan solo los gaps conocidos (Montserrat, `headline/super small`,
+  capa de estado). `flutter analyze` limpio y 41 tests del simulador en verde.
+- **Lo que solo vio el render:** el primer arreglo de `_ResultRow` (`Expanded` + `Flexible` en la misma fila) repartía el
+  ancho a medias y movía los valores al centro. `analyze`, la tabla de Medidas y los tests no lo marcan. Se corrigió con
+  dos `Flexible` y `space-between`.
+- Lo que el render no aporta: no encontró ningún defecto de diseño que la estática no hubiera visto antes.
+
+**Lectura:** la estática basta para *encontrar* diferencias de diseño; no basta para confirmar que el arreglo quedó bien
+implementado. Esa confirmación es barata (un render y una mirada contra la referencia, ~1 min), así que no justifica
+capturas en `forge-e2e` ni goldens por píxel. **Decisión:** cierre guiado por el agente con un render de widget test contra
+`refs/`; las capturas por checkpoint en `forge-e2e` siguen sin implementarse.
+
+**Límites:** una pantalla, un estado, una corrida y un autor del cambio (n = 1). Sin Montserrat el render no valida la
+tipografía de `title/*`. El `check_responsive.py` marca solo el falso positivo ya conocido (`ammount_input.dart`).
+
+**Pendiente (no hecho aquí):** pasar el render guiado a `fidelity.md` § 6 como paso 2 (hoy dice "capturar el resultado") y
+repetir en un segundo proyecto o estado (loading, error) antes de fijarlo como regla.
