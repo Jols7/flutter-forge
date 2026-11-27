@@ -22,7 +22,7 @@ Cada entrada vive en su propio archivo en [`docs/bitacora/`](bitacora/). Este do
 | [BIT-009](bitacora/BIT-009-modelo-y-esfuerzo.md) | Revisión de modelo y esfuerzo por agente y skill (costo vs. calidad) | revisión, mejora | pendiente | 2026-11-17 |
 | [BIT-010](bitacora/BIT-010-linea-base-forge-metrics.md) | Línea base de `forge-metrics`: mediana, rango y ahorro con corridas reales | medición | pendiente (se acumula con el uso) | 2026-11-17 |
 | [BIT-011](bitacora/BIT-011-forge-presentation-semantica.md) | `forge-presentation`: semántica y accesibilidad (opt-in con `a11y`), política de comentarios y estructura de código | auditoría, mejora | hecho (2026-11-19) | 2026-11-19 |
-| [BIT-012](bitacora/BIT-012-e2e-patrol-dispositivo-y-keys.md) | E2E con Patrol: ejecución fiable (selección de dispositivo) y keys en los widgets para pruebas | auditoría, mejora | hecho (2026-11-26; falta probar en simulador) | 2026-11-19 |
+| [BIT-012](bitacora/BIT-012-e2e-patrol-dispositivo-y-keys.md) | E2E con Patrol: ejecución fiable (selección de dispositivo) y keys en los widgets para pruebas | auditoría, mejora | hecho (2026-11-26; verificado en simulador, 0.9.0) | 2026-11-19 |
 | [BIT-013](bitacora/BIT-013-fidelidad-visual-frente-a-figma.md) | Fidelidad visual frente a Figma: diferencias de maquetación, tolerancia y verificación (`forge-figma` → `forge-presentation`) | auditoría, mejora | hecho (2026-11-26; calibración de umbrales abierta) | 2026-11-19 |
 | [BIT-014](bitacora/BIT-014-desviacion-justificada-presentacion-frente-a-figma.md) | Desviación justificada del código de presentación frente al diseño (catálogo cerrado, verificación por geometría) | mejora | pendiente (prioridad baja) | 2026-11-19 |
 

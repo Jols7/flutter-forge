@@ -2,7 +2,7 @@
 
 > [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-013](BIT-013-fidelidad-visual-frente-a-figma.md), [BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md)
 
-- **Tipo:** auditoría, mejora · **Estado:** hecho (2026-11-26; verificación en simulador real pendiente) · **Alta:** 2026-11-19
+- **Tipo:** auditoría, mejora · **Estado:** hecho (2026-11-26; verificado en simulador, `flutter-forge` 0.9.0) · **Alta:** 2026-11-19
 - **Origen:** separada de BIT-002 (2026-11-19), que mezclaba la estrategia general de pruebas con
   dos problemas concretos de Patrol: la ejecución y la testabilidad.
 - **Dónde mirar:** `plugins/flutter-forge/skills/forge-e2e/` (`SKILL.md`, `references/`,
