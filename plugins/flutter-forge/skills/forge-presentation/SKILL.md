@@ -65,6 +65,9 @@ domain, and widgets get state. Nothing in this layer knows about HTTP or JSON.
 - Use the theme for all styling: colors, text styles and spacing tokens from `design.*`. There
   are no hex literals and no `TextStyle(fontFamily: …)`. A token that is missing from the theme
   is a gap reported by `forge-figma`; never replace it with a literal.
+- Emit the feature's `<Feature>Keys` class and put its constants on the interactive widgets and
+  sealed-state containers the blueprint lists (`forge-architecture/references/conventions.md` § 9).
+  Always, whatever `a11y` says. Keys are never added later by the tests.
 - All text comes from l10n through `l10n.accessor`, using the keys listed in the blueprint. Add
   the keys with `forge-l10n`. Failure messages come from the `AppFailure` mapping
   (`page-patterns.md` § Failures).

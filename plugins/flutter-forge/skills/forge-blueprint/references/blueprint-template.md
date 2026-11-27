@@ -49,7 +49,9 @@ Side effects: succeeded → navigate to receipt; BusinessFailure(INSUFFICIENT_FU
 | Amount input | extend `AppAmountField` (+ `errorText`) | lib/core/widgets/inputs/app_amount_field.dart | label from l10n `amountFieldLabel` |
 | Account selector tile | create (feature-local) | lib/features/transfers/presentation/widgets/account_option_tile.dart | `MergeSemantics`, selected state |
 
-Drop the Semantics column when `a11y` is `off`. A "test keys" column (BIT-012) is designed with it.
+Drop the Semantics column when `a11y` is `off`. Add a **Test keys** column (always, independent of
+`a11y`) with the constants of the feature's `<Feature>Keys` class (`conventions.md` § 9) for every
+interactive element and every sealed-state container; Gate 2 shows them with the widgets.
 
 ## Routes and DI
 - Route `/transfers/new` → `BlocProvider(create: (_) => getIt<TransferCubit>(param1: fromAccountId))`

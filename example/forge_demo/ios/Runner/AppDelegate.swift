@@ -11,3 +11,6 @@ import UIKit
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }
+
+// UIScene life cycle (required by the iOS 27 SDK). Kept in this file so the Xcode project is untouched.
+class SceneDelegate: FlutterSceneDelegate {}

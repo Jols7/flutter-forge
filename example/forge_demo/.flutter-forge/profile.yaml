@@ -69,6 +69,7 @@ testing:
   e2e: patrol
   e2e_dir: patrol_test
   credentials_file: patrol_test/demo_env.json   # demo only: USE_MOCKS, no credentials (the app has no login)
+  device: null                             # auto: booted iOS simulator → Android emulator
   default_flavor: dev
   forbidden_flavors: [prod]
 

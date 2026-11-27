@@ -39,6 +39,18 @@ setup guide for that version, because these snippets change between major versio
 
 ## 3. iOS
 
+**Check the UIScene life cycle first (apps built with the iOS 27 SDK).** The iOS 27 SDK refuses
+to launch an app that does not adopt it: the app aborts at start with "UIScene life cycle is
+required for apps built with this SDK", and Patrol then reports `Patrol app did not become ready
+on port 8082` and 0 tests (`run_flow.sh` prints `NO_TESTS_RAN`). It depends on the SDK (Xcode) the
+app is built with, not on a simulator point release. If `ios/Runner/Info.plist` has no
+`UIApplicationSceneManifest`, migrate the Runner before anything else, following the Flutter
+migration guide for the project's Flutter version. With Flutter 3.38 that meant a
+`SceneDelegate: FlutterSceneDelegate` plus a manifest entry that names
+`$(PRODUCT_MODULE_NAME).SceneDelegate`, keeping the existing `AppDelegate`. Newer Flutter versions
+may use a different `AppDelegate` shape; do not copy the 3.38 snippet blindly. This is app
+configuration, so tell the person and do it in its own change, not inside the E2E files.
+
 Create the `RunnerUITests` UI-testing target with the skill's script. It uses the `xcodeproj`
 gem, which ships with CocoaPods; never hand-edit `project.pbxproj`:
 

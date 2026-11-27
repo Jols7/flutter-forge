@@ -72,5 +72,7 @@ is approximate.
 
 ## Keys for tests
 
-Interactive widgets and state containers should be named and placed so a test key can be added
-later without restructuring. The key convention is decided in **BIT-012**, not here.
+Interactive widgets and each sealed-state container carry the key the blueprint lists, taken from
+the feature's `<Feature>Keys` class (`presentation/<feature>_keys.dart`). The rule is in
+`forge-architecture/references/conventions.md` § 9. Emit the class and apply the constants always,
+with `a11y` on or off.

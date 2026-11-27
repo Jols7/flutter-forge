@@ -61,7 +61,7 @@
 **Cuándo subir la prioridad (disparadores)**
 - Dos o más casos reales donde un agente propone desviarse y no hay norma, o donde un `delta.md` marca como defecto
   un desvío razonable.
-- La sonda de geometría o las keys de BIT-012 ya existen.
+- La sonda de geometría o las keys de BIT-012 ya existen (las keys existen desde 2026-11-26; falta la sonda).
 - La calibración con más proyectos (ver BIT-013, protocolo de calibración) muestra listas con envoltorios o
   repeticiones que el código hoy no resuelve bien.
 

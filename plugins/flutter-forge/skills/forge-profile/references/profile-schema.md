@@ -120,6 +120,7 @@ testing:
   default_flavor: dev
   forbidden_flavors: [prod]                # e2e never runs against these
   credentials_file: patrol_test/test_env.json   # gitignored; never written by the agent
+  device: null                             # simulator/emulator id or name for E2E; null = auto (booted iOS sim → Android emulator). Saved when the person answers the one device question
 
 flavors:
   names: []                                # e.g. [dev, qa, prod]
