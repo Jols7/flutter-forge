@@ -6,6 +6,24 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-26
+
+### Added
+- **E2E device policy** (BIT-012, ADR 0011). `forge-e2e/scripts/select_device.sh` picks a booted iOS
+  simulator or Android emulator (or the one in `testing.device`); `run_flow.sh` always passes
+  `--device`, closes stdin and aborts with exit `5` if the device chooser appears twice. New exit
+  `4` (no device) maps to `pending-run`.
+- **Test keys convention** (BIT-012). `conventions.md` § 9 defines `<Feature>Keys`; the blueprint lists
+  them, `forge-presentation` emits them, `forge-e2e` and `forge-tests` use them and report missing
+  ones instead of editing production code. Independent of `a11y`.
+- Tests `test_e2e_device.py` and evals `e2e-device-selection-policy`, `e2e-keys-from-blueprint`.
+
+### Changed
+- `forge_demo` iOS Runner adopts the UIScene lifecycle (`SceneDelegate`, `UIApplicationSceneManifest`),
+  required by the iOS 27 SDK, and `patrol_cli` moves to 4.10.0. `run_flow.sh` reports a run with zero
+  tests as `NO_TESTS_RAN` (exit 1).
+- `forge-figma` fidelity § 6: the visual check is a guided widget-test render (BIT-013 phase 3).
+
 ## [0.8.0] - 2026-11-24
 
 Additive for the orchestrator contract: `result.json` keeps `schema: 1` (it gains an optional `design`

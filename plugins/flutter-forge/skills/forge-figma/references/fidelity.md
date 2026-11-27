@@ -103,8 +103,10 @@ run report:
 How to verify, cheapest first:
 1. **Static.** Compare the Measures table with the code, element by element (reads files, no run).
    This found most of the BIT-013 differences.
-2. **Visual.** Capture the result at the design's frame size and compare it with the reference
-   capture, only for the key screen and the states that change layout.
+2. **Visual.** Render the result with a throwaway widget test at the design's frame size and compare
+   it by eye with the reference capture in `refs/`, only for the key screen and the states that change
+   layout. This is agent-guided (about a minute); there are no pixel goldens or `forge-e2e` captures.
+   It caught an implementation drift the static pass could not (BIT-013 phase 3).
 3. **Responsive.** Render at the sizes and text scales above and look for overflow (a widget test or
    the project's own harness). `forge-audit` and `forge-tests` automate this in phase 2.
 

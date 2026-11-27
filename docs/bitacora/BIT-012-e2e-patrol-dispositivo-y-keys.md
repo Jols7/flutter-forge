@@ -2,7 +2,7 @@
 
 > [Índice](../bitacora.md) · [Convenciones](../bitacora.md#convenciones) · **Relacionadas:** [BIT-002](BIT-002-estrategia-de-pruebas.md), [BIT-011](BIT-011-forge-presentation-semantica.md), [BIT-013](BIT-013-fidelidad-visual-frente-a-figma.md), [BIT-014](BIT-014-desviacion-justificada-presentacion-frente-a-figma.md)
 
-- **Tipo:** auditoría, mejora · **Estado:** pendiente · **Alta:** 2026-11-19
+- **Tipo:** auditoría, mejora · **Estado:** hecho (2026-11-26; verificado en simulador, `flutter-forge` 0.9.0) · **Alta:** 2026-11-19
 - **Origen:** separada de BIT-002 (2026-11-19), que mezclaba la estrategia general de pruebas con
   dos problemas concretos de Patrol: la ejecución y la testabilidad.
 - **Dónde mirar:** `plugins/flutter-forge/skills/forge-e2e/` (`SKILL.md`, `references/`,
@@ -86,11 +86,12 @@
   interactivo), `forge-presentation` (aplicar la convención), `forge-figma` (nombrar según el
   diseño, si ayuda), `forge-e2e` y `forge-tests` (usar las constantes; dejar de crear keys sobre
   la marcha), `forge-audit` (regla: widget interactivo sin key de prueba, severidad baja).
-- [ ] Verificar contra la documentación de Patrol cómo resuelve `$(#nombre)` (por `Key`) y qué
-      ofrece para finders nativos y por semántica.
-- [ ] Decidir la convención de nombres y el lugar de la fuente de verdad.
-- [ ] Añadir la columna al blueprint y la regla al audit; actualizar `forge-e2e` y `forge-tests`.
-- [ ] Eval: una feature con 2 pantallas y 1 lista; el test Patrol generado no debe añadir keys
+- [x] Verificar contra la documentación de Patrol: `$(#nombre)`, `$(Key('x'))` y `$(find.byKey(...))` son
+      equivalentes; por semántica se usan finders de `flutter_test` dentro de `$()`. **No se confirmó**
+      `Semantics(identifier:)` ni la versión mínima de Flutter: no se recomienda ni se emite.
+- [x] Decidir la convención de nombres y el lugar de la fuente de verdad.
+- [x] Añadir la columna al blueprint y la regla al audit; actualizar `forge-e2e` y `forge-tests`.
+- [x] Eval: una feature con 2 pantallas y 1 lista; el test Patrol generado no debe añadir keys
       nuevas y debe usar las constantes.
 - **Criterio de hecho:** convención documentada una vez; blueprint y presentación la aplican;
   una corrida de `forge-e2e` no modifica código de producción para añadir keys.
@@ -107,3 +108,29 @@
   - **Actualización 2026-11-19:** BIT-011 quedó cerrada (fases 0 a 4). La parte B ya no espera: la
     columna "Semantics" ya existe en `blueprint-template.md` y `structure.md` deja un apartado de keys
     que remite aquí.
+
+**Cierre (2026-11-26) · [ADR 0011](../adr/0011-e2e-device-policy-and-test-keys.md)**
+
+- **Parte A:** `forge-e2e/scripts/select_device.sh` (pedido → simulador iOS booteado → emulador Android
+  booteado; intenta bootear el pedido; si no, exit 4) y `run_flow.sh` (siempre `--device`, stdin cerrado,
+  tope de líneas, aborta con exit 5 `DEVICE_PROMPT_LOOP` al segundo prompt). `testing.device` en el perfil.
+  Exit 4/5 → `pending-run` en `forge-deliver`. Preguntar solo en interactivo con varios candidatos.
+- **Parte B:** fuente única en `conventions.md` § 9 (`<Feature>Keys`); columna "Test keys" en el
+  blueprint; `forge-presentation` las emite; `forge-e2e` y `forge-tests` las consumen y reportan las que
+  faltan sin editar `lib/`; regla baja en `severity.md`.
+- **Pruebas:** `tests/test_e2e_device.py` (13 casos con herramientas falsas: 0/1/3 dispositivos, preferido
+  ausente, bucle de prompt, stdin cerrado) y evals `e2e-device-selection-policy`, `e2e-keys-from-blueprint`.
+- **No verificado:** el texto exacto del prompt de Patrol (la máquina solo tenía macOS/Chrome; el detector
+  usa `Please choose one` y variantes) y una corrida real en simulador; los evals no se han ejecutado con
+  `claude plugin eval`. El chequeo estático de keys en `check_presentation.py` queda sin hacer hasta calibrar.
+- **Fase 3 (Figma):** `forge-e2e` solo lee `design.md` para listar referencias; las capturas por checkpoint
+  quedan opt-in y sin implementar (API de captura de Patrol sin verificar). Las keys estables son el hook de
+  BIT-014. BIT-009: sin cambio de modelo, no hay evidencia.
+- **Fuera de alcance:** `flutter-patrol-flows` (plugin PGI) debe copiar la misma política de dispositivo.
+
+**Verificación en simulador (2026-11-26):** `select_device.sh` eligió el único simulador booteado (iPhone 18 Pro) y
+`run_flow.sh` construyó y lanzó Patrol con `--device` explícito, sin prompt. La app no respondió en el puerto 8082
+de Patrol ("did not become ready"), por lo que el flujo de `forge_demo` **no llegó a ejecutarse** (0 tests; antes y
+después de aplicar las keys). **Resuelto después:** la causa no era la versión de Patrol sino que el SDK de iOS 27 exige el ciclo de vida UIScene y el Runner del demo no lo tenía (la app abortaba al lanzar). Se añadió `SceneDelegate: FlutterSceneDelegate` y `UIApplicationSceneManifest` en `Info.plist`, y se actualizó `patrol_cli` 4.8.0 → 4.10.0 (el paquete es 4.11.0). El flujo quedó en verde con las keys (`RESULT: GREEN`, `lib/` sin cambios por la fase E2E). `run_flow.sh` ahora lo
+reporta como `NO_TESTS_RAN` (exit 1). Evals: `e2e-device-selection-policy` 0.83 vs 0.00 sin plugin; `e2e-keys-from-blueprint`
+1.00 vs 0.33 (tras quitar del grader una exigencia sobre `a11y`). El ejemplo `forge_demo` adopta `AccountsKeys`/`TransactionsKeys`.

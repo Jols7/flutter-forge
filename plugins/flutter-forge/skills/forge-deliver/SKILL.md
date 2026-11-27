@@ -47,7 +47,7 @@ skill's rules.
 | 6 | presentation | forge-presentation | blueprint, design | code + visual check | — |
 | 7 | l10n | forge-l10n | blueprint keys | ARB + generated | — |
 | 8 | tests | forge-tests | blueprint test plan, fixtures | tests, `tests.md` | — |
-| 9 | e2e | forge-e2e | flow from brief; device + credentials | flow test | — |
+| 9 | e2e | forge-e2e | flow from brief; device + credentials; test keys from the blueprint | flow test | — |
 | 10 | review | forge-audit + forge-security (via flutter-reviewer) | file list | `findings.md` | **Gate 3** which findings to fix |
 | 11 | fix | owner skill of each finding | approved findings | code, re-run checks | — |
 | 12 | report | this skill | everything | `report.md`, `result.json` | — |
@@ -66,8 +66,9 @@ Rules between phases:
 - **Tests failing (8–9).** Fix and re-run, up to 3 cycles per failure (the rule in
   `forge-tests`), and count each cycle in `retries`. After that, continue to the review and mark
   the run `status: failing-tests`. Never hide a failure.
-- **E2E prerequisites missing** (no device or no credentials). The test stays written and is
-  marked `pending-run`. The run still completes.
+- **E2E prerequisites missing** (no device or no credentials), or the runner exits `4` (no
+  device) or `5` (device prompt loop). The test stays written and is marked `pending-run` with
+  the reason. Unattended runs never ask which device to use. The run still completes.
 - **Scope guard.** Only what the brief and blueprint list gets built. Bugs found elsewhere go
   to the report's **Observations** and are not fixed.
 

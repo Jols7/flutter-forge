@@ -35,6 +35,7 @@ A missing or `fail` verdict in `design.md` is medium; accepted differences witho
 - `commented-out-code` → medium;
 - `todo-without-ref` → low;
 - `banner` → low;
+- an interactive widget or sealed-state container in a `*_page.dart` without the key the blueprint lists (`conventions.md` § 9) → low (manual check; no script yet, calibrate before adding one).
 - `missing-doc` on a domain contract → low.
 
 A missing reference on a non-obvious **money or security** rule is medium.

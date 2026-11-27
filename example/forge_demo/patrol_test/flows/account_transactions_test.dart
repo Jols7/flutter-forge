@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:forge_demo/features/accounts/presentation/widgets/account_card.dart';
-import 'package:forge_demo/features/transactions/presentation/widgets/transaction_tile.dart';
+import 'package:forge_demo/features/accounts/presentation/accounts_keys.dart';
+import 'package:forge_demo/features/transactions/presentation/transactions_keys.dart';
 
 import '../common/flow_runner.dart';
 import '../common/flow_test.dart';
@@ -20,7 +20,8 @@ void main() {
       await flow.start();
 
       await flow.step('Home lists both accounts with masked numbers', () async {
-        await $(AccountCard).at(1).waitUntilVisible();
+        await $(AccountsKeys.item('acc_1')).waitUntilVisible();
+        await $(AccountsKeys.item('acc_2')).waitUntilVisible();
         await $('•••• 4821').waitUntilVisible();
         await $('•••• 9034').waitUntilVisible();
         await $(
@@ -31,13 +32,13 @@ void main() {
       await flow.step(
         'Tapping "Nómina" opens its movements',
         () async {
-          await $('Nómina').tap();
+          await $(AccountsKeys.item('acc_1')).tap();
           await $(
             Screens.transactions,
           ).waitUntilVisible(timeout: const Duration(seconds: 30));
           await $(
-            TransactionTile,
-          ).at(1).waitUntilVisible(timeout: const Duration(seconds: 30));
+            TransactionsKeys.item('tx_2'),
+          ).waitUntilVisible(timeout: const Duration(seconds: 30));
         },
         reached: Checkpoint(
           'transactions',

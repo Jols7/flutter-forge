@@ -60,8 +60,9 @@ A fake extends the ViewModel with a settable `state` and calls `notifyListeners`
 ## Finders and rules
 
 - Prefer `find.byType(WidgetClass)`, then `find.text(<ARB text>)`, then
-  `find.byKey(const Key('transfer_submit'))`. Add keys to the app only when a finder is
-  ambiguous, and mention it in the report.
+  `find.byKey(TransferKeys.submit)`, the `<Feature>Keys` constant from the blueprint
+  (`forge-architecture/references/conventions.md` § 9). Do not add keys to the app from the tests:
+  report a missing one so `forge-presentation` adds it.
 - Assert user-visible outcomes (text, enabled state), not private widget
   internals.
 - Disabled button: `expect(tester.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNull)`.

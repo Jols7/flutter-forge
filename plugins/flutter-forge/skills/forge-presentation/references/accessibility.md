@@ -8,8 +8,8 @@ here instead of repeating thresholds.
 **How to turn it on:** put `a11y: on` in the brief (`forge-requirements` asks for it from the
 story or the requirements), or set `accessibility.default: on` in `.flutter-forge/profile.yaml`.
 
-Test keys and `Semantics(identifier:)` for Patrol are **not** accessibility and are emitted
-regardless of this switch (BIT-012).
+Test keys for Patrol (`conventions.md` § 9) are **not** accessibility and are emitted regardless of
+this switch (BIT-012).
 
 ## Thresholds (cite these, do not restate them elsewhere)
 

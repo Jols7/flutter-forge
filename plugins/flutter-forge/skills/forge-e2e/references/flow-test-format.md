@@ -24,13 +24,13 @@ void main() {
     }, reached: Checkpoint('new transfer', Screens.newTransfer, reach: openNewTransferFromDetail));
 
     await flow.step('AC-2: an amount below the minimum shows the error', () async {
-      await $(#transfer_amount).enterText('5');
+      await $(TransferKeys.amount).enterText('5');
       await $('Ingresa un monto mayor a \$10.00').waitUntilVisible();
     });
 
     await flow.step('AC-3: a valid amount shows the preview', () async {
-      await $(#transfer_amount).enterText('500');
-      await $(#transfer_preview_card).waitUntilVisible(timeout: const Duration(seconds: 30));
+      await $(TransferKeys.amount).enterText('500');
+      await $(TransferKeys.previewCard).waitUntilVisible(timeout: const Duration(seconds: 30));
     });
 
     // Stops before "Confirmar": creating real transfers needs explicit approval.
@@ -38,6 +38,12 @@ void main() {
   });
 }
 ```
+
+## Finders
+
+Use the `<Feature>Keys` constants from the blueprint (`$(TransferKeys.amount)`), never a symbol
+such as `$(#transfer_amount)` that nobody declared. A missing key is reported, not added to `lib/`
+(`SKILL.md` § Write).
 
 ## Rules
 

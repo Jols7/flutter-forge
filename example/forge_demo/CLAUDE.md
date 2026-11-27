@@ -26,6 +26,7 @@ contract (domain) → repository impl → remote data source (Dio). Repositories
 ## Gotchas
 
 - The API host is fictional; without `USE_MOCKS=true` every request fails with `NetworkFailure`.
+- The iOS Runner uses the UIScene life cycle (`SceneDelegate` in `AppDelegate.swift`, `UIApplicationSceneManifest` in `Info.plist`); the iOS 27 SDK refuses to launch apps without it.
 - `dart run build_runner` must run after any DTO change; generated `*.g.dart` files are committed.
 
 ## flutter-forge

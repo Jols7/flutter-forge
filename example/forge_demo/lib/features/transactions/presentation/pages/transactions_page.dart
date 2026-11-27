@@ -6,6 +6,7 @@ import '../../../../core/widgets/feedback/empty_view.dart';
 import '../../../../core/widgets/feedback/error_view.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../state/transactions_cubit.dart';
+import '../transactions_keys.dart';
 import '../state/transactions_state.dart';
 import '../widgets/load_more_on_scroll.dart';
 import '../widgets/transaction_tile.dart';
@@ -24,10 +25,15 @@ class TransactionsPage extends StatelessWidget {
       body: BlocBuilder<TransactionsCubit, TransactionsState>(
         builder: (context, state) => switch (state) {
           TransactionsLoading() => const Center(
+            key: TransactionsKeys.loading,
             child: CircularProgressIndicator(),
           ),
-          TransactionsEmpty() => EmptyView(message: l10n.transactionsEmpty),
+          TransactionsEmpty() => EmptyView(
+            key: TransactionsKeys.empty,
+            message: l10n.transactionsEmpty,
+          ),
           TransactionsFailure(:final failure) => ErrorView(
+            key: TransactionsKeys.error,
             message: failure.message(l10n),
             retryLabel: l10n.commonRetry,
             onRetry: context.read<TransactionsCubit>().load,
@@ -49,6 +55,7 @@ class _TransactionsList extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return LoadMoreOnScroll(
       child: ListView.builder(
+        key: TransactionsKeys.list,
         itemCount: state.listLength,
         itemBuilder: (context, index) {
           if (index >= state.items.length) {
@@ -56,7 +63,7 @@ class _TransactionsList extends StatelessWidget {
           }
           final item = state.items[index];
           return TransactionTile(
-            key: ValueKey(item.id),
+            key: TransactionsKeys.item(item.id),
             transaction: item,
             fallbackDescription: l10n.transactionsNoDescription,
           );

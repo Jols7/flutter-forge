@@ -70,3 +70,28 @@ state is `unknown`. It is not a cubit that navigates. Details: `page-patterns.md
 | Repository contract / impl | `XRepository` / `XRepositoryImpl` |
 | State | `XState` sealed; subtypes `XLoading`, `XLoaded`, `XFailure` |
 | Sub-status inside a state | its own sealed type (`LoadMore`), never two flags |
+
+## 9. Test keys (BIT-012, ADR 0011)
+
+The single source for keys that tests find widgets by. Other skills link here and do not repeat it.
+Keys are independent of the `a11y` switch.
+
+- **Who gets one.** Elements a flow interacts with or checks (action buttons, fields, tabs, list
+  items) and the container of each sealed state (loading, error, empty, content). Not every widget.
+- **Name.** `snake_case`, `<screen>_<element>`; list items `<screen>_item_<id>`. Never personal or
+  sensitive data in a name (MASVS).
+- **Declared once per feature**, in `presentation/<feature>_keys.dart`:
+
+  ```dart
+  abstract final class TransferKeys {
+    static const submit = Key('transfer_submit');
+    static const amount = Key('transfer_amount');
+    static Key item(String id) => Key('transfer_item_$id');
+  }
+  ```
+
+  The page, the widget tests and Patrol all use the constant: `key: TransferKeys.submit`,
+  `find.byKey(TransferKeys.submit)`, `$(TransferKeys.submit)`. No `GlobalKey` for tests.
+- **Declared upstream.** The blueprint lists them (Widgets table, "Test keys" column) and
+  `forge-presentation` emits and applies them. `forge-e2e` and `forge-tests` only consume them: a
+  missing key is a **finding in the report**, never an edit to production code.
